@@ -37,6 +37,12 @@ Abre la dirección mostrada por Vite (normalmente `http://localhost:5173`).
 - Alerta de saldo pendiente al dejar un pedido listo para entrega.
 - Registro de pago con previsualización local de voucher.
 - Persistencia de cambios mediante `localStorage`.
+- Asistente virtual simulado con respuestas contextuales para clientes.
+- Panel de análisis predictivo con proyección lineal, demanda por categoría y riesgo de retraso.
+
+## Inteligencia artificial simulada
+
+El prototipo incorpora **Mía**, un chatbot demostrativo basado en reglas, y un módulo administrativo de análisis inteligente. La proyección de demanda usa regresión lineal sobre información simulada y el riesgo de retraso utiliza un puntaje heurístico según etapa, fecha y pago. Estas funciones son académicas: no consumen APIs de IA ni representan predicciones comerciales reales.
 
 ## Flujo de demostración
 
