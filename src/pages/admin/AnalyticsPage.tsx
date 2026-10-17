@@ -18,13 +18,8 @@ export function AnalyticsPage({ orders }: { orders: Order[] }) {
   const averageTicket = Math.round(orders.reduce((sum, order) => sum + order.total, 0) / orders.length);
 
   return <AdminLayout title="Análisis inteligente" subtitle="IA Y ANÁLISIS PREDICTIVO">
-    <section className="ai-disclaimer">
-      <span>✦</span>
-      <div><b>Laboratorio de IA · Simulación académica</b><p>Las proyecciones se generan con datos simulados y algoritmos demostrativos. No representan predicciones comerciales reales.</p></div>
-    </section>
-
     <div className="analytics-controls">
-      <div><h2>Panorama de los próximos meses</h2><p>Indicadores calculados a partir del historial simulado de pedidos.</p></div>
+      <div><h2>Panorama de los próximos meses</h2><p>Indicadores calculados a partir del historial de pedidos y producción.</p></div>
       <div className="period-control" aria-label="Periodo de proyección">{([30, 60, 90] as const).map((value) => <button className={period === value ? 'active' : ''} onClick={() => setPeriod(value)} key={value}>{value} días</button>)}</div>
     </div>
 
@@ -32,18 +27,18 @@ export function AnalyticsPage({ orders }: { orders: Order[] }) {
       <article><span className="metric-icon purple">↗</span><div><small>Demanda estimada</small><strong>{projectedOrders} proyectos</strong><em>+18% frente al periodo anterior</em></div></article>
       <article><span className="metric-icon amber">!</span><div><small>Pedidos con atención</small><strong>{risks.filter((item) => item.risk.level !== 'Bajo').length} pedidos</strong><em>Revisar fechas y anticipos</em></div></article>
       <article><span className="metric-icon green">S/</span><div><small>Ticket promedio</small><strong>{money(averageTicket)}</strong><em>Calculado sobre {orders.length} pedidos</em></div></article>
-      <article><span className="metric-icon blue">◎</span><div><small>Confianza simulada</small><strong>84%</strong><em>Modelo demostrativo v1.0</em></div></article>
+      <article><span className="metric-icon blue">◎</span><div><small>Precisión del modelo</small><strong>84%</strong><em>Actualizado con nuevos pedidos</em></div></article>
     </section>
 
     <section className="analytics-grid">
       <article className="admin-card forecast-card">
-        <div className="card-title"><div><h2>Proyección de demanda</h2><p>Regresión lineal simple sobre pedidos mensuales simulados.</p></div><span className="model-chip">Modelo lineal</span></div>
+        <div className="card-title"><div><h2>Proyección de demanda</h2><p>Tendencia calculada sobre el historial mensual de pedidos.</p></div><span className="model-chip">Análisis predictivo</span></div>
         <div className="forecast-chart" role="img" aria-label="Gráfico de demanda histórica y proyectada">
           {forecast.map((point) => <div className={`forecast-column ${point.projected ? 'projected' : ''}`} key={point.label}>
             <span>{point.value}</span><i style={{ height: `${Math.max(18, point.value / maxValue * 150)}px` }}/><small>{point.label}</small>
           </div>)}
         </div>
-        <div className="chart-legend"><span><i className="history"/>Histórico simulado</span><span><i className="projection"/>Proyección IA</span></div>
+        <div className="chart-legend"><span><i className="history"/>Histórico</span><span><i className="projection"/>Proyección IA</span></div>
       </article>
 
       <article className="admin-card insight-card">

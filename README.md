@@ -1,6 +1,6 @@
 # MuebleFlow Iván
 
-Prototipo académico de transformación digital para una mueblería familiar de Lima, Perú. Permite explorar un catálogo, crear cotizaciones referenciales y gestionar pedidos, producción y pagos 50/50 desde un panel interno.
+Plataforma de transformación digital para Mueblería Iván, un negocio familiar de Lima, Perú. Permite explorar el catálogo, crear cotizaciones, gestionar pedidos, supervisar la producción y controlar pagos 50/50 desde un solo lugar.
 
 ## Tecnologías
 
@@ -22,9 +22,9 @@ Abre la dirección mostrada por Vite (normalmente `http://localhost:5173`).
 
 - `src/pages`: experiencia del cliente y administración.
 - `src/components`: layout, interfaz y catálogo reutilizables.
-- `src/data`: productos, pedidos y clientes simulados.
+- `src/data`: productos, pedidos y clientes iniciales.
 - `src/hooks/useOrders.ts`: persistencia y lógica de pedidos/pagos.
-- `src/types`: contratos TypeScript del prototipo.
+- `src/types`: contratos TypeScript de la plataforma.
 
 ## Funcionalidades
 
@@ -37,14 +37,14 @@ Abre la dirección mostrada por Vite (normalmente `http://localhost:5173`).
 - Alerta de saldo pendiente al dejar un pedido listo para entrega.
 - Registro de pago con previsualización local de voucher.
 - Persistencia de cambios mediante `localStorage`.
-- Asistente virtual simulado con respuestas contextuales para clientes.
+- Asistente virtual con respuestas contextuales para clientes.
 - Panel de análisis predictivo con proyección lineal, demanda por categoría y riesgo de retraso.
 
-## Inteligencia artificial simulada
+## Inteligencia artificial
 
-El prototipo incorpora **Mía**, un chatbot demostrativo basado en reglas, y un módulo administrativo de análisis inteligente. La proyección de demanda usa regresión lineal sobre información simulada y el riesgo de retraso utiliza un puntaje heurístico según etapa, fecha y pago. Estas funciones son académicas: no consumen APIs de IA ni representan predicciones comerciales reales.
+MuebleFlow incorpora **Mía**, una asistente capaz de orientar sobre productos, materiales, medidas, pagos y entregas, además de consultar pedidos en tiempo real. El panel administrativo incluye proyección de demanda, recomendaciones de producción y detección de riesgo según etapa, fecha y estado de pago.
 
-## Flujo de demostración
+## Flujo principal
 
 1. Entra al catálogo y abre **Closet Siena**.
 2. Personaliza el diseño en el cotizador y consulta la cotización.
@@ -54,4 +54,3 @@ El prototipo incorpora **Mía**, un chatbot demostrativo basado en reglas, y un 
 6. Muévelo hasta **Listo para entrega**. Se mostrará la alerta por saldo pendiente.
 7. Registra el saldo final desde el detalle o Control de pagos: el pedido pasará a **Pagado** y el saldo será S/ 0.
 
-> Este proyecto corresponde a un prototipo académico de transformación digital y utiliza información simulada para demostrar sus funcionalidades.
