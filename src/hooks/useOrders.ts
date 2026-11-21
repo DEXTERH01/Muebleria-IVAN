@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { seedOrders } from '../data/orders';
 import type { Order } from '../types';
-const KEY='muebleflow-orders';
+const KEY='muebleria-ivan-orders';
 const load=():Order[]=>{ try { const raw=localStorage.getItem(KEY); return raw ? JSON.parse(raw) as Order[] : seedOrders; } catch { return seedOrders; } };
 export function useOrders(){
  const [orders,setOrders]=useState<Order[]>(load);

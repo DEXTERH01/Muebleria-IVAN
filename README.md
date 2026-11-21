@@ -1,4 +1,6 @@
-# MuebleFlow Iván
+# Mueblería Iván
+
+![Logo de Mueblería Iván](public/assets/brand/muebleria-ivan-logo.png)
 
 Plataforma de transformación digital para Mueblería Iván, un negocio familiar de Lima, Perú. Permite explorar el catálogo, crear cotizaciones, gestionar pedidos, supervisar la producción y controlar pagos 50/50 desde un solo lugar.
 
@@ -17,6 +19,10 @@ npm run dev
 ```
 
 Abre la dirección mostrada por Vite (normalmente `http://localhost:5173`).
+
+## Plan del proyecto
+
+El alcance, las reglas, la arquitectura y el orden obligatorio de implementación se encuentran en [docs/PLAN_MAESTRO.md](docs/PLAN_MAESTRO.md). El progreso y las evidencias de cada fase se registran en [docs/SEGUIMIENTO.md](docs/SEGUIMIENTO.md).
 
 ## Estructura
 
@@ -42,7 +48,7 @@ Abre la dirección mostrada por Vite (normalmente `http://localhost:5173`).
 
 ## Inteligencia artificial
 
-MuebleFlow incorpora **Mía**, una asistente capaz de orientar sobre productos, materiales, medidas, pagos y entregas, además de consultar pedidos en tiempo real. El panel administrativo incluye proyección de demanda, recomendaciones de producción y detección de riesgo según etapa, fecha y estado de pago.
+La plataforma incorpora **Mía**, una asistente capaz de orientar sobre productos, materiales, medidas, pagos y entregas, además de consultar pedidos en tiempo real. El panel administrativo incluye proyección de demanda, recomendaciones de producción y detección de riesgo según etapa, fecha y estado de pago.
 
 ## Flujo principal
 

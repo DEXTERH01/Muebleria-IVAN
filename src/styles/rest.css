@@ -445,7 +445,7 @@
   .detail-layout, .quote-layout, .summary-layout { grid-template-columns: 1fr; }
   .estimate { position: static; }
   .sidebar { width: 64px; padding: 20px 9px; }
-  .sidebar .logo b, .sidebar .logo em, .sidebar-caption, .sidebar nav a { font-size: 0; }
+  .sidebar-caption, .sidebar nav a { font-size: 0; }
   .sidebar .logo { justify-content: center; }
   .sidebar nav a span { font-size: 18px; margin: 0; }
   .sidebar nav a { display: grid; place-items: center; padding: 12px; }

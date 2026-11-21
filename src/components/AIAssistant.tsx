@@ -92,7 +92,7 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
   const [input, setInput] = useState('');
   const [thinking, setThinking] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: 1, role: 'assistant', text: '¡Hola! Soy Mía, la asistente virtual de MuebleFlow. ¿Qué mueble tienes en mente?' },
+    { id: 1, role: 'assistant', text: '¡Hola! Soy Mía, la asistente virtual de Mueblería Iván. ¿Qué mueble tienes en mente?' },
   ]);
   const endRef = useRef<HTMLDivElement>(null);
   useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages, thinking]);
