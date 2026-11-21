@@ -2,36 +2,22 @@
 
 ## Objetivo
 
-Dos integrantes trabajarán en paralelo sin editar los mismos archivos ni romper el contrato entre frontend y backend. La integración se realizará mediante ramas cortas, OpenAPI y revisiones pequeñas durante el día.
+Dexter y Cristian Gonza desarrollarán frontend y backend en paralelo. La división será por módulos verticales para aprovechar a ambos sin editar simultáneamente los mismos archivos. OpenAPI, migraciones versionadas, ramas cortas y revisión cruzada serán los puntos de integración.
 
-## Integrantes y frentes
+## Responsabilidades principales
 
-| Frente | Responsable | Carpetas principales |
+| Integrante | Lidera | También participa |
 | --- | --- | --- |
-| Backend, datos y DevOps | Responsable principal | `backend/`, `supabase/`, `contracts/`, `.github/`, `scripts/` |
-| Frontend y experiencia de usuario | Cristian Gonza | `frontend/` |
-| Arquitectura y alcance | Compartido, decide responsable principal | `docs/PLAN_MAESTRO.md`, `AGENTS.md` |
-| Pruebas integrales y exposición | Compartido | `docs/`, evidencias y entorno demo |
+| Dexter | Plataforma FastAPI, autenticación/JWT, pedidos, producción, pagos, algoritmos, ML, CI/CD y despliegue | Revisión de base de datos y apoyo frontend |
+| Cristian Gonza | PostgreSQL/Supabase, catálogo, cotizaciones, frontend, UX, accesibilidad y pruebas de interfaz | Endpoints, repositorios, servicios y pruebas backend de sus módulos |
 
-## Ramas iniciales
+Ninguna carpeta pertenece de forma exclusiva a una persona. La propiedad temporal corresponde a la tarea activa indicada en este plan.
 
-Después del commit que introduce esta estructura:
+## Entornos de trabajo
 
-```powershell
-# Responsable backend
-git switch -c codex/backend-phase-2
+Cada integrante debe usar su propio clon o worktree. Dos personas o dos sesiones de Codex no deben trabajar en el mismo directorio porque las ramas y los archivos sin confirmar se comparten.
 
-# Cristian Gonza
-git switch main
-git pull --ff-only
-git switch -c codex/frontend-refresh
-```
-
-No trabajar directamente en `main`. Cada tarea adicional puede usar una rama más específica, por ejemplo `codex/frontend-auth` o `codex/backend-catalog`.
-
-Cada integrante debe trabajar en su propio clon o worktree. Dos personas o dos sesiones de Codex no deben modificar simultáneamente el mismo directorio de trabajo, aunque usen ramas distintas, porque el cambio de rama y los archivos sin confirmar se comparten dentro de ese directorio.
-
-Antes de iniciar, ambos deben confirmar que su repositorio tiene el mismo remoto y el último commit de `main`:
+Antes de comenzar:
 
 ```powershell
 git remote -v
@@ -40,44 +26,104 @@ git switch main
 git pull --ff-only
 ```
 
-## División inmediata
+Ramas del primer ciclo:
 
-### Responsable backend
+```powershell
+# Dexter
+git switch -c codex/backend-auth-platform
 
-1. Crear proyecto Supabase y variables locales.
-2. Preparar SQLAlchemy, Alembic y conexión PostgreSQL.
-3. Crear migraciones de perfiles y roles.
-4. Verificar JWT de Supabase en FastAPI.
-5. Implementar pruebas de permisos.
-6. Exportar OpenAPI después de cada cambio de contrato.
+# Cristian Gonza, desde su propio clon
+git switch -c codex/database-catalog
+```
 
-### Cristian Gonza
+No trabajar directamente en `main`. Una rama resuelve un paquete concreto; no debe convertirse en una rama permanente personal.
 
-1. Reorganizar el frontend por dominios sin cambiar contratos.
-2. Introducir React Router y eliminar el enrutador manual progresivamente.
-3. Crear capa `src/api/` con estados de carga y error.
-4. Preparar pantallas de inicio de sesión y portal del cliente usando datos simulados tipados.
-5. Mejorar responsive, accesibilidad y consistencia visual.
-6. Añadir pruebas Vitest por cada flujo modificado.
+## Ciclo 1: base de datos y autenticación
 
-Cristian no conectará Supabase directamente a tablas comerciales. El login utilizará Supabase Auth y el resto de datos llegará mediante FastAPI.
+### Cristian — DB-01 Base de datos completa
 
-## Archivos compartidos y turnos
+1. Leer `docs/BASE_DATOS.md`.
+2. Configurar el proyecto local de Supabase sin subir credenciales.
+3. Crear una migración base con esquemas, tipos, tablas, claves, restricciones e índices.
+4. Crear perfiles vinculados a `auth.users`, funciones auxiliares y políticas RLS.
+5. Crear un seed pequeño y determinista para desarrollo.
+6. Añadir pruebas SQL de restricciones, roles y aislamiento entre clientes.
+7. Documentar los comandos de `supabase db reset` y pruebas.
 
-| Archivo o zona | Regla |
-| --- | --- |
-| `contracts/openapi.json` | Lo genera y entrega backend; frontend solo consume |
-| `docs/SEGUIMIENTO.md` | Cada integrante actualiza exclusivamente sus tareas terminadas |
-| `README.md` | Solo se cambia cuando un PR altera comandos o estructura |
-| `.github/workflows/ci.yml` | Responsable principal; Cristian propone cambios en su PR |
-| `frontend/package-lock.json` | Solo quien esté trabajando en frontend |
-| Migraciones Supabase | Solo backend; una migración por cambio lógico |
+Archivos asignados: `supabase/`, `docs/BASE_DATOS.md` únicamente si se descubre una corrección necesaria.
 
-Si ambos necesitan el mismo archivo, el segundo espera a que el primer cambio llegue a `main`, actualiza su rama y recién continúa.
+### Dexter — BE-01 Plataforma y seguridad
 
-## Rutina durante el día
+1. Añadir SQLAlchemy y el driver PostgreSQL; las migraciones seguirán en `supabase/migrations/`.
+2. Configurar la conexión, sesiones y transacciones.
+3. Preparar modelos compatibles con el contrato de base de datos aprobado.
+4. Verificar JWT de Supabase y crear dependencias de identidad/rol.
+5. Implementar pruebas positivas y negativas de autenticación.
+6. Preparar manejo uniforme de errores y request ID.
 
-### Inicio de una sesión
+Archivos asignados: `backend/app/core/`, `backend/app/models/`, `backend/tests/core/` y `backend/pyproject.toml`.
+
+### Integración del ciclo 1
+
+Primero se integra DB-01. Dexter actualiza su rama con `main`, ajusta modelos si corresponde y termina BE-01. Ambos ejecutan un reset desde cero y las pruebas de permisos antes de cerrar la Fase 2.
+
+## Ciclo 2: funcionalidades comerciales
+
+### Cristian — BE-02 Catálogo y cotizaciones
+
+- Esquemas Pydantic de productos y cotizaciones.
+- Repositorios de catálogo y cotizaciones.
+- Servicio de cálculo de precios.
+- Endpoints públicos y administrativos correspondientes.
+- Pruebas unitarias y de API.
+- Integración del frontend con catálogo y cotización reales.
+
+Módulos asignados: `products`, `catalog`, `quotes` y `pricing` en schemas, repositories, services, API y tests.
+
+### Dexter — BE-03 Operación del taller
+
+- Clientes, pedidos y conversión desde cotización.
+- Transiciones de producción e historial.
+- Pagos idempotentes y reversión auditada.
+- Media privada para vouchers.
+- Pruebas de concurrencia, permisos y reglas 50/50.
+
+Módulos asignados: `customers`, `orders`, `production`, `payments`, `media` y `audit`.
+
+## Ciclo 3: frontend avanzado, algoritmos y ML
+
+### Cristian
+
+- React Router y estructura por dominios.
+- Cliente generado desde OpenAPI.
+- Autenticación, portal del cliente y administración conectados.
+- Responsive, accesibilidad, Vitest y Playwright.
+
+### Dexter
+
+- A* para entregas y Hill Climbing para producción.
+- Dataset sintético reproducible.
+- Regresión, clasificación y clustering con líneas base.
+- Registro de experimentos, métricas e inferencia en FastAPI.
+
+## Archivos de integración
+
+| Archivo o zona | Integrador | Regla |
+| --- | --- | --- |
+| `contracts/openapi.json` | Dexter | Se genera después de integrar rutas; nunca se edita a mano |
+| `backend/app/api/v1/router.py` | Dexter | Cristian entrega su router de módulo; Dexter lo registra al integrar |
+| `backend/app/models/__init__.py` | Dexter | Exportaciones centrales después de integrar la migración |
+| `backend/pyproject.toml` | Dexter | Cristian comunica dependencias nuevas en el PR |
+| `supabase/migrations/` | Cristian en DB-01 | Una migración nueva por cambio; nunca reescribir una ya compartida |
+| `frontend/package-lock.json` | Cristian durante trabajo frontend | No actualizarlo desde tareas backend |
+| `.github/workflows/ci.yml` | Dexter | Cambios revisados por Cristian |
+| `docs/SEGUIMIENTO.md` | Ambos | Cada uno actualiza únicamente sus tareas y evidencias |
+
+Si ambos necesitan el mismo archivo, el segundo espera a que el primer PR llegue a `main`, actualiza su rama y continúa. No resolver contratos o migraciones eligiendo automáticamente “ours” o “theirs”.
+
+## Rutina diaria
+
+Al iniciar:
 
 ```powershell
 git status --short
@@ -85,56 +131,46 @@ git fetch origin
 git rebase origin/main
 ```
 
-Confirmar que se está en la rama propia y que no existan cambios ajenos sin guardar. Leer mensajes del compañero y seleccionar una tarea del seguimiento.
+Antes de cada commit:
 
-### Antes de cada commit
-
-1. Ejecutar las pruebas de la zona modificada.
+1. Ejecutar pruebas de la zona modificada.
 2. Ejecutar `git diff --check`.
-3. Revisar que no haya secretos ni archivos generados.
-4. Actualizar evidencia en `docs/SEGUIMIENTO.md` si la tarea terminó.
-5. Crear un commit con un solo propósito.
+3. Revisar secretos, datos personales y artefactos generados.
+4. Actualizar el seguimiento si la tarea terminó.
+5. Crear un commit de un solo propósito.
 
-### Sincronización intermedia
+Durante el día:
 
-- Enviar commits pequeños al remoto durante el día.
-- Avisar al compañero cuando cambie OpenAPI, una migración o una variable de entorno.
-- No esperar al final del día para descubrir conflictos.
-- Abrir PR temprano como borrador si la tarea dura varias horas.
+- Subir commits pequeños y abrir un PR borrador temprano.
+- Avisar cuando cambie una migración, variable, endpoint o esquema.
+- Revisar el PR del compañero antes de empezar una tarea dependiente.
+- No mezclar cambios visuales, migraciones y lógica de negocio en el mismo commit.
 
-### Cierre del día
+Al cerrar:
 
-1. Ejecutar `scripts/verify.ps1` en la rama.
-2. Rebasar sobre `main` y resolver conflictos en la rama, nunca en `main`.
-3. Subir la rama y abrir o actualizar el PR.
-4. Registrar trabajo terminado, pendiente y bloqueos.
+```powershell
+.\scripts\verify.ps1
+git fetch origin
+git rebase origin/main
+git push
+```
 
-## Protocolo de cambio de API
+## Protocolo de API
 
-1. Backend modifica esquema, ruta y prueba.
-2. Backend ejecuta el exportador OpenAPI.
-3. Backend incluye `contracts/openapi.json` en el mismo commit.
-4. Cristian actualiza su rama desde `main`.
-5. Frontend regenera o adapta sus tipos.
-6. CI verifica frontend y backend antes de integrar.
+1. El autor implementa esquema, servicio, endpoint y prueba en su módulo.
+2. El PR explica campos nuevos, permisos y posibles incompatibilidades.
+3. Dexter integra el router y genera `contracts/openapi.json`.
+4. Cristian actualiza o regenera el cliente TypeScript.
+5. CI verifica frontend y backend.
 
-No se aceptan cambios de API comunicados solo por chat: el contrato versionado es la referencia.
-
-## Resolución de conflictos
-
-- No elegir automáticamente “ours” o “theirs” en contratos, migraciones o configuración.
-- Entender ambos cambios y conservar el comportamiento requerido.
-- Si el conflicto afecta el contrato, backend decide el esquema final y frontend adapta el consumo.
-- Después de resolver, ejecutar todas las pruebas, no solo las del archivo conflictivo.
-- Registrar una decisión cuando el conflicto cambie alcance o arquitectura.
+Un cambio no comunicado en OpenAPI no forma parte del contrato.
 
 ## Criterio para integrar un PR
 
-- Alcance concreto y explicado.
-- Sin secretos ni artefactos temporales.
-- Pruebas locales aprobadas.
-- CI aprobado.
+- Alcance concreto y responsable identificado.
+- Sin secretos, datos personales ni artefactos temporales.
+- Migración reproducible cuando corresponda.
+- Pruebas locales y CI aprobados.
 - OpenAPI actualizado cuando corresponde.
-- Documentación y seguimiento actualizados.
-- Sin cambios accidentales en carpetas propiedad del compañero.
-
+- Seguimiento y documentación actualizados.
+- Revisión de la otra persona en cambios de seguridad, base de datos o dinero.

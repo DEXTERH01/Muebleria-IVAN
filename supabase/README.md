@@ -6,5 +6,5 @@ Esta carpeta contendrá la definición reproducible de base de datos y seguridad
 - `tests/`: pruebas de permisos, RLS y restricciones.
 - `seed.sql`: datos mínimos para desarrollo y demostración.
 
-Las migraciones son propiedad del frente backend/datos. No se editan migraciones ya compartidas; una corrección se realiza con una migración nueva.
+Cristian Gonza lidera la migración base y Dexter realiza la revisión de arquitectura y seguridad. No se editan migraciones ya compartidas; una corrección se realiza con una migración nueva. El diseño obligatorio está en `../docs/BASE_DATOS.md`.
 

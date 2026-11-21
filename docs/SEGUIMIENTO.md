@@ -20,11 +20,12 @@
 
 | Rol | Responsable |
 | --- | --- |
-| Product owner y analista | Responsable principal |
+| Product owner y analista | Dexter |
 | UX y frontend | Cristian Gonza |
-| Backend y datos | Responsable principal |
-| IA y datos | Responsable principal, revisión compartida |
-| DevOps y QA | Responsable principal, validación compartida |
+| Backend | Dexter y Cristian Gonza, separados por módulo |
+| Base de datos | Cristian Gonza, revisión de Dexter |
+| IA y datos | Dexter, revisión compartida |
+| DevOps y QA | Dexter, validación compartida |
 | Documentación y exposición | Equipo completo |
 
 ## Fase 0. Definición y control
@@ -58,14 +59,16 @@ Criterio de salida: frontend y backend construyen y sus pruebas se ejecutan loca
 
 ## Fase 2. Base de datos y autenticación
 
-- [ ] Crear proyecto de Supabase para demo.
-- [ ] Crear migraciones iniciales.
-- [ ] Crear seed reproducible.
-- [ ] Implementar perfiles y roles.
-- [ ] Integrar Supabase Auth en React.
-- [ ] Verificar JWT en FastAPI.
-- [ ] Probar permisos de visitante, cliente, operador y administrador.
-- [ ] Probar aislamiento entre clientes.
+- [x] Definir el modelo completo y sus criterios. Responsable: equipo. Evidencia: `docs/BASE_DATOS.md`.
+- [ ] Crear proyecto de Supabase para demo. Responsable: Cristian.
+- [ ] Crear migración base completa. Responsable: Cristian; revisión: Dexter.
+- [ ] Crear seed reproducible. Responsable: Cristian.
+- [ ] Implementar RLS, perfiles y roles. Responsable: Cristian; revisión: Dexter.
+- [ ] Preparar conexión, sesiones y modelos SQLAlchemy. Responsable: Dexter.
+- [ ] Integrar Supabase Auth en React. Responsable: Cristian.
+- [ ] Verificar JWT en FastAPI. Responsable: Dexter.
+- [ ] Probar permisos de visitante, cliente, operador y administrador. Responsable: ambos.
+- [ ] Probar aislamiento entre clientes. Responsable: ambos.
 
 Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas positivas y negativas.
 
@@ -165,19 +168,21 @@ Criterio de salida: una persona externa puede verificar el prototipo y repetir e
 | ID | Fecha | Decisión | Motivo | Impacto | Responsable |
 | --- | --- | --- | --- | --- | --- |
 | D-001 | 2026-11-21 | Usar React y TypeScript para el frontend | El prototipo existente ya utiliza estas tecnologías | Se conserva y adapta el frontend actual | Cristian Gonza |
-| D-002 | 2026-11-21 | Usar Python y FastAPI para el backend | Favorece OpenAPI, rapidez de desarrollo y ML | Se implementó la base técnica del backend | Responsable principal |
+| D-002 | 2026-11-21 | Usar Python y FastAPI para el backend | Favorece OpenAPI, rapidez de desarrollo y ML | Se implementó la base técnica del backend | Dexter |
 | D-003 | 2026-11-21 | Usar un monolito modular | Reduce complejidad operativa y académica | No se crearán microservicios | Equipo completo |
-| D-004 | 2026-11-21 | Utilizar un dataset inicial controlado de prueba | Todavía no existe suficiente historial digital | Las métricas iniciales validan el prototipo y no reemplazan métricas operativas | Responsable principal |
+| D-004 | 2026-11-21 | Utilizar un dataset inicial controlado de prueba | Todavía no existe suficiente historial digital | Las métricas iniciales validan el prototipo y no reemplazan métricas operativas | Dexter |
 | D-005 | 2026-11-21 | Mantener las decisiones ML bajo supervisión humana | Evita automatización engañosa o sensible | ML será consultivo | Equipo completo |
 | D-006 | 2026-11-21 | Adoptar Mueblería Iván como identidad pública única | Unificar empresa, web y presentación | Se actualizan interfaz, recursos y documentación | Equipo completo |
 | D-007 | 2026-11-21 | Organizar el repositorio por frontend, backend, contratos, Supabase y datos | Permitir desarrollo paralelo con límites claros | Cristian trabaja en `frontend/`; el responsable principal en backend y datos | Equipo completo |
 | D-008 | 2026-11-21 | Versionar OpenAPI como frontera entre ambos frentes | Evitar contratos verbales y cambios incompatibles | Backend genera el contrato y frontend lo consume | Equipo completo |
+| D-009 | 2026-11-21 | Dividir el trabajo por módulos verticales y no por carpetas completas | Permite que ambos aporten a backend sin editar los mismos archivos | Cristian asume base de datos, catálogo y cotizaciones; Dexter plataforma, operación e IA | Equipo completo |
+| D-010 | 2026-11-21 | Usar migraciones SQL de Supabase como única fuente de DDL | Auth, RLS, funciones y políticas requieren SQL específico de PostgreSQL; dos sistemas producirían divergencias | SQLAlchemy será ORM, pero no administrará migraciones con Alembic | Equipo completo |
 
 ## Bloqueos
 
 | Fecha | Bloqueo | Impacto | Próxima acción | Responsable | Estado |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-21 | No existe suficiente historial digital para ML | Los primeros modelos no pueden validarse comercialmente | Usar datos de prueba, registrar operaciones y reevaluar modelos | Responsable principal | Abierto |
+| 2026-11-21 | No existe suficiente historial digital para ML | Los primeros modelos no pueden validarse comercialmente | Usar datos de prueba, registrar operaciones y reevaluar modelos | Dexter | Abierto |
 | 2026-11-21 | No se conoce la fecha exacta ni duración de exposición | Dificulta priorizar entregables | Confirmar con el docente | Equipo completo | Abierto |
 
 ## Evidencias finales esperadas

@@ -11,14 +11,15 @@ Antes de modificar el repositorio, leer en este orden:
 
 ## Arquitectura y propiedad
 
-- `frontend/`: propiedad principal de Cristian Gonza y su Codex.
-- `backend/`: propiedad principal del responsable backend y su Codex.
-- `supabase/`: propiedad del responsable backend/datos.
-- `contracts/`: lo actualiza el responsable backend al cambiar la API; frontend lo consume.
-- `.github/`, `scripts/`, `netlify.toml` y documentación raíz: cambios coordinados por el responsable principal.
+- La propiedad se asigna por módulo y tarea activa, no por una carpeta completa.
+- Dexter lidera plataforma backend, autenticación, pedidos, pagos, algoritmos, ML y DevOps.
+- Cristian Gonza lidera frontend, base de datos, catálogo y cotizaciones, incluyendo sus módulos backend.
+- `supabase/migrations/`: Cristian crea la migración base; después solo una persona modifica migraciones en cada tarea.
+- `contracts/openapi.json`: lo genera Dexter al integrar cambios de API; frontend lo consume.
+- `.github/`, `scripts/`, `netlify.toml` y documentación raíz: cambios coordinados por Dexter.
 - `docs/SEGUIMIENTO.md`: puede actualizarlo quien termina una tarea, pero solo en las filas de su tarea.
 
-No modificar una zona ajena salvo que la tarea lo exija y el otro integrante haya sido avisado. No ejecutar formateos masivos en carpetas compartidas.
+Consultar la matriz vigente en `docs/PLAN_TRABAJO_PARALELO.md`. No editar simultáneamente el mismo módulo o archivo. No ejecutar formateos masivos en carpetas compartidas.
 
 ## Reglas de integración
 

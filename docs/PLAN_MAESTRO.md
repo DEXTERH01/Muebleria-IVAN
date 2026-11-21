@@ -305,7 +305,7 @@ El frontend no accederá directamente a las tablas comerciales. Solo utilizará 
 | Estilos | CSS existente, diseño responsive |
 | API | Python, FastAPI, Pydantic |
 | Persistencia | PostgreSQL en Supabase |
-| ORM y migraciones | SQLAlchemy y Alembic |
+| ORM y migraciones | SQLAlchemy como ORM; Supabase CLI y SQL como sistema único de migraciones |
 | Autenticación | Supabase Auth y JWT |
 | Imágenes | Cloudinary |
 | ML | Scikit-learn, CatBoost opcional, Prophet cuando corresponda |
@@ -336,7 +336,6 @@ Muebleria Ivan/
 |   |   |-- services/
 |   |   |-- algorithms/
 |   |   `-- ml/
-|   |-- alembic/
 |   |-- tests/
 |   `-- pyproject.toml
 |-- supabase/
@@ -401,16 +400,21 @@ Muebleria Ivan/
 | --- | --- |
 | `profiles` | Datos públicos mínimos y rol de usuarios autenticados |
 | `customers` | Datos del cliente asociados a un perfil o contacto |
+| `delivery_locations` | Direcciones y coordenadas autorizadas para entregas y A* |
 | `products` | Productos o modelos de referencia |
 | `product_images` | Metadatos y orden de imágenes en Cloudinary |
 | `materials` | Materiales, costo base y disponibilidad |
 | `finishes` | Acabados disponibles |
 | `accessories` | Accesorios y costo |
+| `product_materials`, `product_finishes`, `product_accessories` | Opciones permitidas por producto |
 | `pricing_rules` | Reglas versionadas para estimar precios |
 | `quotes` | Cabecera, contacto, estado y totales de cotización |
 | `quote_items` | Configuración y desglose de cada mueble cotizado |
 | `orders` | Pedido, fechas, total, estado y versión de concurrencia |
+| `order_items` | Snapshot inmutable de productos y precios aprobados |
 | `order_status_events` | Historial de etapas y duración |
+| `production_jobs` | Planificación y tiempos de producción |
+| `deliveries` | Ventanas y secuencias de entrega optimizadas |
 | `payments` | Pagos, método, monto, voucher e idempotencia |
 | `media_assets` | Identificador, tipo, acceso y propietario del recurso |
 | `customer_events` | Eventos autorizados para recomendaciones y análisis |
@@ -419,7 +423,7 @@ Muebleria Ivan/
 | `optimization_runs` | Algoritmo, entrada, resultado, mejora y tiempo de ejecución |
 | `audit_logs` | Cambios sensibles realizados por usuarios |
 
-Las tablas de negocio estarán en un esquema no expuesto directamente al navegador. Se aplicarán restricciones, índices, claves foráneas y migraciones reproducibles.
+Las tablas de negocio estarán en un esquema no expuesto directamente al navegador. Se aplicarán restricciones, índices, claves foráneas y migraciones reproducibles. Los campos, controles, permisos, seed y criterio de finalización se especifican en `docs/BASE_DATOS.md`.
 
 ## Contrato de API
 

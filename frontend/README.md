@@ -2,9 +2,9 @@
 
 Aplicación React, TypeScript y Vite desplegada en Netlify.
 
-## Responsable principal
+## Liderazgo
 
-Cristian Gonza. Leer `../AGENTS.md`, `../docs/PLAN_TRABAJO_PARALELO.md` y `../docs/FRONTEND_ROADMAP.md` antes de modificar esta carpeta.
+Cristian Gonza lidera este frente, con apoyo de Dexter en tareas acordadas. Leer `../AGENTS.md`, `../docs/PLAN_TRABAJO_PARALELO.md` y `../docs/FRONTEND_ROADMAP.md` antes de modificar esta carpeta.
 
 ## Desarrollo
 

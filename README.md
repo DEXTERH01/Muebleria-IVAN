@@ -55,8 +55,9 @@ Antes de modificar el proyecto, leer:
 1. [`AGENTS.md`](AGENTS.md): instrucciones obligatorias para integrantes y Codex.
 2. [`docs/PLAN_MAESTRO.md`](docs/PLAN_MAESTRO.md): alcance y arquitectura.
 3. [`docs/PLAN_TRABAJO_PARALELO.md`](docs/PLAN_TRABAJO_PARALELO.md): ramas, propiedad y rutina diaria.
-4. [`docs/SEGUIMIENTO.md`](docs/SEGUIMIENTO.md): estado y evidencias.
-5. [`docs/FRONTEND_ROADMAP.md`](docs/FRONTEND_ROADMAP.md): trabajo asignado a Cristian Gonza.
+4. [`docs/BASE_DATOS.md`](docs/BASE_DATOS.md): diseño y criterio de finalización de PostgreSQL/Supabase.
+5. [`docs/SEGUIMIENTO.md`](docs/SEGUIMIENTO.md): estado y evidencias.
+6. [`docs/FRONTEND_ROADMAP.md`](docs/FRONTEND_ROADMAP.md): evolución visual y funcional.
 
 No se trabaja directamente sobre `main`. Cada cambio se desarrolla en una rama `codex/<area>-<tarea>` y se integra mediante una revisión pequeña.
 
