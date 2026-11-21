@@ -54,6 +54,543 @@
         ]
       }
     },
+    "/api/v1/products": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "List Products",
+        "operationId": "list_products_api_v1_products_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Pagesize"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Create Product",
+        "operationId": "create_product_api_v1_products_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{slug}": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Product Detail",
+        "operationId": "product_detail_api_v1_products__slug__get",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{product_id}": {
+      "patch": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Update Product",
+        "operationId": "update_product_api_v1_products__product_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Deactivate Product",
+        "operationId": "deactivate_product_api_v1_products__product_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotes/estimate": {
+      "post": {
+        "tags": [
+          "quotes"
+        ],
+        "summary": "Estimate Quote",
+        "operationId": "estimate_quote_api_v1_quotes_estimate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteEstimateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteEstimateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pricing-rules": {
+      "get": {
+        "tags": [
+          "quotes"
+        ],
+        "summary": "List Pricing Rules",
+        "operationId": "list_pricing_rules_api_v1_pricing_rules_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PricingRuleListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "quotes"
+        ],
+        "summary": "Create Pricing Rule",
+        "operationId": "create_pricing_rule_api_v1_pricing_rules_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PricingRuleCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PricingRuleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/quotes": {
+      "post": {
+        "tags": [
+          "quotes"
+        ],
+        "summary": "Create Quote",
+        "operationId": "create_quote_api_v1_quotes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/quotes/{quote_id}": {
+      "get": {
+        "tags": [
+          "quotes"
+        ],
+        "summary": "Get Quote",
+        "operationId": "get_quote_api_v1_quotes__quote_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quote_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Quote Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotes/{quote_id}/status": {
+      "patch": {
+        "tags": [
+          "quotes"
+        ],
+        "summary": "Update Quote Status",
+        "operationId": "update_quote_status_api_v1_quotes__quote_id__status_patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quote_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Quote Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteStatusUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/customers": {
       "get": {
         "tags": [
@@ -931,6 +1468,79 @@
   },
   "components": {
     "schemas": {
+      "AppliedRuleData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "adjustmentMinor": {
+            "type": "integer",
+            "title": "Adjustmentminor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "version",
+          "adjustmentMinor"
+        ],
+        "title": "AppliedRuleData"
+      },
+      "CatalogOptionData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "priceAdjustmentMinor": {
+            "type": "integer",
+            "title": "Priceadjustmentminor"
+          },
+          "priceAdjustmentPercent": {
+            "type": "string",
+            "title": "Priceadjustmentpercent"
+          },
+          "isDefault": {
+            "type": "boolean",
+            "title": "Isdefault"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "description",
+          "priceAdjustmentMinor",
+          "priceAdjustmentPercent",
+          "isDefault"
+        ],
+        "title": "CatalogOptionData"
+      },
       "CustomerCreate": {
         "properties": {
           "fullName": {
@@ -1261,6 +1871,182 @@
         "title": "CustomerUpdate",
         "description": "All fields optional for PATCH semantics."
       },
+      "EstimateItemData": {
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Productid"
+          },
+          "productName": {
+            "type": "string",
+            "title": "Productname"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "widthMm": {
+            "type": "integer",
+            "title": "Widthmm"
+          },
+          "heightMm": {
+            "type": "integer",
+            "title": "Heightmm"
+          },
+          "depthMm": {
+            "type": "integer",
+            "title": "Depthmm"
+          },
+          "material": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SelectedOptionData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "finish": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SelectedOptionData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "accessories": {
+            "items": {
+              "$ref": "#/components/schemas/SelectedOptionData"
+            },
+            "type": "array",
+            "title": "Accessories"
+          },
+          "appliedRules": {
+            "items": {
+              "$ref": "#/components/schemas/AppliedRuleData"
+            },
+            "type": "array",
+            "title": "Appliedrules"
+          },
+          "breakdown": {
+            "$ref": "#/components/schemas/PricingBreakdownData"
+          },
+          "lineTotalMinor": {
+            "type": "integer",
+            "title": "Linetotalminor"
+          },
+          "minProductionDays": {
+            "type": "integer",
+            "title": "Minproductiondays"
+          },
+          "maxProductionDays": {
+            "type": "integer",
+            "title": "Maxproductiondays"
+          }
+        },
+        "type": "object",
+        "required": [
+          "productId",
+          "productName",
+          "quantity",
+          "widthMm",
+          "heightMm",
+          "depthMm",
+          "material",
+          "finish",
+          "accessories",
+          "appliedRules",
+          "breakdown",
+          "lineTotalMinor",
+          "minProductionDays",
+          "maxProductionDays"
+        ],
+        "title": "EstimateItemData"
+      },
+      "EstimateItemRequest": {
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Productid"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Quantity",
+            "default": 1
+          },
+          "widthMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Widthmm"
+          },
+          "heightMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Heightmm"
+          },
+          "depthMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Depthmm"
+          },
+          "materialId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Materialid"
+          },
+          "finishId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finishid"
+          },
+          "accessoryIds": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Accessoryids"
+          },
+          "configuration": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Configuration"
+          }
+        },
+        "type": "object",
+        "required": [
+          "productId",
+          "widthMm",
+          "heightMm",
+          "depthMm"
+        ],
+        "title": "EstimateItemRequest"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1374,6 +2160,44 @@
           "data"
         ],
         "title": "MeResponse"
+      },
+      "MeasurementLimits": {
+        "properties": {
+          "minWidthMm": {
+            "type": "integer",
+            "title": "Minwidthmm"
+          },
+          "maxWidthMm": {
+            "type": "integer",
+            "title": "Maxwidthmm"
+          },
+          "minHeightMm": {
+            "type": "integer",
+            "title": "Minheightmm"
+          },
+          "maxHeightMm": {
+            "type": "integer",
+            "title": "Maxheightmm"
+          },
+          "minDepthMm": {
+            "type": "integer",
+            "title": "Mindepthmm"
+          },
+          "maxDepthMm": {
+            "type": "integer",
+            "title": "Maxdepthmm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "minWidthMm",
+          "maxWidthMm",
+          "minHeightMm",
+          "maxHeightMm",
+          "minDepthMm",
+          "maxDepthMm"
+        ],
+        "title": "MeasurementLimits"
       },
       "MediaAssetConfirm": {
         "properties": {
@@ -2244,6 +3068,1273 @@
         ],
         "title": "PaymentVoidRequest",
         "description": "Body for POST /payments/{payment_id}/void."
+      },
+      "PricingBreakdownData": {
+        "properties": {
+          "referenceBaseMinor": {
+            "type": "integer",
+            "title": "Referencebaseminor"
+          },
+          "sizeAdjustedBaseMinor": {
+            "type": "integer",
+            "title": "Sizeadjustedbaseminor"
+          },
+          "materialMinor": {
+            "type": "integer",
+            "title": "Materialminor"
+          },
+          "finishMinor": {
+            "type": "integer",
+            "title": "Finishminor"
+          },
+          "accessoriesMinor": {
+            "type": "integer",
+            "title": "Accessoriesminor"
+          },
+          "rulesMinor": {
+            "type": "integer",
+            "title": "Rulesminor"
+          },
+          "unitTotalMinor": {
+            "type": "integer",
+            "title": "Unittotalminor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "referenceBaseMinor",
+          "sizeAdjustedBaseMinor",
+          "materialMinor",
+          "finishMinor",
+          "accessoriesMinor",
+          "rulesMinor",
+          "unitTotalMinor"
+        ],
+        "title": "PricingBreakdownData"
+      },
+      "PricingConditionRequest": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "volumeMm3",
+              "quantity",
+              "category",
+              "subtotalMinor"
+            ],
+            "title": "Field"
+          },
+          "operator": {
+            "type": "string",
+            "enum": [
+              "equals",
+              "greater_than",
+              "greater_or_equal",
+              "less_than",
+              "less_or_equal",
+              "in"
+            ],
+            "title": "Operator"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "operator",
+          "value"
+        ],
+        "title": "PricingConditionRequest"
+      },
+      "PricingOperationRequest-Input": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "percentage",
+              "fixed_minor"
+            ],
+            "title": "Type"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "value"
+        ],
+        "title": "PricingOperationRequest"
+      },
+      "PricingOperationRequest-Output": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "percentage",
+              "fixed_minor"
+            ],
+            "title": "Type"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "value"
+        ],
+        "title": "PricingOperationRequest"
+      },
+      "PricingRuleCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "priority": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Priority",
+            "default": 100
+          },
+          "validFrom": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validfrom"
+          },
+          "validUntil": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validuntil"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/PricingConditionRequest"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/PricingOperationRequest-Input"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "condition",
+          "operation"
+        ],
+        "title": "PricingRuleCreateRequest"
+      },
+      "PricingRuleData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "priority": {
+            "type": "integer",
+            "title": "Priority"
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Validfrom"
+          },
+          "validUntil": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validuntil"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/PricingConditionRequest"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/PricingOperationRequest-Output"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "version",
+          "priority",
+          "validFrom",
+          "validUntil",
+          "condition",
+          "operation",
+          "active",
+          "createdBy",
+          "createdAt"
+        ],
+        "title": "PricingRuleData"
+      },
+      "PricingRuleListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/PricingRuleData"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "PricingRuleListResponse"
+      },
+      "PricingRuleResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PricingRuleData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "PricingRuleResponse"
+      },
+      "ProductCreateRequest": {
+        "properties": {
+          "slug": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Description",
+            "default": ""
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 2,
+            "title": "Category"
+          },
+          "basePriceMinor": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Basepriceminor"
+          },
+          "minProductionDays": {
+            "type": "integer",
+            "maximum": 365.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Minproductiondays"
+          },
+          "maxProductionDays": {
+            "type": "integer",
+            "maximum": 365.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Maxproductiondays"
+          },
+          "minWidthMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Minwidthmm"
+          },
+          "maxWidthMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Maxwidthmm"
+          },
+          "minHeightMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Minheightmm"
+          },
+          "maxHeightMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Maxheightmm"
+          },
+          "minDepthMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Mindepthmm"
+          },
+          "maxDepthMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Maxdepthmm"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "slug",
+          "name",
+          "category",
+          "basePriceMinor",
+          "minProductionDays",
+          "maxProductionDays",
+          "minWidthMm",
+          "maxWidthMm",
+          "minHeightMm",
+          "maxHeightMm",
+          "minDepthMm",
+          "maxDepthMm"
+        ],
+        "title": "ProductCreateRequest"
+      },
+      "ProductDetailData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "basePriceMinor": {
+            "type": "integer",
+            "title": "Basepriceminor"
+          },
+          "minProductionDays": {
+            "type": "integer",
+            "title": "Minproductiondays"
+          },
+          "maxProductionDays": {
+            "type": "integer",
+            "title": "Maxproductiondays"
+          },
+          "primaryImage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProductImageData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "measurementLimits": {
+            "$ref": "#/components/schemas/MeasurementLimits"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/ProductImageData"
+            },
+            "type": "array",
+            "title": "Images"
+          },
+          "materials": {
+            "items": {
+              "$ref": "#/components/schemas/CatalogOptionData"
+            },
+            "type": "array",
+            "title": "Materials"
+          },
+          "finishes": {
+            "items": {
+              "$ref": "#/components/schemas/CatalogOptionData"
+            },
+            "type": "array",
+            "title": "Finishes"
+          },
+          "accessories": {
+            "items": {
+              "$ref": "#/components/schemas/CatalogOptionData"
+            },
+            "type": "array",
+            "title": "Accessories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "description",
+          "category",
+          "basePriceMinor",
+          "minProductionDays",
+          "maxProductionDays",
+          "active",
+          "measurementLimits",
+          "images",
+          "materials",
+          "finishes",
+          "accessories"
+        ],
+        "title": "ProductDetailData"
+      },
+      "ProductImageData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "secureUrl": {
+            "type": "string",
+            "title": "Secureurl"
+          },
+          "altText": {
+            "type": "string",
+            "title": "Alttext"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "secureUrl",
+          "altText",
+          "position"
+        ],
+        "title": "ProductImageData"
+      },
+      "ProductListData": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ProductSummaryData"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "title": "ProductListData"
+      },
+      "ProductListResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ProductListData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ProductListResponse"
+      },
+      "ProductResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ProductDetailData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ProductResponse"
+      },
+      "ProductSummaryData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "basePriceMinor": {
+            "type": "integer",
+            "title": "Basepriceminor"
+          },
+          "minProductionDays": {
+            "type": "integer",
+            "title": "Minproductiondays"
+          },
+          "maxProductionDays": {
+            "type": "integer",
+            "title": "Maxproductiondays"
+          },
+          "primaryImage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProductImageData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "description",
+          "category",
+          "basePriceMinor",
+          "minProductionDays",
+          "maxProductionDays"
+        ],
+        "title": "ProductSummaryData"
+      },
+      "ProductUpdateRequest": {
+        "properties": {
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 2,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "basePriceMinor": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basepriceminor"
+          },
+          "minProductionDays": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 365.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minproductiondays"
+          },
+          "maxProductionDays": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 365.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxproductiondays"
+          },
+          "minWidthMm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minwidthmm"
+          },
+          "maxWidthMm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxwidthmm"
+          },
+          "minHeightMm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minheightmm"
+          },
+          "maxHeightMm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxheightmm"
+          },
+          "minDepthMm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mindepthmm"
+          },
+          "maxDepthMm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxdepthmm"
+          },
+          "active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active"
+          }
+        },
+        "type": "object",
+        "title": "ProductUpdateRequest"
+      },
+      "QuoteCreateRequest": {
+        "properties": {
+          "contactName": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Contactname"
+          },
+          "contactEmail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 320
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactemail"
+          },
+          "contactPhone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40,
+                "minLength": 6
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactphone"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EstimateItemRequest"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "contactName",
+          "items"
+        ],
+        "title": "QuoteCreateRequest"
+      },
+      "QuoteData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "submitted",
+              "reviewing",
+              "approved",
+              "rejected",
+              "expired",
+              "converted"
+            ],
+            "title": "Status"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "contactName": {
+            "type": "string",
+            "title": "Contactname"
+          },
+          "contactEmail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactemail"
+          },
+          "contactPhone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contactphone"
+          },
+          "subtotalMinor": {
+            "type": "integer",
+            "title": "Subtotalminor"
+          },
+          "adjustmentsMinor": {
+            "type": "integer",
+            "title": "Adjustmentsminor"
+          },
+          "totalMinor": {
+            "type": "integer",
+            "title": "Totalminor"
+          },
+          "depositMinor": {
+            "type": "integer",
+            "title": "Depositminor"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QuoteItemData"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "status",
+          "currency",
+          "contactName",
+          "contactEmail",
+          "contactPhone",
+          "subtotalMinor",
+          "adjustmentsMinor",
+          "totalMinor",
+          "depositMinor",
+          "expiresAt",
+          "version",
+          "createdAt",
+          "updatedAt",
+          "items"
+        ],
+        "title": "QuoteData"
+      },
+      "QuoteEstimateData": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "PEN"
+          },
+          "subtotalMinor": {
+            "type": "integer",
+            "title": "Subtotalminor"
+          },
+          "adjustmentsMinor": {
+            "type": "integer",
+            "title": "Adjustmentsminor"
+          },
+          "totalMinor": {
+            "type": "integer",
+            "title": "Totalminor"
+          },
+          "depositMinor": {
+            "type": "integer",
+            "title": "Depositminor"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EstimateItemData"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "subtotalMinor",
+          "adjustmentsMinor",
+          "totalMinor",
+          "depositMinor",
+          "items"
+        ],
+        "title": "QuoteEstimateData"
+      },
+      "QuoteEstimateRequest": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EstimateItemRequest"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "QuoteEstimateRequest"
+      },
+      "QuoteEstimateResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/QuoteEstimateData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "QuoteEstimateResponse"
+      },
+      "QuoteItemData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Productid"
+          },
+          "productName": {
+            "type": "string",
+            "title": "Productname"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "widthMm": {
+            "type": "integer",
+            "title": "Widthmm"
+          },
+          "heightMm": {
+            "type": "integer",
+            "title": "Heightmm"
+          },
+          "depthMm": {
+            "type": "integer",
+            "title": "Depthmm"
+          },
+          "material": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SelectedOptionData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "finish": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SelectedOptionData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "accessories": {
+            "items": {
+              "$ref": "#/components/schemas/SelectedOptionData"
+            },
+            "type": "array",
+            "title": "Accessories"
+          },
+          "configuration": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Configuration"
+          },
+          "basePriceMinor": {
+            "type": "integer",
+            "title": "Basepriceminor"
+          },
+          "breakdown": {
+            "$ref": "#/components/schemas/PricingBreakdownData"
+          },
+          "lineTotalMinor": {
+            "type": "integer",
+            "title": "Linetotalminor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "productId",
+          "productName",
+          "quantity",
+          "widthMm",
+          "heightMm",
+          "depthMm",
+          "material",
+          "finish",
+          "accessories",
+          "configuration",
+          "basePriceMinor",
+          "breakdown",
+          "lineTotalMinor"
+        ],
+        "title": "QuoteItemData"
+      },
+      "QuoteResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/QuoteData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "QuoteResponse"
+      },
+      "QuoteStatusUpdateRequest": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "reviewing",
+              "approved",
+              "rejected",
+              "expired"
+            ],
+            "title": "Status"
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Expectedversion"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "expectedVersion"
+        ],
+        "title": "QuoteStatusUpdateRequest"
+      },
+      "SelectedOptionData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "adjustmentMinor": {
+            "type": "integer",
+            "title": "Adjustmentminor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "adjustmentMinor"
+        ],
+        "title": "SelectedOptionData"
       },
       "ValidationError": {
         "properties": {
