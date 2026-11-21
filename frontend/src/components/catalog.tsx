@@ -1,4 +1,7 @@
+import { useState } from 'react';
+
 import type { ProductSummary } from '../api/modules/catalog';
+import type { ProductImage } from '../api/modules/catalog';
 import { moneyMinor } from '../utils/format';
 import { navigate } from './layout';
 import { Button, ProductVisual } from './ui';
@@ -11,11 +14,47 @@ export function productVisual(category: string, slug: string): string {
   return 'hero';
 }
 
+export function ProductArtwork({
+  image,
+  visual,
+  className,
+  loading = 'lazy',
+  decorative = false,
+}: {
+  image?: ProductImage | null;
+  visual: string;
+  className: string;
+  loading?: 'eager' | 'lazy';
+  decorative?: boolean;
+}) {
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+
+  if (!image || failedUrl === image.secureUrl) {
+    return <ProductVisual kind={visual} className={className} />;
+  }
+
+  return (
+    <img
+      className={className}
+      src={image.secureUrl}
+      alt={decorative ? '' : image.altText}
+      aria-hidden={decorative || undefined}
+      loading={loading}
+      decoding="async"
+      onError={() => setFailedUrl(image.secureUrl)}
+    />
+  );
+}
+
 export function ProductCard({ product }: { product: ProductSummary }) {
   const visual = productVisual(product.category, product.slug);
   return (
     <article className="product-card">
-      <ProductVisual kind={visual} />
+      <ProductArtwork
+        image={product.primaryImage}
+        visual={visual}
+        className="product-card-photo"
+      />
       <div className="product-copy">
         <span className="eyebrow">{product.category}</span>
         <h3>{product.name}</h3>

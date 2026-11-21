@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
 import { getProduct, type ProductDetail } from '../api/modules/catalog';
-import { productVisual } from '../components/catalog';
+import { ProductArtwork, productVisual } from '../components/catalog';
 import { Footer, Navbar, navigate } from '../components/layout';
-import { Button, ProductVisual } from '../components/ui';
+import { Button } from '../components/ui';
 import { moneyMinor } from '../utils/format';
 
 export function ProductDetailPage({ id }: { id: string }) {
@@ -32,6 +32,7 @@ export function ProductDetailPage({ id }: { id: string }) {
   }, [id, retry]);
 
   const visual = product ? productVisual(product.category, product.slug) : 'hero';
+  const primaryImage = product?.images[0] ?? product?.primaryImage;
 
   return (
     <>
@@ -51,10 +52,20 @@ export function ProductDetailPage({ id }: { id: string }) {
         {product && !loading && !error && (
           <div className="detail-layout">
             <div className="detail-gallery">
-              <ProductVisual kind={visual} className="detail-main-visual" />
+              <ProductArtwork
+                image={primaryImage}
+                visual={visual}
+                className="detail-main-visual"
+                loading="eager"
+              />
               <div className="thumbnails">
                 <button className="selected" aria-label="Vista del producto">
-                  <ProductVisual kind={visual} />
+                  <ProductArtwork
+                    image={primaryImage}
+                    visual={visual}
+                    className="detail-thumbnail-image"
+                    decorative
+                  />
                 </button>
               </div>
             </div>
