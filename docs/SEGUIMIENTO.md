@@ -3,11 +3,11 @@
 ## Estado general
 
 - Fecha de referencia: 2026-11-21.
-- Fase actual: Fase 2, base de datos y autenticación.
-- Estado: Fase 2 sigue abierta hasta validar Supabase publicado y sus permisos reales. La integración React Auth ya está en `main`. En la última validación backend pasaron 70 pruebas por grupos, se omitieron 3 de PostgreSQL por falta de `SUPABASE_TEST_DATABASE_URL` y se excluyó 1 prueba HTTP de catálogo cuyo proceso queda esperando al finalizar en Windows. Los modelos coinciden con las columnas declaradas en la migración. Las Fases 3 y 4 tienen sus flujos principales implementados y la Fase 5 solo conserva la visualización administrativa y la validación PostgreSQL.
+- Fase actual: Fase 5, algoritmos de búsqueda; cierre operativo de Fase 4 en paralelo.
+- Estado: Fase 2 quedó validada contra Supabase publicado: conexión ORM, columnas, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento aprobados. La Fase 3 está implementada; la Fase 4 requiere el smoke test completo y credenciales reales de Cloudinary. En Fase 5 los algoritmos y endpoints están implementados y queda la visualización administrativa.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: publicar Supabase, aplicar migración y seed, ejecutar pgTAP y `backend/tests/integration/` con `SUPABASE_TEST_DATABASE_URL`; en paralelo, Cristian completa la visualización frontend de algoritmos.
-- Avance global: 9 fases numeradas (0–8); Fase 1 está cumplida, Fase 0 está definida pero conserva dos pendientes administrativos (fecha/formato de entrega y duración de exposición), Fase 2 está activa y quedan 6 fases posteriores (3–8). En total, 7 fases numeradas siguen abiertas o por iniciar si se cuenta también la fase activa.
+- Próxima puerta de control: integrar el flujo frontend de taller de Cristian, ejecutar un smoke test cotización → pedido → pago → instalación y completar la visualización de algoritmos.
+- Avance global: Fases 1, 2 y 3 cumplen sus criterios técnicos; Fases 4 y 5 están cerca del cierre. Quedan Fases 6, 7 y 8, además de dos pendientes administrativos de Fase 0.
 
 ## Cómo actualizar este seguimiento
 
@@ -61,17 +61,17 @@ Criterio de salida: frontend y backend construyen y sus pruebas se ejecutan loca
 ## Fase 2. Base de datos y autenticación
 
 - [x] Definir el modelo completo y sus criterios. Responsable: equipo. Evidencia: `docs/BASE_DATOS.md`.
-- [ ] Crear proyecto de Supabase para demo. Responsable: Cristian.
+- [x] Crear proyecto de Supabase para demo. Responsable: Cristian. Evidencia: PostgreSQL publicado y validado el 2026-11-21.
 - [x] Crear migración base completa. Responsable: Cristian; revisión: Dexter. Evidencia: `supabase/migrations/20261121000100_initial_schema.sql`; ejecución local pendiente.
 - [x] Crear seed reproducible. Responsable: Cristian. Evidencia: `supabase/seed.sql`; ejecución local pendiente.
 - [x] Implementar RLS, perfiles y roles. Responsable: Cristian; revisión: Dexter. Evidencia: migración y pruebas `supabase/tests/database/03_rls_test.sql`; ejecución pgTAP pendiente.
 - [x] Preparar conexión, sesiones y modelo de perfil SQLAlchemy. Responsable: Dexter. Evidencia: `backend/app/core/database.py`, `backend/app/models/profile.py`, `backend/tests/test_security.py`. `Profile` coincide con `app.profiles`: enum `app.user_role`, columnas `text`, timestamps no nulos y FK a `auth.users`.
 - [x] Integrar Supabase Auth en React. Responsable: Cristian. Evidencia: `frontend/src/auth/`, `frontend/src/api/client/supabase.ts`, `frontend/.env.example`; prueba de UI en `frontend/src/auth/AuthPage.test.tsx`. Falta validar con proyecto Supabase real.
 - [x] Verificar JWT de firma asimétrica en FastAPI y rol desde perfil. Responsable: Dexter. Evidencia: `backend/app/core/security.py`, `backend/app/api/v1/auth.py`, `backend/tests/test_security.py`, `backend/tests/test_auth_endpoint.py`. CurrentUser incluye `full_name`, `phone`, `created_at`. Pendiente prueba con proyecto Supabase real.
-- [ ] Probar permisos de visitante, cliente, operador y administrador. Responsable: ambos.
-- [ ] Probar aislamiento entre clientes. Responsable: ambos.
+- [x] Probar permisos de visitante, cliente, operador y administrador. Responsable: ambos. Evidencia: `supabase/tests/database/03_rls_test.sql`, 17 comprobaciones aprobadas contra Supabase publicado.
+- [x] Probar aislamiento entre clientes. Responsable: ambos. Evidencia: pgTAP remoto y pruebas API de propiedad.
 
-Integración PostgreSQL añadida en `backend/tests/integration/test_profile_postgres.py`; sus tres casos se omiten si no se define `SUPABASE_TEST_DATABASE_URL`. En esta verificación no estaban disponibles Supabase CLI, Docker ni `psql`, y la variable no está configurada, por lo que no se pudo ejecutar la migración ni las pruebas de base de datos. La migración, seed y pruebas pgTAP de Cristian están integradas desde `codex/database-catalog` (`1f4480e`).
+El 2026-11-21 pasaron los tres casos de `backend/tests/integration/test_profile_postgres.py` y 68 comprobaciones de `supabase/tests/database/` contra Supabase publicado. El ejecutor remoto transaccional está en `backend/scripts/run_remote_pgtap.py`; cada archivo finaliza con `ROLLBACK`.
 
 Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas positivas y negativas.
 

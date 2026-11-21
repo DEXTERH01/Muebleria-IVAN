@@ -19,6 +19,15 @@ Para activar la Fase 2 configura en `backend/.env` una URL PostgreSQL con el dri
 
 Las cargas firmadas de media requieren `MUEBLERIA_CLOUDINARY_CLOUD_NAME`, `MUEBLERIA_CLOUDINARY_API_KEY` y `MUEBLERIA_CLOUDINARY_API_SECRET`. El secreto solo se usa en el backend. Los tests de integración PostgreSQL se activan con `SUPABASE_TEST_DATABASE_URL` apuntando a una base local migrada y sembrada.
 
+Para validar una base Supabase publicada sin conservar datos de prueba, configura
+`MUEBLERIA_DATABASE_URL` y ejecuta:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_remote_pgtap.py
+```
+
+Las suites SQL administran su propia transacción y terminan con `ROLLBACK`.
+
 Las sesiones SQLAlchemy se cierran al terminar la solicitud. Los servicios que escriban datos deben confirmar explícitamente sus transacciones; esta capa no crea ni modifica tablas. Las migraciones SQL viven en `supabase/migrations/`.
 
 Servicios locales:
