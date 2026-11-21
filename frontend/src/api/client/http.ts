@@ -1,5 +1,10 @@
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000')
   .replace(/\/$/, '');
+let accessTokenProvider: (() => string | null) | null = null;
+
+export function setAccessTokenProvider(provider: (() => string | null) | null): void {
+  accessTokenProvider = provider;
+}
 
 interface ApiErrorBody {
   error?: {
@@ -29,11 +34,13 @@ function errorMessage(body: ApiErrorBody, fallback: string): string {
 }
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
+  const accessToken = accessTokenProvider?.();
   const response = await fetch(`${apiBaseUrl}${path}`, {
     ...init,
     headers: {
       Accept: 'application/json',
       ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...init?.headers,
     },
   });

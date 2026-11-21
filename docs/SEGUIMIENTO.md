@@ -66,7 +66,7 @@ Criterio de salida: frontend y backend construyen y sus pruebas se ejecutan loca
 - [x] Crear seed reproducible. Responsable: Cristian. Evidencia: `supabase/seed.sql`; ejecución local pendiente.
 - [x] Implementar RLS, perfiles y roles. Responsable: Cristian; revisión: Dexter. Evidencia: migración y pruebas `supabase/tests/database/03_rls_test.sql`; ejecución pgTAP pendiente.
 - [x] Preparar conexión, sesiones y modelo de perfil SQLAlchemy. Responsable: Dexter. Evidencia: `backend/app/core/database.py`, `backend/app/models/profile.py`, `backend/tests/test_security.py`. `Profile` coincide con `app.profiles`: enum `app.user_role`, columnas `text`, timestamps no nulos y FK a `auth.users`.
-- [ ] Integrar Supabase Auth en React. Responsable: Cristian.
+- [x] Integrar Supabase Auth en React. Responsable: Cristian. Evidencia: `frontend/src/auth/`, `frontend/src/api/client/supabase.ts`, `frontend/.env.example`; prueba de UI en `frontend/src/auth/AuthPage.test.tsx`. Falta validar con proyecto Supabase real.
 - [x] Verificar JWT de firma asimétrica en FastAPI y rol desde perfil. Responsable: Dexter. Evidencia: `backend/app/core/security.py`, `backend/app/api/v1/auth.py`, `backend/tests/test_security.py`, `backend/tests/test_auth_endpoint.py`. CurrentUser incluye `full_name`, `phone`, `created_at`. Pendiente prueba con proyecto Supabase real.
 - [ ] Probar permisos de visitante, cliente, operador y administrador. Responsable: ambos.
 - [ ] Probar aislamiento entre clientes. Responsable: ambos.
