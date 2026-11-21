@@ -4,9 +4,9 @@
 
 - Fecha de referencia: 2026-11-21.
 - Fase actual: Fase 2, base de datos y autenticación.
-- Estado: Fase 2 sigue abierta. La migración base, el seed determinista, las políticas RLS y las pruebas pgTAP ya están en el repositorio; falta ejecutarlos en Supabase, correr las pruebas ORM contra PostgreSQL y completar la integración React Auth. En la última validación backend pasaron 60 pruebas, se omitieron 3 de PostgreSQL por falta de `SUPABASE_TEST_DATABASE_URL` y se excluyó 1 prueba HTTP de catálogo que queda esperando en el entorno Windows. Los modelos coinciden con las columnas declaradas en la migración. También hay avances locales de BE-03 para clientes, producción, pagos y media.
+- Estado: Fase 2 sigue abierta hasta validar Supabase publicado y sus permisos reales. La integración React Auth ya está en `main`. En la última validación backend pasaron 70 pruebas por grupos, se omitieron 3 de PostgreSQL por falta de `SUPABASE_TEST_DATABASE_URL` y se excluyó 1 prueba HTTP de catálogo cuyo proceso queda esperando al finalizar en Windows. Los modelos coinciden con las columnas declaradas en la migración. Las Fases 3 y 4 tienen sus flujos principales implementados y la Fase 5 solo conserva la visualización administrativa y la validación PostgreSQL.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: instalar/iniciar Supabase CLI y runtime local, validar `supabase db reset` y `supabase test db`, ejecutar `backend/tests/integration/` con `SUPABASE_TEST_DATABASE_URL` y terminar React Auth; después retomar Fase 3 (catálogo y cotizaciones).
+- Próxima puerta de control: publicar Supabase, aplicar migración y seed, ejecutar pgTAP y `backend/tests/integration/` con `SUPABASE_TEST_DATABASE_URL`; en paralelo, Cristian completa la visualización frontend de algoritmos.
 - Avance global: 9 fases numeradas (0–8); Fase 1 está cumplida, Fase 0 está definida pero conserva dos pendientes administrativos (fecha/formato de entrega y duración de exposición), Fase 2 está activa y quedan 6 fases posteriores (3–8). En total, 7 fases numeradas siguen abiertas o por iniciar si se cuenta también la fase activa.
 
 ## Cómo actualizar este seguimiento
@@ -107,17 +107,17 @@ Criterio de salida: cotización, pedido, producción, pago e instalación funcio
 
 ## Fase 5. Algoritmos de búsqueda
 
-- Avance local: A* ya busca el orden de visita de hasta 12 paradas sobre una matriz simétrica de distancias. Incluye un conjunto sintético reproducible y compara la ruta sugerida con el orden inicial. Aún no está conectado al endpoint ni persiste ejecuciones; las distancias no representan tráfico real.
+- Avance local: A* y Hill Climbing ya están conectados a endpoints consultivos y cada ejecución se guarda en `app.optimization_runs`. A* usa matrices simétricas de distancias y Hill Climbing aplica la función documentada con reinicios aleatorios reproducibles. Ninguno modifica pedidos automáticamente y las distancias no representan tráfico real. Falta la visualización administrativa y la prueba contra PostgreSQL publicado.
 - [x] Definir dataset de rutas y distancias. Evidencia: `backend/app/algorithms/route_dataset.py`.
 - [x] Implementar A*. Evidencia: `backend/app/algorithms/astar.py`.
 - [x] Crear línea base para rutas. Evidencia: el orden recibido se usa como ruta inicial en `optimize_route`.
 - [x] Medir ruta, nodos y tiempo. Evidencia: `AStarRouteResult` en `backend/app/algorithms/astar.py`.
-- [ ] Definir función objetivo de producción.
-- [ ] Implementar Hill Climbing.
-- [ ] Añadir reinicios aleatorios.
-- [ ] Comparar secuencia inicial y optimizada.
-- [ ] Crear visualizaciones en administración.
-- [ ] Persistir ejecuciones y métricas.
+- [x] Definir función objetivo de producción. Evidencia: `ProductionWeights` y `score_sequence` en `backend/app/algorithms/hill_climbing.py`.
+- [x] Implementar Hill Climbing. Evidencia: `backend/app/algorithms/hill_climbing.py`.
+- [x] Añadir reinicios aleatorios. Evidencia: semilla y reinicios configurables en `optimize_production_sequence`.
+- [x] Comparar secuencia inicial y optimizada. Evidencia: `HillClimbingResult` y `POST /api/v1/optimizations/production`.
+- [x] Crear visualizaciones en administración. Evidencia: `frontend/src/pages/admin/OptimizationsPage.tsx`; comparación de rutas A* y secuencias Hill Climbing conectadas a API y protegidas para operador/administrador.
+- [x] Persistir ejecuciones y métricas. Evidencia: `backend/app/api/v1/optimizations.py`, `app.optimization_runs`.
 
 Criterio de salida: A* y Hill Climbing tienen pruebas, resultados reproducibles y comparación contra una línea base.
 

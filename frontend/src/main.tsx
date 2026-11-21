@@ -5,4 +5,5 @@ import './styles/index.css';
 import './styles/rest.css';
 import './styles/admin.css';
 import './styles/ai.css';
+import './styles/optimizations.css';
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

@@ -11,6 +11,7 @@ import { useOrders } from './hooks/useOrders';
 import { AnalyticsPage } from './pages/admin/AnalyticsPage';
 import { CatalogAdminPage } from './pages/admin/CatalogAdminPage';
 import { QuotesPage } from './pages/admin/QuotesPage';
+import { OptimizationsPage } from './pages/admin/OptimizationsPage';
 import {
   CustomersPage,
   Dashboard,
@@ -84,6 +85,8 @@ function AppRoutes() {
     page = <AuthGuard roles={['admin', 'operator']}><CustomersPage customers={customers} orders={orders} /></AuthGuard>;
   } else if (path === '/admin/analitica') {
     page = <AuthGuard roles={['admin', 'operator']}><AnalyticsPage orders={orders} /></AuthGuard>;
+  } else if (path === '/admin/optimizaciones') {
+    page = <AuthGuard roles={['admin', 'operator']}><OptimizationsPage /></AuthGuard>;
   }
   else if (adminOrder) {
     const order = orders.find((item) => item.id === adminOrder[1]);

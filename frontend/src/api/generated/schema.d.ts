@@ -401,12 +401,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Optimizar secuencia de producción (Hill Climbing)
-         * @description Run Hill Climbing on a selection of active orders.
-         *
-         *     Request body: {"orderIds": [...], "weights": {"delayDays": 10, ...}}
-         *     Returns: initial sequence, optimised sequence, score improvement, iterations,
-         *     stop reason, and execution time.
+         * Optimizar secuencia de producción con Hill Climbing
+         * @description Suggest a sequence; this endpoint never changes production jobs.
          */
         post: operations["optimize_production_api_v1_optimizations_production_post"];
         delete?: never;
@@ -425,12 +421,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Optimizar ruta de entregas (A*)
-         * @description Run A* route optimisation for a set of pending deliveries.
-         *
-         *     Request body: {"deliveryIds": [...]}
-         *     Returns: initial route, optimised route, total distance, nodes explored,
-         *     execution time, and improvement vs. baseline.
+         * Optimizar ruta de entregas con A*
+         * @description Suggest a route over provided distances; no delivery is modified.
          */
         post: operations["optimize_delivery_api_v1_optimizations_delivery_post"];
         delete?: never;
@@ -623,6 +615,19 @@ export interface components {
             district: string;
             /** Reference */
             reference?: string | null;
+        };
+        /** DeliveryOptimizationRequest */
+        DeliveryOptimizationRequest: {
+            /** Start */
+            start: string;
+            /** Stops */
+            stops: string[];
+            /** Distances */
+            distances: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
         };
         /** EstimateItemData */
         EstimateItemData: {
@@ -843,6 +848,42 @@ export interface components {
         /** MediaSignatureResponse */
         MediaSignatureResponse: {
             data: components["schemas"]["MediaSignatureData"];
+        };
+        /** OptimizationRunData */
+        OptimizationRunData: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Algorithm
+             * @enum {string}
+             */
+            algorithm: "astar" | "hill_climbing";
+            /** Baseline */
+            baseline: {
+                [key: string]: unknown;
+            };
+            /** Result */
+            result: {
+                [key: string]: unknown;
+            };
+            /** Improvement */
+            improvement: number;
+            /** Durationms */
+            durationMs: number;
+            /** Randomseed */
+            randomSeed: number | null;
+            /**
+             * Advisory
+             * @default true
+             */
+            advisory: boolean;
+        };
+        /** OptimizationRunResponse */
+        OptimizationRunResponse: {
+            data: components["schemas"]["OptimizationRunData"];
         };
         /** OrderDetailOut */
         OrderDetailOut: {
@@ -1395,6 +1436,61 @@ export interface components {
             maxDepthMm?: number | null;
             /** Active */
             active?: boolean | null;
+        };
+        /** ProductionOptimizationRequest */
+        ProductionOptimizationRequest: {
+            /** Tasks */
+            tasks: components["schemas"]["ProductionTaskRequest"][];
+            weights?: components["schemas"]["ProductionWeightsRequest"];
+            /**
+             * Randomseed
+             * @default 2026
+             */
+            randomSeed: number;
+            /**
+             * Restarts
+             * @default 5
+             */
+            restarts: number;
+            /**
+             * Maxiterations
+             * @default 100
+             */
+            maxIterations: number;
+        };
+        /** ProductionTaskRequest */
+        ProductionTaskRequest: {
+            /** Taskid */
+            taskId: string;
+            /** Material */
+            material: string;
+            /** Durationhours */
+            durationHours: number;
+            /** Dueinhours */
+            dueInHours: number;
+            /**
+             * Readyinhours
+             * @default 0
+             */
+            readyInHours: number;
+        };
+        /** ProductionWeightsRequest */
+        ProductionWeightsRequest: {
+            /**
+             * Delaydays
+             * @default 10
+             */
+            delayDays: number;
+            /**
+             * Materialchanges
+             * @default 3
+             */
+            materialChanges: number;
+            /**
+             * Idlehours
+             * @default 2
+             */
+            idleHours: number;
         };
         /** QuoteConvertRequest */
         QuoteConvertRequest: {
@@ -2526,15 +2622,28 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductionOptimizationRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
-            501: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["OptimizationRunResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -2546,15 +2655,28 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeliveryOptimizationRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
-            501: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["OptimizationRunResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
