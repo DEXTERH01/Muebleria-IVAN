@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 
 import type { QuoteData } from './api/modules/quotes';
-import { AuthGuard, AuthPage, CustomerPortal } from './auth/AuthPage';
+import { AuthGuard, AuthPage } from './auth/AuthPage';
 import { AuthProvider } from './auth/AuthProvider';
+import { CustomerPortal } from './auth/CustomerPortal';
 import { AIAssistant } from './components/AIAssistant';
 import { Toast, useToast } from './components/ui';
 import { customers } from './data/customers';
