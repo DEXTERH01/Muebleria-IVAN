@@ -164,8 +164,8 @@ Criterio de salida: flujos críticos aprobados y resultados reales documentados.
 - [x] Configurar Supabase y Cloudinary de demo. Evidencia: catálogo público devuelve 52 productos con imágenes de Cloudinary desde Supabase.
 - [x] Configurar variables y CORS. Evidencia: el frontend de Netlify consume la API de Render.
 - [x] Validar pipeline de despliegue. Evidencia: pipeline de CI aprobado en `main`; el frontend se publica desde Netlify.
-- [x] Preparar bootstrap de cuentas de demo para los roles cliente, operador y administrador. Evidencia: backend/scripts/bootstrap_demo_accounts.py; ejecución en Supabase pendiente de la clave secreta administrativa.
-- [ ] Ejecutar smoke test integral en producción de demo. Parcial: el endpoint público de catálogo devuelve 52 productos, con 52 imágenes distintas respondiendo HTTP 200, cero descripciones demo y 40 precios base distintos.
+- [x] Crear cuentas de demo para los roles cliente, operador y administrador. Evidencia: `backend/scripts/bootstrap_demo_accounts.py`; cuatro inicios de sesión HTTP 200, correos confirmados, identidades email y roles verificados en Supabase.
+- [ ] Ejecutar smoke test integral en producción de demo. Parcial: el catálogo devuelve 52 productos, con 52 imágenes distintas respondiendo HTTP 200, cero descripciones demo y 40 precios base distintos; las cuatro cuentas demo inician sesión en Supabase Auth. Pendiente confirmar `/api/v1/auth/me` después del redespliegue de Render con la URL de Supabase declarada en `render.yaml`.
 - [ ] Preparar informe de métricas.
 - [ ] Preparar arquitectura final.
 - [ ] Preparar guion de demostración.

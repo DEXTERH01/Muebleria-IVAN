@@ -59,6 +59,14 @@ cuentas con la misma contraseña temporal indicada:
 No guardes estas credenciales en el repositorio ni configures la clave secreta en Netlify o Render.
 Para una exposición pública, usa una contraseña temporal y cámbiala o elimina las cuentas al terminar.
 
+Si Supabase Auth responde 429 Too Many Requests o no está disponible durante la preparación de
+la demo, se puede usar el modo de recuperación con la conexión PostgreSQL configurada. Este modo
+crea o actualiza transaccionalmente el usuario, su identidad de correo y el perfil:
+
+~~~powershell
+backend\.venv\Scripts\python.exe backend\scripts\bootstrap_demo_accounts.py --database-auth
+~~~
+
 ## Machine learning con datos de prueba
 
 El entrenamiento se ejecuta fuera de las solicitudes web. Para reproducir los 500 pedidos sintéticos, comparar los modelos, generar los artefactos versionados y registrar sus métricas en Supabase:

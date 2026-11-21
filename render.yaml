@@ -15,7 +15,7 @@ services:
       - key: MUEBLERIA_DATABASE_URL
         sync: false
       - key: MUEBLERIA_SUPABASE_URL
-        sync: false
+        value: https://uyntocgzizflkpdlhtgp.supabase.co
       - key: MUEBLERIA_CORS_ORIGINS
         sync: false
       - key: MUEBLERIA_SUPABASE_JWT_AUDIENCE

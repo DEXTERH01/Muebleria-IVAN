@@ -9,11 +9,11 @@ from dataclasses import dataclass
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
 from app.core.config import BACKEND_DIR, Settings
@@ -184,7 +184,133 @@ def _synchronize_profiles(database_url: str, accounts: list[DemoAccount]) -> Non
         engine.dispose()
 
 
+def _upsert_accounts_through_database(
+    database_url: str, password: str
+) -> list[DemoAccount]:
+    """Recovery path when Auth Admin is unavailable; keep users and identities consistent."""
+    engine = create_engine(database_url, pool_pre_ping=True)
+    accounts: list[DemoAccount] = []
+    try:
+        with engine.begin() as connection:
+            for email, full_name, role in AUTH_ACCOUNTS:
+                user_id = connection.scalar(
+                    text("select id from auth.users where lower(email) = lower(:email)"),
+                    {"email": email},
+                )
+                if user_id is None:
+                    user_id = uuid4()
+                    connection.execute(
+                        text(
+                            """
+                            insert into auth.users (
+                              instance_id, id, aud, role, email, encrypted_password,
+                              email_confirmed_at, confirmation_token, recovery_token,
+                              email_change_token_new, email_change, raw_app_meta_data,
+                              raw_user_meta_data, created_at, updated_at
+                            )
+                            values (
+                              '00000000-0000-0000-0000-000000000000', :user_id,
+                              'authenticated', 'authenticated', :email,
+                              extensions.crypt(:password, extensions.gen_salt('bf')),
+                              timezone('utc', now()), '', '', '', '',
+                              cast(:app_metadata as jsonb), cast(:user_metadata as jsonb),
+                              timezone('utc', now()), timezone('utc', now())
+                            )
+                            """
+                        ),
+                        {
+                            "user_id": user_id,
+                            "email": email,
+                            "password": password,
+                            "app_metadata": json.dumps(
+                                {"provider": "email", "providers": ["email"]}
+                            ),
+                            "user_metadata": json.dumps({"full_name": full_name}),
+                        },
+                    )
+                else:
+                    connection.execute(
+                        text(
+                            """
+                            update auth.users
+                            set encrypted_password =
+                                  extensions.crypt(:password, extensions.gen_salt('bf')),
+                                email_confirmed_at =
+                                  coalesce(email_confirmed_at, timezone('utc', now())),
+                                raw_app_meta_data = cast(:app_metadata as jsonb),
+                                raw_user_meta_data = cast(:user_metadata as jsonb),
+                                updated_at = timezone('utc', now()),
+                                deleted_at = null,
+                                banned_until = null
+                            where id = :user_id
+                            """
+                        ),
+                        {
+                            "user_id": user_id,
+                            "password": password,
+                            "app_metadata": json.dumps(
+                                {"provider": "email", "providers": ["email"]}
+                            ),
+                            "user_metadata": json.dumps({"full_name": full_name}),
+                        },
+                    )
+
+                connection.execute(
+                    text(
+                        """
+                        insert into auth.identities (
+                          provider_id, user_id, identity_data, provider,
+                          last_sign_in_at, created_at, updated_at
+                        )
+                        values (
+                          cast(:user_id as text), :user_id,
+                          cast(:identity_data as jsonb), 'email',
+                          timezone('utc', now()), timezone('utc', now()),
+                          timezone('utc', now())
+                        )
+                        on conflict (provider_id, provider) do update
+                        set user_id = excluded.user_id,
+                            identity_data = excluded.identity_data,
+                            updated_at = timezone('utc', now())
+                        """
+                    ),
+                    {
+                        "user_id": user_id,
+                        "identity_data": json.dumps({"sub": str(user_id), "email": email}),
+                    },
+                )
+                connection.execute(
+                    text(
+                        """
+                        insert into app.profiles (user_id, full_name, role, active)
+                        values (:user_id, :full_name, cast(:role as app.user_role), true)
+                        on conflict (user_id) do update
+                        set full_name = excluded.full_name,
+                            role = excluded.role,
+                            active = true,
+                            updated_at = timezone('utc', now())
+                        """
+                    ),
+                    {"user_id": user_id, "full_name": full_name, "role": role},
+                )
+                accounts.append(
+                    DemoAccount(
+                        email=email,
+                        full_name=full_name,
+                        role=role,
+                        user_id=user_id,
+                    )
+                )
+    finally:
+        engine.dispose()
+    return accounts
+
+
 def main() -> int:
+    database_auth = sys.argv[1:] == ["--database-auth"]
+    if sys.argv[1:] and not database_auth:
+        raise BootstrapError("Uso: bootstrap_demo_accounts.py [--database-auth]")
+
     project = Settings()
     if not project.supabase_url:
         raise BootstrapError("Configura MUEBLERIA_SUPABASE_URL en backend/.env.")
@@ -192,49 +318,52 @@ def main() -> int:
         raise BootstrapError("Configura MUEBLERIA_DATABASE_URL en backend/.env.")
 
     secrets = BootstrapSettings()
-    service_key = (
-        secrets.supabase_service_role_key.get_secret_value()
-        if secrets.supabase_service_role_key
-        else getpass.getpass("Clave secreta de Supabase (no se mostrará): ")
-    )
     password = (
         secrets.demo_bootstrap_password.get_secret_value()
         if secrets.demo_bootstrap_password
         else getpass.getpass("Contraseña común para las cuentas demo (no se mostrará): ")
     )
 
-    if not service_key:
-        raise BootstrapError("La clave secreta de Supabase es obligatoria.")
     if not password:
         raise BootstrapError("La contraseña de demo es obligatoria.")
     if len(password) < 8:
         raise BootstrapError("La contraseña de demo debe tener al menos 8 caracteres.")
-    _validate_service_key(service_key)
 
-    auth_url = f"{project.supabase_url.rstrip('/')}/auth/v1"
-    users_by_email = _list_users(auth_url, service_key)
-    accounts = [
-        DemoAccount(
-            email=email,
-            full_name=full_name,
-            role=role,
-            user_id=_upsert_auth_account(
-                auth_url,
-                service_key,
-                password,
-                email,
-                full_name,
-                users_by_email,
-            ),
+    if database_auth:
+        accounts = _upsert_accounts_through_database(project.database_url, password)
+    else:
+        service_key = (
+            secrets.supabase_service_role_key.get_secret_value()
+            if secrets.supabase_service_role_key
+            else getpass.getpass("Clave secreta de Supabase (no se mostrará): ")
         )
-        for email, full_name, role in AUTH_ACCOUNTS
-    ]
-    _synchronize_profiles(project.database_url, accounts)
+        if not service_key:
+            raise BootstrapError("La clave secreta de Supabase es obligatoria.")
+        _validate_service_key(service_key)
+        auth_url = f"{project.supabase_url.rstrip('/')}/auth/v1"
+        users_by_email = _list_users(auth_url, service_key)
+        accounts = [
+            DemoAccount(
+                email=email,
+                full_name=full_name,
+                role=role,
+                user_id=_upsert_auth_account(
+                    auth_url,
+                    service_key,
+                    password,
+                    email,
+                    full_name,
+                    users_by_email,
+                ),
+            )
+            for email, full_name, role in AUTH_ACCOUNTS
+        ]
+        _synchronize_profiles(project.database_url, accounts)
 
     print("Cuentas de demo listas en Supabase Auth y app.profiles:")
     for account in accounts:
         print(f"- {account.email} — {account.role}")
-    print("La contraseña común se tomó de MUEBLERIA_DEMO_BOOTSTRAP_PASSWORD.")
+    print("La contraseña común se ingresó de forma oculta o mediante la variable temporal.")
     return 0
 
 
