@@ -8,8 +8,11 @@ Plataforma de transformación digital para Mueblería Iván, un negocio familiar
 
 - React + TypeScript
 - Vite
+- Python + FastAPI
+- Pydantic Settings
+- Pytest, Ruff y Vitest
 - CSS moderno responsive
-- `localStorage` para persistencia local de pedidos y pagos
+- `localStorage` como persistencia temporal mientras se implementa Supabase
 
 ## Instalación
 
@@ -19,6 +22,26 @@ npm run dev
 ```
 
 Abre la dirección mostrada por Vite (normalmente `http://localhost:5173`).
+
+### Backend
+
+La preparación completa del entorno Python se encuentra en [backend/README.md](backend/README.md). Después de instalarlo, la API se inicia desde `backend/` con:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+```
+
+Swagger estará disponible en `http://127.0.0.1:8000/docs`.
+
+## Pruebas
+
+```powershell
+npm run test
+npm run build
+cd backend
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m ruff check .
+```
 
 ## Plan del proyecto
 
@@ -31,6 +54,9 @@ El alcance, las reglas, la arquitectura y el orden obligatorio de implementació
 - `src/data`: productos, pedidos y clientes iniciales.
 - `src/hooks/useOrders.ts`: persistencia y lógica de pedidos/pagos.
 - `src/types`: contratos TypeScript de la plataforma.
+- `backend/app`: API y módulos de negocio en Python.
+- `backend/tests`: pruebas del backend.
+- `.github/workflows/ci.yml`: validación automática de frontend y backend.
 
 ## Funcionalidades
 

@@ -1,0 +1,1 @@
+"""Search and optimization algorithms."""

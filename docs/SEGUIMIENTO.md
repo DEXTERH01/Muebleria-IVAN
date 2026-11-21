@@ -3,10 +3,10 @@
 ## Estado general
 
 - Fecha de referencia: 2026-11-21.
-- Fase actual: Fase 0, definición y control.
-- Estado: en curso.
+- Fase actual: Fase 1, base técnica.
+- Estado: implementación técnica completada; pendiente cerrar asignaciones organizativas.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: revisar el plan y asignar responsables.
+- Próxima puerta de control: asignar responsables y preparar la Fase 2.
 
 ## Cómo actualizar este seguimiento
 
@@ -35,7 +35,7 @@
 | Hecho | Crear el plan maestro | `docs/PLAN_MAESTRO.md` |
 | Hecho | Crear el seguimiento por fases | `docs/SEGUIMIENTO.md` |
 | Hecho | Definir e integrar la identidad visual | `public/assets/brand/` |
-| Pendiente | Revisar y aprobar los requisitos con el equipo | Por registrar |
+| Hecho | Revisar y aprobar los requisitos con el equipo | `docs/PLAN_MAESTRO.md` |
 | Pendiente | Asignar responsables | Tabla de responsables |
 | Pendiente | Confirmar fecha y formato de entrega del Avance 3 | Por registrar |
 | Pendiente | Definir duración disponible para la exposición | Por registrar |
@@ -44,14 +44,14 @@ Criterio de salida: el alcance es entendido, los responsables están asignados y
 
 ## Fase 1. Base técnica
 
-- [ ] Crear `backend/` y configuración del proyecto Python.
-- [ ] Implementar `/health`.
-- [ ] Habilitar documentación OpenAPI.
-- [ ] Añadir configuración por variables de entorno.
-- [ ] Añadir prueba inicial de API.
-- [ ] Añadir Vitest al frontend.
-- [ ] Crear pipeline inicial de frontend y backend.
-- [ ] Documentar comandos locales.
+- [x] Crear `backend/` y configuración del proyecto Python. Evidencia: `backend/pyproject.toml`, `backend/app/`.
+- [x] Implementar `/health`. Evidencia: `backend/app/api/routes/health.py`.
+- [x] Habilitar documentación OpenAPI. Evidencia: `backend/app/main.py`.
+- [x] Añadir configuración por variables de entorno. Evidencia: `backend/app/core/config.py`, `backend/.env.example`.
+- [x] Añadir prueba inicial de API. Evidencia: `backend/tests/`.
+- [x] Añadir Vitest al frontend. Evidencia: `src/pages/HomePage.test.tsx`, `vite.config.ts`.
+- [x] Crear pipeline inicial de frontend y backend. Evidencia: `.github/workflows/ci.yml`.
+- [x] Documentar comandos locales. Evidencia: `README.md`, `backend/README.md`.
 
 Criterio de salida: frontend y backend construyen y sus pruebas se ejecutan localmente.
 
