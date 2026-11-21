@@ -16,6 +16,7 @@ from app.models.catalog import (
     ProductImage,
     ProductMaterial,
 )
+from app.models.media_asset import MediaAsset
 
 
 @dataclass(frozen=True)
@@ -135,6 +136,13 @@ class CatalogRepository:
 
     def add(self, product: Product) -> None:
         self.session.add(product)
+        self.session.flush()
+
+    def get_media_asset(self, asset_id: UUID) -> MediaAsset | None:
+        return self.session.get(MediaAsset, asset_id)
+
+    def add_image(self, image: ProductImage) -> None:
+        self.session.add(image)
         self.session.flush()
 
     def flush(self) -> None:

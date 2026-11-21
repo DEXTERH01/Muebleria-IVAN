@@ -13,6 +13,10 @@ class DuplicateProductError(CatalogError):
     pass
 
 
+class InvalidCatalogMediaError(CatalogError):
+    pass
+
+
 class PricingValidationError(CatalogError):
     pass
 

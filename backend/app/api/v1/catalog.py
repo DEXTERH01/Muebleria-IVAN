@@ -6,12 +6,18 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from app.core.config import Settings, get_settings
 from app.core.database import get_session
 from app.core.security import CurrentUser, require_roles
-from app.domain.catalog import DuplicateProductError, ProductNotFoundError
+from app.domain.catalog import (
+    DuplicateProductError,
+    InvalidCatalogMediaError,
+    ProductNotFoundError,
+)
 from app.repositories.catalog import CatalogRepository
 from app.schemas.catalog import (
     ProductCreateRequest,
+    ProductImageAttachRequest,
     ProductListResponse,
     ProductResponse,
     ProductUpdateRequest,
@@ -30,6 +36,8 @@ def _catalog_error(error: Exception) -> HTTPException:
         return HTTPException(status_code=404, detail=str(error))
     if isinstance(error, DuplicateProductError):
         return HTTPException(status_code=409, detail=str(error))
+    if isinstance(error, InvalidCatalogMediaError):
+        return HTTPException(status_code=422, detail=str(error))
     if isinstance(error, ValueError):
         return HTTPException(status_code=422, detail=str(error))
     return HTTPException(status_code=500, detail="No se pudo procesar el catálogo.")
@@ -86,6 +94,28 @@ def update_product(
     try:
         return ProductResponse(data=service.update_product(product_id, request))
     except (ProductNotFoundError, DuplicateProductError, ValueError) as error:
+        raise _catalog_error(error) from error
+
+
+@router.post("/products/{product_id}/images", response_model=ProductResponse, status_code=201)
+def attach_product_image(
+    product_id: UUID,
+    request: ProductImageAttachRequest,
+    _user: Annotated[CurrentUser, Depends(require_roles("admin"))],
+    service: Annotated[CatalogService, Depends(get_catalog_service)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> ProductResponse:
+    if not settings.cloudinary_cloud_name:
+        raise HTTPException(status_code=503, detail="Cloudinary no está configurado.")
+    try:
+        return ProductResponse(
+            data=service.attach_image(
+                product_id,
+                request,
+                cloud_name=settings.cloudinary_cloud_name,
+            )
+        )
+    except (ProductNotFoundError, InvalidCatalogMediaError) as error:
         raise _catalog_error(error) from error
 
 
