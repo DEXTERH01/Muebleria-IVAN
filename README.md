@@ -1,57 +1,68 @@
-# MuebleFlow Iván
+# Mueblería Iván
 
-Prototipo académico de transformación digital para una mueblería familiar de Lima, Perú. Permite explorar un catálogo, crear cotizaciones referenciales y gestionar pedidos, producción y pagos 50/50 desde un panel interno.
+![Logo de Mueblería Iván](frontend/public/assets/brand/muebleria-ivan-logo.png)
 
-## Tecnologías
+Plataforma web desacoplada para gestionar el catálogo, las cotizaciones, los pedidos, la producción y los pagos de Mueblería Iván. El repositorio también servirá como prototipo académico de Cloud, DevOps, algoritmos de búsqueda y machine learning.
 
-- React + TypeScript
-- Vite
-- CSS moderno responsive
-- `localStorage` para persistencia local de pedidos y pagos
+## Arquitectura
 
-## Instalación
+- `frontend/`: React, TypeScript y Vite; despliegue en Netlify.
+- `backend/`: Python y FastAPI; despliegue previsto en Render.
+- `supabase/`: migraciones, pruebas SQL y datos iniciales de PostgreSQL/Auth.
+- `contracts/`: contrato OpenAPI generado por FastAPI.
+- `data/`: datasets reproducibles para algoritmos y ML.
+- `docs/`: requisitos, seguimiento y coordinación del equipo.
+- `scripts/`: verificaciones comunes del repositorio.
 
-```bash
+El navegador usa Supabase directamente solo para autenticación. Los datos comerciales y las reglas de negocio pasan por FastAPI. Las imágenes se integrarán mediante Cloudinary.
+
+## Inicio rápido
+
+Frontend:
+
+```powershell
+cd frontend
 npm install
 npm run dev
 ```
 
-Abre la dirección mostrada por Vite (normalmente `http://localhost:5173`).
+Backend:
 
-## Estructura
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+Copy-Item .env.example .env
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+```
 
-- `src/pages`: experiencia del cliente y administración.
-- `src/components`: layout, interfaz y catálogo reutilizables.
-- `src/data`: productos, pedidos y clientes simulados.
-- `src/hooks/useOrders.ts`: persistencia y lógica de pedidos/pagos.
-- `src/types`: contratos TypeScript del prototipo.
+Vite mostrará la URL del frontend, normalmente `http://localhost:5173`. La documentación Swagger estará en `http://127.0.0.1:8000/docs`.
 
-## Funcionalidades
+## Verificación
 
-- Catálogo filtrable con búsqueda y detalles de producto.
-- Cotizador dinámico con medidas, materiales, acabados y accesorios.
-- Cálculo referencial de anticipo 50% y saldo 50%.
-- Mensaje generado para WhatsApp con opción de copiar.
-- Dashboard, pedidos, detalle de pedido, clientes y control de pagos.
-- Tablero de producción con movimiento de pedidos por etapa.
-- Alerta de saldo pendiente al dejar un pedido listo para entrega.
-- Registro de pago con previsualización local de voucher.
-- Persistencia de cambios mediante `localStorage`.
-- Asistente virtual simulado con respuestas contextuales para clientes.
-- Panel de análisis predictivo con proyección lineal, demanda por categoría y riesgo de retraso.
+Desde la raíz:
 
-## Inteligencia artificial simulada
+```powershell
+.\scripts\verify.ps1
+```
 
-El prototipo incorpora **Mía**, un chatbot demostrativo basado en reglas, y un módulo administrativo de análisis inteligente. La proyección de demanda usa regresión lineal sobre información simulada y el riesgo de retraso utiliza un puntaje heurístico según etapa, fecha y pago. Estas funciones son académicas: no consumen APIs de IA ni representan predicciones comerciales reales.
+También se puede verificar una sola área con `-Scope frontend` o `-Scope backend`.
 
-## Flujo de demostración
+## Trabajo en equipo
 
-1. Entra al catálogo y abre **Closet Siena**.
-2. Personaliza el diseño en el cotizador y consulta la cotización.
-3. Revisa el anticipo y saldo, luego copia el mensaje de WhatsApp.
-4. Cambia a **Vista administrador**.
-5. Abre el tablero de Producción y ubica `PED-001` (María López).
-6. Muévelo hasta **Listo para entrega**. Se mostrará la alerta por saldo pendiente.
-7. Registra el saldo final desde el detalle o Control de pagos: el pedido pasará a **Pagado** y el saldo será S/ 0.
+Antes de modificar el proyecto, leer:
 
-> Este proyecto corresponde a un prototipo académico de transformación digital y utiliza información simulada para demostrar sus funcionalidades.
+1. [`AGENTS.md`](AGENTS.md): instrucciones obligatorias para integrantes y Codex.
+2. [`docs/PLAN_MAESTRO.md`](docs/PLAN_MAESTRO.md): alcance y arquitectura.
+3. [`docs/PLAN_TRABAJO_PARALELO.md`](docs/PLAN_TRABAJO_PARALELO.md): ramas, propiedad y rutina diaria.
+4. [`docs/BASE_DATOS.md`](docs/BASE_DATOS.md): diseño y criterio de finalización de PostgreSQL/Supabase.
+5. [`docs/SEGUIMIENTO.md`](docs/SEGUIMIENTO.md): estado y evidencias.
+6. [`docs/FRONTEND_ROADMAP.md`](docs/FRONTEND_ROADMAP.md): evolución visual y funcional.
+
+No se trabaja directamente sobre `main`. Cada cambio se desarrolla en una rama `codex/<area>-<tarea>` y se integra mediante una revisión pequeña.
+
+## Estado funcional actual
+
+El frontend ya incluye catálogo, cotizador, seguimiento de pedidos, administración, producción, pagos y panel analítico con datos locales. El backend dispone de configuración, documentación OpenAPI, endpoint de salud y pruebas iniciales. Las siguientes fases reemplazarán progresivamente los datos locales por Supabase y reglas ejecutadas por FastAPI.
+
+Los resultados de ML se presentarán como resultados de datos controlados de prueba hasta que exista suficiente historial operativo; nunca se mostrarán métricas inventadas como si fueran reales.
