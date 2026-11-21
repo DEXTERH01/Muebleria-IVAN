@@ -77,7 +77,7 @@ Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas
 
 ## Fase 3. Catálogo y cotizaciones
 
-- [x] Migrar productos a PostgreSQL.
+- [x] Migrar productos a PostgreSQL. Evidencia: catálogo demo ampliado a 52 productos; manifiesto idempotente de 46 modelos en `supabase/catalog_import/`.
 - [x] Implementar endpoints de catálogo.
 - [x] Implementar administración del catálogo.
 - [x] Migrar reglas del cotizador al backend.
@@ -98,7 +98,7 @@ Avance local: están implementados clientes, conversión de cotizaciones aprobad
 - [x] Implementar clientes. Evidencia: `backend/app/api/v1/customers.py`, `backend/app/schemas/customer.py`.
 - [x] Implementar pagos con idempotencia. Evidencia: `backend/app/api/v1/payments.py`, `backend/tests/test_operations_api.py`.
 - [x] Implementar reversión de pagos. Evidencia: `backend/app/api/v1/payments.py`, `backend/app/models/audit_log.py`.
-- [x] Integrar Cloudinary para productos. Evidencia: `backend/app/api/v1/catalog.py`, `frontend/src/api/modules/media.ts`, `frontend/src/pages/admin/CatalogAdminPage.tsx`. Validación con cuenta real pendiente.
+- [x] Integrar Cloudinary para productos. Evidencia: 46 imágenes cargadas y vinculadas en Supabase demo; `supabase/catalog_import/products.csv`, `supabase/catalog_import/import_catalog.py`, `frontend/src/components/catalog.tsx` y `frontend/src/pages/ProductDetailPage.tsx` muestran el recorrido hasta el frontend.
 - [x] Integrar Cloudinary privado para vouchers. Evidencia: `backend/app/api/v1/media.py`, `backend/tests/test_operations_api.py`.
 - [x] Sustituir `localStorage` por la API FastAPI de pedidos y pagos. Evidencia: `frontend/src/hooks/useOrders.ts`, `frontend/src/api/modules/orders.ts`.
 - [x] Probar el flujo completo. Evidencia: `backend/tests/integration/test_phase4_workflow_postgres.py`; ejecutado contra Supabase local con JWT real y PostgreSQL migrado, desde cotización hasta instalación con aislamiento entre clientes, conversión idempotente, 8 eventos de estado, 2 pagos y saldo final cero.
