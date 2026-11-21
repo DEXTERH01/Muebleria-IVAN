@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { listProducts } from './catalog';
-import { createQuote, estimateQuote } from './quotes';
+import { convertQuote, createQuote, estimateQuote, listQuotes, updateQuoteStatus } from './quotes';
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -85,5 +85,42 @@ describe('catalog and quote API modules', () => {
         status: 422,
       }),
     );
+  });
+
+  it('lists, reviews, and converts quotes through the generated contract', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse({
+        data: { items: [], total: 0, page: 1, pageSize: 100 },
+      }))
+      .mockResolvedValueOnce(jsonResponse({ data: { id: 'quote-id', status: 'approved' } }))
+      .mockResolvedValueOnce(jsonResponse({ data: { id: 'order-id', code: 'PED-2026-0001' } }, 201));
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('crypto', { randomUUID: () => 'request-key-1234' });
+
+    await listQuotes();
+    await updateQuoteStatus('quote-id', 'approved', 2);
+    await convertQuote('quote-id', {
+      expectedQuoteVersion: 3,
+      deliveryAddress: { address: 'Av. Lima 123', district: 'Miraflores', reference: null },
+      promisedDate: '2026-12-15',
+    });
+
+    expect(fetchMock.mock.calls[0][0]).toContain('/api/v1/quotes?page=1&pageSize=100');
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body as string)).toEqual({
+      status: 'approved',
+      expectedVersion: 2,
+    });
+    expect(fetchMock.mock.calls[2][1].headers).toEqual(expect.objectContaining({
+      'Idempotency-Key': 'request-key-1234',
+    }));
+    expect(JSON.parse(fetchMock.mock.calls[2][1].body as string)).toEqual({
+      expectedQuoteVersion: 3,
+      deliveryAddress: {
+        address: 'Av. Lima 123',
+        district: 'Miraflores',
+        reference: null,
+      },
+      promisedDate: '2026-12-15',
+    });
   });
 });

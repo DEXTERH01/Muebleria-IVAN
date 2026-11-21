@@ -9,6 +9,8 @@ import { Toast, useToast } from './components/ui';
 import { customers } from './data/customers';
 import { useOrders } from './hooks/useOrders';
 import { AnalyticsPage } from './pages/admin/AnalyticsPage';
+import { CatalogAdminPage } from './pages/admin/CatalogAdminPage';
+import { QuotesPage } from './pages/admin/QuotesPage';
 import {
   CustomersPage,
   Dashboard,
@@ -59,6 +61,10 @@ function AppRoutes() {
     page = <AuthGuard roles={['admin', 'operator']}><Dashboard orders={orders} /></AuthGuard>;
   } else if (path === '/admin/pedidos') {
     page = <AuthGuard roles={['admin', 'operator']}><OrdersPage orders={orders} /></AuthGuard>;
+  } else if (path === '/admin/cotizaciones') {
+    page = <AuthGuard roles={['admin']}><QuotesPage showToast={show} onOrdersChanged={reload} /></AuthGuard>;
+  } else if (path === '/admin/catalogo') {
+    page = <AuthGuard roles={['admin']}><CatalogAdminPage showToast={show} /></AuthGuard>;
   }
   else if (path === '/admin/kanban') {
     page = (

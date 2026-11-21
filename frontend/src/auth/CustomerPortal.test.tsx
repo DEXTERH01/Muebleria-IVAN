@@ -2,12 +2,15 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getOrder, listOrders, type ApiOrder, type ApiOrderDetail } from '../api/modules/orders';
+import { listQuotes, type QuoteData } from '../api/modules/quotes';
 import { CustomerPortal } from './CustomerPortal';
 
 vi.mock('../api/modules/orders', () => ({ listOrders: vi.fn(), getOrder: vi.fn() }));
+vi.mock('../api/modules/quotes', () => ({ listQuotes: vi.fn() }));
 
 const mockedListOrders = vi.mocked(listOrders);
 const mockedGetOrder = vi.mocked(getOrder);
+const mockedListQuotes = vi.mocked(listQuotes);
 const order: ApiOrder = {
   id: 'order-uuid',
   code: 'PED-2026-0001',
@@ -37,11 +40,42 @@ const orderDetail: ApiOrderDetail = {
     },
   ],
 };
+const quote = {
+  id: 'quote-uuid',
+  code: 'COT-2026-0001',
+  status: 'approved',
+  currency: 'PEN',
+  contactName: 'Ana Demo',
+  contactEmail: 'ana@example.test',
+  contactPhone: null,
+  subtotalMinor: 125000,
+  adjustmentsMinor: 0,
+  totalMinor: 125000,
+  depositMinor: 62500,
+  expiresAt: '2026-11-28T12:00:00Z',
+  version: 2,
+  createdAt: '2026-11-21T12:00:00Z',
+  updatedAt: '2026-11-21T12:00:00Z',
+  items: [{ productName: 'Clóset personalizado' }],
+} as QuoteData;
 
 describe('CustomerPortal', () => {
   beforeEach(() => {
     mockedListOrders.mockReset();
     mockedGetOrder.mockReset();
+    mockedListQuotes.mockReset();
+    mockedListQuotes.mockResolvedValue({ items: [], total: 0, page: 1, pageSize: 100 });
+  });
+
+  it('shows the customer’s own quotes', async () => {
+    mockedListOrders.mockResolvedValue([]);
+    mockedListQuotes.mockResolvedValue({ items: [quote], total: 1, page: 1, pageSize: 100 });
+
+    render(<CustomerPortal />);
+
+    expect(await screen.findByText('COT-2026-0001')).toBeInTheDocument();
+    expect(screen.getByText('Aprobada')).toBeInTheDocument();
+    expect(screen.getByText('Clóset personalizado')).toBeInTheDocument();
   });
 
   it('shows the customer’s order progress and balance from the API', async () => {
@@ -69,7 +103,7 @@ describe('CustomerPortal', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Servicio no disponible');
     fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
 
-    await waitFor(() => expect(screen.getByText('Aún no tienes pedidos')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Aún no tienes proyectos')).toBeInTheDocument());
     expect(mockedListOrders).toHaveBeenCalledTimes(2);
   });
 });

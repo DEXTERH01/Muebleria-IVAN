@@ -8,6 +8,7 @@ export type MeasurementLimits = components['schemas']['MeasurementLimits'];
 export type ProductDetail = components['schemas']['ProductDetailData'];
 type ProductListResponse = components['schemas']['ProductListResponse'];
 type ProductResponse = components['schemas']['ProductResponse'];
+type ProductImageAttachRequest = components['schemas']['ProductImageAttachRequest'];
 
 export async function listProducts(filters: {
   category?: string;
@@ -25,6 +26,17 @@ export async function listProducts(filters: {
 export async function getProduct(slug: string): Promise<ProductDetail> {
   const response = await apiRequest<ProductResponse>(
     `/api/v1/products/${encodeURIComponent(slug)}`,
+  );
+  return response.data;
+}
+
+export async function attachProductImage(
+  productId: string,
+  input: ProductImageAttachRequest,
+): Promise<ProductDetail> {
+  const response = await apiRequest<ProductResponse>(
+    `/api/v1/products/${encodeURIComponent(productId)}/images`,
+    { method: 'POST', body: JSON.stringify(input) },
   );
   return response.data;
 }

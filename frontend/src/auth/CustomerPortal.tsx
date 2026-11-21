@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { getOrder, listOrders, type ApiOrder, type ApiOrderDetail } from '../api/modules/orders';
+import { listQuotes, type QuoteData, type QuoteStatus } from '../api/modules/quotes';
 import { Button } from '../components/ui';
 import { Footer, Navbar, navigate } from '../components/layout';
 import { date, moneyMinor } from '../utils/format';
@@ -17,8 +18,19 @@ const statusLabel: Record<ApiOrder['status'], string> = {
   cancelled: 'Cancelado',
 };
 
+const quoteStatusLabel: Record<QuoteStatus, string> = {
+  draft: 'Borrador',
+  submitted: 'Enviada',
+  reviewing: 'En revisión',
+  approved: 'Aprobada',
+  rejected: 'Rechazada',
+  expired: 'Vencida',
+  converted: 'Convertida en pedido',
+};
+
 export function CustomerPortal() {
   const [orders, setOrders] = useState<ApiOrder[]>([]);
+  const [quotes, setQuotes] = useState<QuoteData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
@@ -27,21 +39,23 @@ export function CustomerPortal() {
   const [historyLoading, setHistoryLoading] = useState<Record<string, boolean>>({});
   const [historyError, setHistoryError] = useState<Record<string, string>>({});
 
-  const loadOrders = useCallback(async () => {
+  const loadPortal = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      setOrders(await listOrders());
+      const [nextOrders, quoteList] = await Promise.all([listOrders(), listQuotes()]);
+      setOrders(nextOrders);
+      setQuotes(quoteList.items);
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'No pudimos cargar tus pedidos.');
+      setError(reason instanceof Error ? reason.message : 'No pudimos cargar tu información.');
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    void loadOrders();
-  }, [loadOrders, retry]);
+    void loadPortal();
+  }, [loadPortal, retry]);
 
   const loadHistory = async (orderId: string) => {
     if (orderId in history || historyLoading[orderId]) return;
@@ -72,8 +86,8 @@ export function CustomerPortal() {
       <main className="customer-portal-page">
         <header className="customer-portal-heading">
           <span className="kicker">MI CUENTA</span>
-          <h1>Seguimiento de pedidos</h1>
-          <p>Consulta el avance y los saldos de tus proyectos.</p>
+          <h1>Tus proyectos</h1>
+          <p>Consulta tus cotizaciones, el avance de tus pedidos y sus saldos.</p>
         </header>
 
         {loading && <p role="status" className="portal-notice">Cargando tus pedidos…</p>}
@@ -84,15 +98,50 @@ export function CustomerPortal() {
             <Button onClick={() => setRetry((value) => value + 1)}>Reintentar</Button>
           </section>
         )}
-        {!loading && !error && orders.length === 0 && (
+        {!loading && !error && orders.length === 0 && quotes.length === 0 && (
           <section className="portal-notice portal-empty">
-            <h2>Aún no tienes pedidos</h2>
-            <p>Cuando una cotización se convierta en pedido, aparecerá aquí.</p>
+            <h2>Aún no tienes proyectos</h2>
+            <p>Las cotizaciones que envíes y sus pedidos aparecerán aquí.</p>
             <Button onClick={() => navigate('/catalogo')}>Explorar catálogo</Button>
           </section>
         )}
+        {!loading && !error && quotes.length > 0 && (
+          <section className="customer-portal-section" aria-labelledby="customer-quotes-title">
+            <div className="customer-section-heading">
+              <div>
+                <span className="kicker">COTIZACIONES</span>
+                <h2 id="customer-quotes-title">Solicitudes enviadas</h2>
+              </div>
+              <Button variant="secondary" onClick={() => navigate('/cotizador')}>Nueva cotización</Button>
+            </div>
+            <div className="customer-quote-list">
+              {quotes.map((quote) => (
+                <article className="customer-quote-card" key={quote.id}>
+                  <div>
+                    <b>{quote.code}</b>
+                    <span className={`customer-quote-status quote-${quote.status}`}>
+                      {quoteStatusLabel[quote.status]}
+                    </span>
+                  </div>
+                  <h3>{quote.items.map((item) => item.productName).join(', ')}</h3>
+                  <dl>
+                    <div><dt>Total referencial</dt><dd>{moneyMinor(quote.totalMinor)}</dd></div>
+                    <div><dt>Válida hasta</dt><dd>{date(quote.expiresAt.slice(0, 10))}</dd></div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
         {!loading && !error && orders.length > 0 && (
-          <section className="customer-order-list" aria-label="Mis pedidos">
+          <section className="customer-portal-section" aria-labelledby="customer-orders-title">
+            <div className="customer-section-heading">
+              <div>
+                <span className="kicker">PEDIDOS</span>
+                <h2 id="customer-orders-title">Seguimiento del taller</h2>
+              </div>
+            </div>
+            <div className="customer-order-list">
             {orders.map((order) => (
               <article className="customer-order-card" key={order.id}>
                 <div className="customer-order-heading">
@@ -150,6 +199,7 @@ export function CustomerPortal() {
                 )}
               </article>
             ))}
+            </div>
           </section>
         )}
       </main>

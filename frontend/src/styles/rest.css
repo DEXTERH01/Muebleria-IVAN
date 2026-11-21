@@ -439,6 +439,20 @@
 .customer-portal-heading { margin-bottom: 30px; }
 .customer-portal-heading h1 { color: var(--brown); font-size: clamp(34px, 5vw, 52px); margin: 12px 0; }
 .customer-portal-heading p { color: var(--muted); line-height: 1.6; }
+.customer-portal-section { margin-top: 36px; }
+.customer-section-heading { align-items: center; display: flex; gap: 20px; justify-content: space-between; margin-bottom: 16px; }
+.customer-section-heading h2 { color: var(--brown); font-size: 25px; margin: 6px 0 0; }
+.customer-quote-list { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.customer-quote-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-xs); padding: 22px; }
+.customer-quote-card > div:first-child { align-items: center; display: flex; gap: 12px; justify-content: space-between; }
+.customer-quote-card > div:first-child > b { color: var(--wood); font-size: 12px; }
+.customer-quote-card h3 { color: var(--brown); font-size: 17px; margin: 18px 0; }
+.customer-quote-card dl { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; margin: 0; }
+.customer-quote-card dt { color: var(--muted); font-size: 10px; margin-bottom: 4px; }
+.customer-quote-card dd { color: var(--brown); font-size: 13px; font-weight: 600; margin: 0; }
+.customer-quote-status { background: var(--cream-dark); border-radius: 999px; color: var(--brown); font-size: 11px; font-weight: 700; padding: 7px 10px; }
+.customer-quote-status.quote-approved, .customer-quote-status.quote-converted { background: var(--green-light); color: var(--green); }
+.customer-quote-status.quote-rejected, .customer-quote-status.quote-expired { background: var(--red-light); color: var(--red); }
 .portal-notice { background: #fff; border: 1px solid var(--line); border-radius: 16px; color: var(--muted); padding: 24px; }
 .portal-notice h2 { color: var(--brown); font-size: 22px; }
 .portal-empty { padding: 48px 20px; text-align: center; }
@@ -470,6 +484,8 @@
   .customer-portal-page { padding: 38px 18px 56px; }
   .customer-order-card { padding: 18px; }
   .customer-order-details { gap: 18px 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .customer-quote-list { grid-template-columns: 1fr; }
+  .customer-section-heading { align-items: flex-start; flex-direction: column; }
 }
 
 /* Estimate sidebar */

@@ -82,7 +82,7 @@ Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas
 - [x] Implementar administración del catálogo.
 - [x] Migrar reglas del cotizador al backend.
 - [x] Persistir cotizaciones.
-- [ ] Generar cliente TypeScript desde OpenAPI.
+- [x] Generar cliente TypeScript desde OpenAPI. Evidencia: `frontend/src/api/generated/schema.d.ts`, `frontend/src/api/modules/`.
 - [x] Reemplazar datos locales del catálogo.
 - [x] Añadir pruebas del cálculo de precios.
 
@@ -90,7 +90,7 @@ Criterio de salida: catálogo y cotización funcionan sin depender de datos escr
 
 ## Fase 4. Operación del taller
 
-Avance local: están implementados clientes, conversión de cotizaciones aprobadas a pedidos, lectura y transiciones de pedidos con historial, pagos idempotentes con reversión auditada y endpoints para firmar cargas y registrar vouchers privados de Cloudinary. La conversión conserva snapshots de artículos, requiere control de versión e idempotencia y deja auditoría. La instalación con saldo pendiente requiere administrador y motivo; las pruebas también cubren aislamiento entre clientes. Falta validar cargas reales con Cloudinary, asociar imágenes a productos y probar el flujo completo contra Supabase.
+Avance local: están implementados clientes, conversión de cotizaciones aprobadas a pedidos, lectura y transiciones de pedidos con historial, pagos idempotentes con reversión auditada y endpoints para firmar cargas y registrar vouchers privados de Cloudinary. El frontend permite consultar cotizaciones propias, revisar y aprobar cotizaciones como administrador y convertirlas con dirección de entrega. La instalación con saldo pendiente requiere administrador y motivo. Falta validar cargas reales con Cloudinary, asociar imágenes a productos y probar el flujo completo contra Supabase.
 
 - [x] Convertir cotización a pedido. Evidencia: `backend/app/api/v1/orders.py`, `backend/app/schemas/order.py`, `backend/tests/test_operations_api.py`.
 - [x] Implementar estados y transiciones. Evidencia: `backend/app/api/v1/orders.py`, `backend/tests/test_operations_api.py`.
@@ -98,7 +98,7 @@ Avance local: están implementados clientes, conversión de cotizaciones aprobad
 - [x] Implementar clientes. Evidencia: `backend/app/api/v1/customers.py`, `backend/app/schemas/customer.py`.
 - [x] Implementar pagos con idempotencia. Evidencia: `backend/app/api/v1/payments.py`, `backend/tests/test_operations_api.py`.
 - [x] Implementar reversión de pagos. Evidencia: `backend/app/api/v1/payments.py`, `backend/app/models/audit_log.py`.
-- [ ] Integrar Cloudinary para productos.
+- [x] Integrar Cloudinary para productos. Evidencia: `backend/app/api/v1/catalog.py`, `frontend/src/api/modules/media.ts`, `frontend/src/pages/admin/CatalogAdminPage.tsx`. Validación con cuenta real pendiente.
 - [x] Integrar Cloudinary privado para vouchers. Evidencia: `backend/app/api/v1/media.py`, `backend/tests/test_operations_api.py`.
 - [x] Sustituir `localStorage` por la API FastAPI de pedidos y pagos. Evidencia: `frontend/src/hooks/useOrders.ts`, `frontend/src/api/modules/orders.ts`.
 - [ ] Probar el flujo completo.
