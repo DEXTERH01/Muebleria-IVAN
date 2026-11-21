@@ -1,6 +1,7 @@
 """Supabase JWT verification and database-backed application authorization."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 from functools import lru_cache
 from typing import Annotated
 from uuid import UUID
@@ -25,6 +26,9 @@ ALGORITHMS = ["RS256", "ES256"]
 class CurrentUser:
     user_id: UUID
     role: str
+    full_name: str | None = field(default=None)
+    phone: str | None = field(default=None)
+    created_at: datetime | None = field(default=None)
 
 
 def unauthorized() -> HTTPException:
@@ -76,12 +80,24 @@ def get_current_user(
     user_id: Annotated[UUID, Depends(get_current_identity)],
     session: Annotated[Session, Depends(get_session)],
 ) -> CurrentUser:
-    profile = session.execute(
-        select(Profile.role, Profile.active).where(Profile.user_id == user_id)
+    row = session.execute(
+        select(
+            Profile.role,
+            Profile.active,
+            Profile.full_name,
+            Profile.phone,
+            Profile.created_at,
+        ).where(Profile.user_id == user_id)
     ).one_or_none()
-    if profile is None or not profile.active:
+    if row is None or not row.active:
         raise HTTPException(status_code=403, detail="Perfil deshabilitado o inexistente.")
-    return CurrentUser(user_id=user_id, role=profile.role)
+    return CurrentUser(
+        user_id=user_id,
+        role=row.role,
+        full_name=row.full_name,
+        phone=row.phone,
+        created_at=row.created_at,
+    )
 
 
 def require_roles(*allowed_roles: str):

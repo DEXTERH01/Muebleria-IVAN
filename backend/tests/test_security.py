@@ -54,14 +54,29 @@ def test_verify_token_accepts_valid_supabase_access_token(monkeypatch: pytest.Mo
 
 
 class FakeSession:
-    def __init__(self, role: str, active: bool = True) -> None:
-        self.profile = SimpleNamespace(role=role, active=active)
+    """In-memory session stub that returns a profile row without DB access."""
+
+    def __init__(
+        self,
+        role: str,
+        active: bool = True,
+        full_name: str | None = None,
+        phone: str | None = None,
+        created_at: datetime | None = None,
+    ) -> None:
+        self._row = SimpleNamespace(
+            role=role,
+            active=active,
+            full_name=full_name,
+            phone=phone,
+            created_at=created_at,
+        )
 
     def execute(self, _statement: object) -> "FakeSession":
         return self
 
     def one_or_none(self) -> SimpleNamespace:
-        return self.profile
+        return self._row
 
 
 @pytest.mark.parametrize(
@@ -80,6 +95,18 @@ def test_role_dependency_uses_database_profile(role: str, allowed: bool) -> None
         assert error.value.status_code == 403
 
 
+def test_require_roles_allows_multiple_roles() -> None:
+    """require_roles must accept any role listed in the allow-list."""
+    op_user = get_current_user(uuid4(), FakeSession("operator"))
+    admin_user = get_current_user(uuid4(), FakeSession("admin"))
+    dep = require_roles("operator", "admin")
+    assert dep(op_user).role == "operator"
+    assert dep(admin_user).role == "admin"
+    with pytest.raises(HTTPException) as exc:
+        dep(get_current_user(uuid4(), FakeSession("customer")))
+    assert exc.value.status_code == 403
+
+
 def test_missing_bearer_is_rejected() -> None:
     with pytest.raises(HTTPException) as error:
         get_current_identity(None, Settings(environment="test"))
@@ -93,12 +120,26 @@ def test_disabled_profile_is_rejected() -> None:
     assert error.value.status_code == 403
 
 
-def test_me_returns_profile_role_and_camel_case_id() -> None:
+def test_missing_profile_is_rejected() -> None:
+    """A user_id with no matching profile row must be rejected with 403."""
+
+    class EmptySession(FakeSession):
+        def one_or_none(self) -> None:  # type: ignore[override]
+            return None
+
+    with pytest.raises(HTTPException) as exc:
+        get_current_user(uuid4(), EmptySession("customer"))
+    assert exc.value.status_code == 403
+
+
+def test_me_returns_profile_fields_in_camel_case() -> None:
     user_id = uuid4()
-    user = get_current_user(user_id, FakeSession("customer"))
-    assert me(user).model_dump(mode="json", by_alias=True) == {
-        "data": {"userId": str(user_id), "role": "customer"}
-    }
+    user = get_current_user(user_id, FakeSession("customer", full_name="Ana López"))
+    result = me(user).model_dump(mode="json", by_alias=True)
+    assert result["data"]["userId"] == str(user_id)
+    assert result["data"]["role"] == "customer"
+    assert result["data"]["fullName"] == "Ana López"
+    assert result["data"]["phone"] is None
 
 
 def test_unconfigured_auth_rejects_presented_token() -> None:
