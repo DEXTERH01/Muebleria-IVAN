@@ -54,28 +54,20 @@ select is((select count(*) from app.orders), 2::bigint, 'operator sees all order
 select is((select count(*) from app.quotes), 3::bigint, 'operator sees all quotes');
 select is((select count(*) from app.pricing_rules), 0::bigint, 'operator cannot read pricing rules');
 select is((select count(*) from app.audit_logs), 0::bigint, 'operator cannot read audit logs');
-select is(
-  (
-    with changed as (
-      update app.products set base_price_minor = 1
-      where id = '40000000-0000-4000-8000-000000000001'
-      returning 1
-    )
-    select count(*) from changed
-  ),
-  0::bigint,
+select is_empty(
+  $$
+    update app.products set base_price_minor = 1
+    where id = '40000000-0000-4000-8000-000000000001'
+    returning 1
+  $$,
   'operator cannot change catalog prices'
 );
-select is(
-  (
-    with removed as (
-      delete from app.customers
-      where id = '20000000-0000-4000-8000-000000000001'
-      returning 1
-    )
-    select count(*) from removed
-  ),
-  0::bigint,
+select is_empty(
+  $$
+    delete from app.customers
+    where id = '20000000-0000-4000-8000-000000000001'
+    returning 1
+  $$,
   'operator cannot delete customers'
 );
 
