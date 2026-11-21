@@ -28,3 +28,13 @@ Servicios locales:
 .\.venv\Scripts\python.exe -m pytest
 .\.venv\Scripts\python.exe -m ruff check .
 ```
+
+## Actualizar el contrato del frontend
+
+Después de modificar rutas o esquemas, desde la raíz del repositorio:
+
+```powershell
+backend\.venv\Scripts\python.exe backend\scripts\export_openapi.py
+```
+
+El archivo generado `contracts/openapi.json` debe incluirse en el mismo commit que el cambio de API.

@@ -3,10 +3,10 @@
 ## Estado general
 
 - Fecha de referencia: 2026-11-21.
-- Fase actual: Fase 1, base técnica.
-- Estado: implementación técnica completada; pendiente cerrar asignaciones organizativas.
+- Fase actual: transición de Fase 1 a Fase 2.
+- Estado: base técnica y división del repositorio completadas; Fase 2 lista para iniciar en ramas paralelas.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: asignar responsables y preparar la Fase 2.
+- Próxima puerta de control: integrar Supabase Auth, migraciones iniciales y la base del nuevo frontend por dominios.
 
 ## Cómo actualizar este seguimiento
 
@@ -20,23 +20,24 @@
 
 | Rol | Responsable |
 | --- | --- |
-| Product owner y analista | Por asignar |
-| UX y frontend | Por asignar |
-| Backend y datos | Por asignar |
-| IA y datos | Por asignar |
-| DevOps y QA | Por asignar |
-| Documentación y exposición | Por asignar |
+| Product owner y analista | Responsable principal |
+| UX y frontend | Cristian Gonza |
+| Backend y datos | Responsable principal |
+| IA y datos | Responsable principal, revisión compartida |
+| DevOps y QA | Responsable principal, validación compartida |
+| Documentación y exposición | Equipo completo |
 
 ## Fase 0. Definición y control
 
 | Estado | Tarea | Evidencia |
 | --- | --- | --- |
-| Hecho | Revisar el estado técnico actual | `README.md`, `src/` |
+| Hecho | Revisar el estado técnico actual | `README.md`, `frontend/src/` |
 | Hecho | Crear el plan maestro | `docs/PLAN_MAESTRO.md` |
 | Hecho | Crear el seguimiento por fases | `docs/SEGUIMIENTO.md` |
-| Hecho | Definir e integrar la identidad visual | `public/assets/brand/` |
+| Hecho | Definir e integrar la identidad visual | `frontend/public/assets/brand/` |
 | Hecho | Revisar y aprobar los requisitos con el equipo | `docs/PLAN_MAESTRO.md` |
-| Pendiente | Asignar responsables | Tabla de responsables |
+| Hecho | Asignar responsables y zonas de trabajo | Tabla de responsables, `docs/PLAN_TRABAJO_PARALELO.md` |
+| Hecho | Separar frontend, backend, contratos, datos y Supabase | Estructura raíz del repositorio |
 | Pendiente | Confirmar fecha y formato de entrega del Avance 3 | Por registrar |
 | Pendiente | Definir duración disponible para la exposición | Por registrar |
 
@@ -49,7 +50,7 @@ Criterio de salida: el alcance es entendido, los responsables están asignados y
 - [x] Habilitar documentación OpenAPI. Evidencia: `backend/app/main.py`.
 - [x] Añadir configuración por variables de entorno. Evidencia: `backend/app/core/config.py`, `backend/.env.example`.
 - [x] Añadir prueba inicial de API. Evidencia: `backend/tests/`.
-- [x] Añadir Vitest al frontend. Evidencia: `src/pages/HomePage.test.tsx`, `vite.config.ts`.
+- [x] Añadir Vitest al frontend. Evidencia: `frontend/src/pages/HomePage.test.tsx`, `frontend/vite.config.ts`.
 - [x] Crear pipeline inicial de frontend y backend. Evidencia: `.github/workflows/ci.yml`.
 - [x] Documentar comandos locales. Evidencia: `README.md`, `backend/README.md`.
 
@@ -163,19 +164,21 @@ Criterio de salida: una persona externa puede verificar el prototipo y repetir e
 
 | ID | Fecha | Decisión | Motivo | Impacto | Responsable |
 | --- | --- | --- | --- | --- | --- |
-| D-001 | 2026-11-21 | Usar React y TypeScript para el frontend | El prototipo existente ya utiliza estas tecnologías | Se conserva y adapta el frontend actual | Por asignar |
-| D-002 | 2026-11-21 | Usar Python y FastAPI para el backend | Favorece OpenAPI, rapidez de desarrollo y ML | Se creará un backend nuevo | Por asignar |
-| D-003 | 2026-11-21 | Usar un monolito modular | Reduce complejidad operativa y académica | No se crearán microservicios | Por asignar |
-| D-004 | 2026-11-21 | Utilizar un dataset inicial controlado de prueba | Todavía no existe suficiente historial digital | Las métricas iniciales validan el prototipo y no reemplazan métricas operativas | Por asignar |
-| D-005 | 2026-11-21 | Mantener las decisiones ML bajo supervisión humana | Evita automatización engañosa o sensible | ML será consultivo | Por asignar |
-| D-006 | 2026-11-21 | Adoptar Mueblería Iván como identidad pública única | Unificar empresa, web y presentación | Se actualizan interfaz, recursos y documentación | Por asignar |
+| D-001 | 2026-11-21 | Usar React y TypeScript para el frontend | El prototipo existente ya utiliza estas tecnologías | Se conserva y adapta el frontend actual | Cristian Gonza |
+| D-002 | 2026-11-21 | Usar Python y FastAPI para el backend | Favorece OpenAPI, rapidez de desarrollo y ML | Se implementó la base técnica del backend | Responsable principal |
+| D-003 | 2026-11-21 | Usar un monolito modular | Reduce complejidad operativa y académica | No se crearán microservicios | Equipo completo |
+| D-004 | 2026-11-21 | Utilizar un dataset inicial controlado de prueba | Todavía no existe suficiente historial digital | Las métricas iniciales validan el prototipo y no reemplazan métricas operativas | Responsable principal |
+| D-005 | 2026-11-21 | Mantener las decisiones ML bajo supervisión humana | Evita automatización engañosa o sensible | ML será consultivo | Equipo completo |
+| D-006 | 2026-11-21 | Adoptar Mueblería Iván como identidad pública única | Unificar empresa, web y presentación | Se actualizan interfaz, recursos y documentación | Equipo completo |
+| D-007 | 2026-11-21 | Organizar el repositorio por frontend, backend, contratos, Supabase y datos | Permitir desarrollo paralelo con límites claros | Cristian trabaja en `frontend/`; el responsable principal en backend y datos | Equipo completo |
+| D-008 | 2026-11-21 | Versionar OpenAPI como frontera entre ambos frentes | Evitar contratos verbales y cambios incompatibles | Backend genera el contrato y frontend lo consume | Equipo completo |
 
 ## Bloqueos
 
 | Fecha | Bloqueo | Impacto | Próxima acción | Responsable | Estado |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-21 | No existe suficiente historial digital para ML | Los primeros modelos no pueden validarse comercialmente | Usar datos de prueba, registrar operaciones y reevaluar modelos | Por asignar | Abierto |
-| 2026-11-21 | No se conoce la fecha exacta ni duración de exposición | Dificulta priorizar entregables | Confirmar con el docente | Por asignar | Abierto |
+| 2026-11-21 | No existe suficiente historial digital para ML | Los primeros modelos no pueden validarse comercialmente | Usar datos de prueba, registrar operaciones y reevaluar modelos | Responsable principal | Abierto |
+| 2026-11-21 | No se conoce la fecha exacta ni duración de exposición | Dificulta priorizar entregables | Confirmar con el docente | Equipo completo | Abierto |
 
 ## Evidencias finales esperadas
 

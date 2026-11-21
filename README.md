@@ -1,88 +1,67 @@
 # Mueblería Iván
 
-![Logo de Mueblería Iván](public/assets/brand/muebleria-ivan-logo.png)
+![Logo de Mueblería Iván](frontend/public/assets/brand/muebleria-ivan-logo.png)
 
-Plataforma de transformación digital para Mueblería Iván, un negocio familiar de Lima, Perú. Permite explorar el catálogo, crear cotizaciones, gestionar pedidos, supervisar la producción y controlar pagos 50/50 desde un solo lugar.
+Plataforma web desacoplada para gestionar el catálogo, las cotizaciones, los pedidos, la producción y los pagos de Mueblería Iván. El repositorio también servirá como prototipo académico de Cloud, DevOps, algoritmos de búsqueda y machine learning.
 
-## Tecnologías
+## Arquitectura
 
-- React + TypeScript
-- Vite
-- Python + FastAPI
-- Pydantic Settings
-- Pytest, Ruff y Vitest
-- CSS moderno responsive
-- `localStorage` como persistencia temporal mientras se implementa Supabase
+- `frontend/`: React, TypeScript y Vite; despliegue en Netlify.
+- `backend/`: Python y FastAPI; despliegue previsto en Render.
+- `supabase/`: migraciones, pruebas SQL y datos iniciales de PostgreSQL/Auth.
+- `contracts/`: contrato OpenAPI generado por FastAPI.
+- `data/`: datasets reproducibles para algoritmos y ML.
+- `docs/`: requisitos, seguimiento y coordinación del equipo.
+- `scripts/`: verificaciones comunes del repositorio.
 
-## Instalación
+El navegador usa Supabase directamente solo para autenticación. Los datos comerciales y las reglas de negocio pasan por FastAPI. Las imágenes se integrarán mediante Cloudinary.
 
-```bash
+## Inicio rápido
+
+Frontend:
+
+```powershell
+cd frontend
 npm install
 npm run dev
 ```
 
-Abre la dirección mostrada por Vite (normalmente `http://localhost:5173`).
-
-### Backend
-
-La preparación completa del entorno Python se encuentra en [backend/README.md](backend/README.md). Después de instalarlo, la API se inicia desde `backend/` con:
+Backend:
 
 ```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+Copy-Item .env.example .env
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
 ```
 
-Swagger estará disponible en `http://127.0.0.1:8000/docs`.
+Vite mostrará la URL del frontend, normalmente `http://localhost:5173`. La documentación Swagger estará en `http://127.0.0.1:8000/docs`.
 
-## Pruebas
+## Verificación
+
+Desde la raíz:
 
 ```powershell
-npm run test
-npm run build
-cd backend
-.\.venv\Scripts\python.exe -m pytest
-.\.venv\Scripts\python.exe -m ruff check .
+.\scripts\verify.ps1
 ```
 
-## Plan del proyecto
+También se puede verificar una sola área con `-Scope frontend` o `-Scope backend`.
 
-El alcance, las reglas, la arquitectura y el orden obligatorio de implementación se encuentran en [docs/PLAN_MAESTRO.md](docs/PLAN_MAESTRO.md). El progreso y las evidencias de cada fase se registran en [docs/SEGUIMIENTO.md](docs/SEGUIMIENTO.md).
+## Trabajo en equipo
 
-## Estructura
+Antes de modificar el proyecto, leer:
 
-- `src/pages`: experiencia del cliente y administración.
-- `src/components`: layout, interfaz y catálogo reutilizables.
-- `src/data`: productos, pedidos y clientes iniciales.
-- `src/hooks/useOrders.ts`: persistencia y lógica de pedidos/pagos.
-- `src/types`: contratos TypeScript de la plataforma.
-- `backend/app`: API y módulos de negocio en Python.
-- `backend/tests`: pruebas del backend.
-- `.github/workflows/ci.yml`: validación automática de frontend y backend.
+1. [`AGENTS.md`](AGENTS.md): instrucciones obligatorias para integrantes y Codex.
+2. [`docs/PLAN_MAESTRO.md`](docs/PLAN_MAESTRO.md): alcance y arquitectura.
+3. [`docs/PLAN_TRABAJO_PARALELO.md`](docs/PLAN_TRABAJO_PARALELO.md): ramas, propiedad y rutina diaria.
+4. [`docs/SEGUIMIENTO.md`](docs/SEGUIMIENTO.md): estado y evidencias.
+5. [`docs/FRONTEND_ROADMAP.md`](docs/FRONTEND_ROADMAP.md): trabajo asignado a Cristian Gonza.
 
-## Funcionalidades
+No se trabaja directamente sobre `main`. Cada cambio se desarrolla en una rama `codex/<area>-<tarea>` y se integra mediante una revisión pequeña.
 
-- Catálogo filtrable con búsqueda y detalles de producto.
-- Cotizador dinámico con medidas, materiales, acabados y accesorios.
-- Cálculo referencial de anticipo 50% y saldo 50%.
-- Mensaje generado para WhatsApp con opción de copiar.
-- Dashboard, pedidos, detalle de pedido, clientes y control de pagos.
-- Tablero de producción con movimiento de pedidos por etapa.
-- Alerta de saldo pendiente al dejar un pedido listo para entrega.
-- Registro de pago con previsualización local de voucher.
-- Persistencia de cambios mediante `localStorage`.
-- Asistente virtual con respuestas contextuales para clientes.
-- Panel de análisis predictivo con proyección lineal, demanda por categoría y riesgo de retraso.
+## Estado funcional actual
 
-## Inteligencia artificial
+El frontend ya incluye catálogo, cotizador, seguimiento de pedidos, administración, producción, pagos y panel analítico con datos locales. El backend dispone de configuración, documentación OpenAPI, endpoint de salud y pruebas iniciales. Las siguientes fases reemplazarán progresivamente los datos locales por Supabase y reglas ejecutadas por FastAPI.
 
-La plataforma incorpora **Mía**, una asistente capaz de orientar sobre productos, materiales, medidas, pagos y entregas, además de consultar pedidos en tiempo real. El panel administrativo incluye proyección de demanda, recomendaciones de producción y detección de riesgo según etapa, fecha y estado de pago.
-
-## Flujo principal
-
-1. Entra al catálogo y abre **Closet Siena**.
-2. Personaliza el diseño en el cotizador y consulta la cotización.
-3. Revisa el anticipo y saldo, luego copia el mensaje de WhatsApp.
-4. Cambia a **Vista administrador**.
-5. Abre el tablero de Producción y ubica `PED-001` (María López).
-6. Muévelo hasta **Listo para entrega**. Se mostrará la alerta por saldo pendiente.
-7. Registra el saldo final desde el detalle o Control de pagos: el pedido pasará a **Pagado** y el saldo será S/ 0.
-
+Los resultados de ML se presentarán como resultados de datos controlados de prueba hasta que exista suficiente historial operativo; nunca se mostrarán métricas inventadas como si fueran reales.

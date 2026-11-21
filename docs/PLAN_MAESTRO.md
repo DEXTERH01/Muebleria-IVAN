@@ -40,7 +40,7 @@ Las limitaciones actuales son:
 
 - Los datos están escritos en archivos TypeScript.
 - Los pedidos se guardan en `localStorage`.
-- No existe backend.
+- El backend solo cuenta con la base técnica y aún no implementa los módulos comerciales.
 - No existe autenticación real.
 - No existe base de datos remota integrada.
 - La analítica utiliza fórmulas y valores simulados.
@@ -265,7 +265,7 @@ La migración desde el prototipo actual será:
 
 El nombre público y oficial de la empresa dentro del sistema es **Mueblería Iván** y será el único nombre utilizado en interfaces, documentación y metadatos públicos.
 
-El recurso oficial es `public/assets/brand/muebleria-ivan-logo.png`: un monograma compacto inspirado en un mueble, utilizado en navegación, panel administrativo y favicon. El nombre Mueblería Iván se presenta como texto accesible fuera de la imagen.
+El recurso oficial es `frontend/public/assets/brand/muebleria-ivan-logo.png`: un monograma compacto inspirado en un mueble, utilizado en navegación, panel administrativo y favicon. El nombre Mueblería Iván se presenta como texto accesible fuera de la imagen.
 
 La paleta principal usa marrón nogal `#3B2416`, madera cálida `#7A5136`, arena `#DCC3A4` y fondo crema. El logo se mostrará sobre fondos claros y conservará su transparencia, proporción y espacio libre. No se deformará, recoloreará ni acompañará con otro nombre comercial.
 
@@ -320,7 +320,11 @@ El frontend no accederá directamente a las tablas comerciales. Solo utilizará 
 
 ```text
 Muebleria Ivan/
-|-- src/                       # frontend actual
+|-- frontend/
+|   |-- public/
+|   |-- src/
+|   |-- package.json
+|   `-- vite.config.ts
 |-- backend/
 |   |-- app/
 |   |   |-- api/v1/
@@ -346,8 +350,12 @@ Muebleria Ivan/
 |   `-- openapi.json
 |-- docs/
 |   |-- PLAN_MAESTRO.md
+|   |-- PLAN_TRABAJO_PARALELO.md
+|   |-- FRONTEND_ROADMAP.md
 |   `-- SEGUIMIENTO.md
+|-- scripts/
 |-- .github/workflows/
+|-- AGENTS.md
 |-- netlify.toml
 `-- README.md
 ```
