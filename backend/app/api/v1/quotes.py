@@ -3,7 +3,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
@@ -36,6 +36,7 @@ from app.schemas.pricing import (
 )
 from app.schemas.quotes import (
     QuoteCreateRequest,
+    QuoteListResponse,
     QuoteResponse,
     QuoteStatusUpdateRequest,
 )
@@ -120,6 +121,16 @@ def create_quote(
         return QuoteResponse(data=service.create(request, owner))
     except (ProductNotFoundError, PricingValidationError) as error:
         raise _quote_error(error) from error
+
+
+@router.get("/quotes", response_model=QuoteListResponse)
+def list_quotes(
+    user: Annotated[CurrentUser, Depends(require_roles("customer", "admin"))],
+    service: Annotated[QuoteService, Depends(get_quote_service)],
+    page: Annotated[int, Query(ge=1)] = 1,
+    page_size: Annotated[int, Query(alias="pageSize", ge=1, le=100)] = 20,
+) -> QuoteListResponse:
+    return QuoteListResponse(data=service.list_for_user(user, page=page, page_size=page_size))
 
 
 @router.get("/quotes/{quote_id}", response_model=QuoteResponse)

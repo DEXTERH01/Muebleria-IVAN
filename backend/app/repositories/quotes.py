@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from app.models.quotes import Quote, QuoteItem
@@ -36,6 +36,44 @@ class QuoteRepository:
             ).all()
         )
         return QuoteAggregate(quote=quote, items=items)
+
+    def list_for_user(
+        self,
+        *,
+        owner_user_id: UUID,
+        include_all: bool,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[QuoteAggregate], int]:
+        filters = [] if include_all else [Quote.owner_user_id == owner_user_id]
+        total = self.session.scalar(
+            select(func.count()).select_from(Quote).where(*filters)
+        ) or 0
+        quotes = list(
+            self.session.scalars(
+                select(Quote)
+                .where(*filters)
+                .order_by(Quote.created_at.desc(), Quote.id)
+                .offset((page - 1) * page_size)
+                .limit(page_size)
+            ).all()
+        )
+        if not quotes:
+            return [], total
+
+        quote_ids = [quote.id for quote in quotes]
+        items = self.session.scalars(
+            select(QuoteItem)
+            .where(QuoteItem.quote_id.in_(quote_ids))
+            .order_by(QuoteItem.created_at, QuoteItem.id)
+        ).all()
+        items_by_quote: dict[UUID, list[QuoteItem]] = {quote_id: [] for quote_id in quote_ids}
+        for item in items:
+            items_by_quote[item.quote_id].append(item)
+        aggregates = [
+            QuoteAggregate(quote=quote, items=items_by_quote[quote.id]) for quote in quotes
+        ]
+        return aggregates, total
 
     def update_status(
         self,

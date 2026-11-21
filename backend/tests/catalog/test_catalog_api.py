@@ -5,10 +5,12 @@ from fastapi.testclient import TestClient
 
 from app.api.v1.catalog import get_catalog_service
 from app.api.v1.catalog import router as catalog_router
-from app.api.v1.quotes import get_pricing_service
+from app.api.v1.quotes import get_pricing_service, get_quote_service
 from app.api.v1.quotes import router as quote_router
+from app.core.security import CurrentUser, get_current_user
 from app.schemas.catalog import ProductListData, ProductSummaryData
 from app.schemas.pricing import QuoteEstimateData
+from app.schemas.quotes import QuoteListData
 
 
 class FakeCatalogService:
@@ -46,6 +48,15 @@ class FakePricingService:
             deposit_minor=50_000,
             items=[],
         )
+
+
+class FakeQuoteListService:
+    def __init__(self) -> None:
+        self.calls = []
+
+    def list_for_user(self, user, *, page, page_size):
+        self.calls.append((user, page, page_size))
+        return QuoteListData(items=[], total=0, page=page, page_size=page_size)
 
 
 def test_public_catalog_and_estimate_contracts_use_camel_case() -> None:
@@ -107,3 +118,27 @@ def test_module_openapi_exposes_expected_routes_without_central_registration() -
         "/api/v1/quotes/{quote_id}",
         "/api/v1/quotes/{quote_id}/status",
     }
+    assert "get" in paths["/api/v1/quotes"]
+    assert "post" in paths["/api/v1/quotes"]
+
+
+def test_quote_list_requires_customer_or_admin_and_uses_camel_case_pagination() -> None:
+    quote_service = FakeQuoteListService()
+    customer = CurrentUser(user_id=uuid4(), role="customer")
+    app = FastAPI()
+    app.include_router(quote_router, prefix="/api/v1")
+    app.dependency_overrides[get_quote_service] = lambda: quote_service
+    app.dependency_overrides[get_current_user] = lambda: customer
+    client = TestClient(app)
+
+    response = client.get("/api/v1/quotes?page=2&pageSize=5")
+
+    assert response.status_code == 200
+    assert response.json()["data"] == {"items": [], "total": 0, "page": 2, "pageSize": 5}
+    assert quote_service.calls == [(customer, 2, 5)]
+
+    app.dependency_overrides[get_current_user] = lambda: CurrentUser(
+        user_id=uuid4(), role="operator"
+    )
+    forbidden = client.get("/api/v1/quotes")
+    assert forbidden.status_code == 403
