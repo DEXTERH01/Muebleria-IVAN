@@ -203,24 +203,3 @@ export function AuthGuard({
   }
   return <>{children}</>;
 }
-
-export function CustomerPortal() {
-  const auth = useAuth();
-  return (
-    <>
-      <Navbar />
-      <main className="auth-page">
-        <section className="auth-card customer-portal">
-          <span className="kicker">MI CUENTA</span>
-          <h1>Hola{auth?.profile?.fullName ? `, ${auth.profile.fullName}` : ''}</h1>
-          <p>Tu sesión está activa. Aquí podrás consultar tus cotizaciones y seguir tus pedidos.</p>
-          <p className="portal-email">{auth?.session?.user.email}</p>
-          <Button variant="secondary" onClick={() => void auth?.signOut().then(() => navigate('/'))}>
-            Cerrar sesión
-          </Button>
-        </section>
-      </main>
-      <Footer />
-    </>
-  );
-}

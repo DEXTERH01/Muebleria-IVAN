@@ -435,6 +435,30 @@
   padding: 11px 13px;
 }
 .portal-email { color: var(--brown) !important; font-weight: 600; }
+.customer-portal-page { margin: 0 auto; max-width: 1040px; min-height: 62vh; padding: 56px 28px 80px; }
+.customer-portal-heading { margin-bottom: 30px; }
+.customer-portal-heading h1 { color: var(--brown); font-size: clamp(34px, 5vw, 52px); margin: 12px 0; }
+.customer-portal-heading p { color: var(--muted); line-height: 1.6; }
+.portal-notice { background: #fff; border: 1px solid var(--line); border-radius: 16px; color: var(--muted); padding: 24px; }
+.portal-notice h2 { color: var(--brown); font-size: 22px; }
+.portal-empty { padding: 48px 20px; text-align: center; }
+.portal-empty p, .portal-error p { line-height: 1.6; }
+.portal-error { border-color: var(--red); color: var(--red); }
+.customer-order-list { display: grid; gap: 16px; }
+.customer-order-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-xs); padding: 24px; }
+.customer-order-heading { align-items: center; display: flex; gap: 16px; justify-content: space-between; }
+.customer-order-heading h2 { color: var(--brown); font-size: 23px; margin: 6px 0 0; }
+.customer-order-status { background: var(--cream-dark); border-radius: 999px; color: var(--brown); font-size: 12px; font-weight: 700; padding: 8px 12px; }
+.customer-order-status.status-cancelled { background: var(--red-light); color: var(--red); }
+.customer-order-status.status-installed, .customer-order-status.status-delivered { background: var(--green-light); color: var(--green); }
+.customer-order-details { display: grid; gap: 16px; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 24px 0 0; }
+.customer-order-details dt { color: var(--muted); font-size: 11px; margin-bottom: 5px; }
+.customer-order-details dd { color: var(--brown); font-size: 14px; font-weight: 600; margin: 0; }
+@media (max-width: 700px) {
+  .customer-portal-page { padding: 38px 18px 56px; }
+  .customer-order-card { padding: 18px; }
+  .customer-order-details { gap: 18px 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 
 /* Estimate sidebar */
 .estimate {
