@@ -1,5 +1,10 @@
+from uuid import uuid4
+
 from fastapi import FastAPI
+from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.requests import Request
 
 from app.api.routes.health import router as health_router
 from app.api.v1.router import api_router
@@ -18,6 +23,29 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         openapi_url="/openapi.json",
     )
     app.state.settings = app_settings
+
+    @app.middleware("http")
+    async def add_request_id(request: Request, call_next):
+        request.state.request_id = str(uuid4())
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = request.state.request_id
+        return response
+
+    @app.exception_handler(HTTPException)
+    async def http_error(request: Request, exc: HTTPException) -> JSONResponse:
+        codes = {401: "UNAUTHORIZED", 403: "FORBIDDEN", 503: "SERVICE_UNAVAILABLE"}
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "error": {
+                    "code": codes.get(exc.status_code, "REQUEST_ERROR"),
+                    "message": str(exc.detail),
+                    "details": {},
+                    "requestId": getattr(request.state, "request_id", str(uuid4())),
+                }
+            },
+            headers=exc.headers,
+        )
 
     if settings is not None:
         app.dependency_overrides[get_settings] = lambda: settings

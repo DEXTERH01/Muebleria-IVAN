@@ -3,8 +3,8 @@
 ## Estado general
 
 - Fecha de referencia: 2026-11-21.
-- Fase actual: transición de Fase 1 a Fase 2.
-- Estado: base técnica y división del repositorio completadas; Fase 2 lista para iniciar en ramas paralelas.
+- Fase actual: Fase 2, base de datos y autenticación.
+- Estado: plataforma de identidad y sesiones backend en desarrollo; faltan migración, Supabase Auth en React y pruebas integradas con base real.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
 - Próxima puerta de control: integrar Supabase Auth, migraciones iniciales y la base del nuevo frontend por dominios.
 
@@ -64,9 +64,9 @@ Criterio de salida: frontend y backend construyen y sus pruebas se ejecutan loca
 - [ ] Crear migración base completa. Responsable: Cristian; revisión: Dexter.
 - [ ] Crear seed reproducible. Responsable: Cristian.
 - [ ] Implementar RLS, perfiles y roles. Responsable: Cristian; revisión: Dexter.
-- [ ] Preparar conexión, sesiones y modelos SQLAlchemy. Responsable: Dexter.
+- [x] Preparar conexión, sesiones y modelo de perfil SQLAlchemy. Responsable: Dexter. Evidencia: `backend/app/core/database.py`, `backend/app/models/profile.py`, `backend/tests/test_security.py`. Pendiente verificar contra migración real.
 - [ ] Integrar Supabase Auth en React. Responsable: Cristian.
-- [ ] Verificar JWT en FastAPI. Responsable: Dexter.
+- [x] Verificar JWT de firma asimétrica en FastAPI y rol desde perfil. Responsable: Dexter. Evidencia: `backend/app/core/security.py`, `backend/app/api/v1/auth.py`, `backend/tests/test_security.py`. Pendiente prueba con proyecto Supabase real.
 - [ ] Probar permisos de visitante, cliente, operador y administrador. Responsable: ambos.
 - [ ] Probar aislamiento entre clientes. Responsable: ambos.
 
