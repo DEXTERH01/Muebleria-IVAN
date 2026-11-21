@@ -7,9 +7,10 @@ Set SUPABASE_TEST_DATABASE_URL to the local Supabase database URL after running
 import os
 
 import pytest
-from sqlalchemy import create_engine, select, text
+from sqlalchemy import create_engine, inspect, select, text
 from sqlalchemy.orm import Session
 
+from app.models import Base
 from app.models.profile import Profile
 
 DATABASE_URL = os.getenv("SUPABASE_TEST_DATABASE_URL")
@@ -56,5 +57,26 @@ def test_profile_role_is_the_migrated_app_enum() -> None:
         assert enum_labels == ["customer", "operator", "admin"]
         assert Profile.__table__.c.role.type.name == "user_role"
         assert Profile.__table__.c.role.type.schema == "app"
+    finally:
+        engine.dispose()
+
+
+def test_registered_models_match_migrated_table_columns() -> None:
+    assert DATABASE_URL is not None
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+    try:
+        inspector = inspect(engine)
+        mismatches = {}
+        for table in Base.metadata.tables.values():
+            database_columns = {
+                column["name"] for column in inspector.get_columns(table.name, schema="app")
+            }
+            model_columns = set(table.columns.keys())
+            if model_columns != database_columns:
+                mismatches[table.name] = {
+                    "model_only": sorted(model_columns - database_columns),
+                    "database_only": sorted(database_columns - model_columns),
+                }
+        assert not mismatches, f"SQLAlchemy and Supabase columns differ: {mismatches}"
     finally:
         engine.dispose()

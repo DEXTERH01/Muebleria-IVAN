@@ -53,10 +53,1227 @@
           }
         ]
       }
+    },
+    "/api/v1/customers": {
+      "get": {
+        "tags": [
+          "customers"
+        ],
+        "summary": "Listar clientes",
+        "operationId": "list_customers_api_v1_customers_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Pagesize"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "customers"
+        ],
+        "summary": "Crear cliente",
+        "operationId": "create_customer_api_v1_customers_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customers/{customer_id}": {
+      "get": {
+        "tags": [
+          "customers"
+        ],
+        "summary": "Detalle de cliente",
+        "operationId": "get_customer_api_v1_customers__customer_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "customer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "customers"
+        ],
+        "summary": "Actualizar cliente",
+        "operationId": "update_customer_api_v1_customers__customer_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "customer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Customer Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Listar pedidos",
+        "operationId": "list_orders_api_v1_orders_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "confirmed",
+                    "materials_pending",
+                    "cutting",
+                    "assembly",
+                    "finishing",
+                    "ready",
+                    "delivered",
+                    "installed",
+                    "cancelled"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "customerId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Customerid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Pagesize"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{order_id}": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Detalle de pedido",
+        "operationId": "get_order_api_v1_orders__order_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{order_id}/status": {
+      "patch": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Cambiar etapa de producción",
+        "operationId": "update_order_status_api_v1_orders__order_id__status_patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderStatusPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{order_id}/payments": {
+      "post": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Registrar pago",
+        "operationId": "create_payment_api_v1_orders__order_id__payments_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Listar pagos de un pedido",
+        "operationId": "list_payments_api_v1_orders__order_id__payments_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Pagesize"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/{payment_id}/void": {
+      "post": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Revertir pago",
+        "operationId": "void_payment_api_v1_payments__payment_id__void_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Payment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentVoidRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/media/signature": {
+      "post": {
+        "tags": [
+          "media"
+        ],
+        "summary": "Obtener firma de carga a Cloudinary",
+        "operationId": "get_upload_signature_api_v1_media_signature_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaSignatureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaSignatureResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/media/assets": {
+      "post": {
+        "tags": [
+          "media"
+        ],
+        "summary": "Registrar carga completada",
+        "operationId": "confirm_upload_api_v1_media_assets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaAssetConfirm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaAssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/media/{asset_id}": {
+      "get": {
+        "tags": [
+          "media"
+        ],
+        "summary": "Metadatos del recurso multimedia",
+        "operationId": "get_asset_api_v1_media__asset_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaAssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/optimizations/production": {
+      "post": {
+        "tags": [
+          "optimizations"
+        ],
+        "summary": "Optimizar secuencia de producción (Hill Climbing)",
+        "description": "Run Hill Climbing on a selection of active orders.\n\nRequest body: {\"orderIds\": [...], \"weights\": {\"delayDays\": 10, ...}}\nReturns: initial sequence, optimised sequence, score improvement, iterations,\nstop reason, and execution time.",
+        "operationId": "optimize_production_api_v1_optimizations_production_post",
+        "responses": {
+          "501": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/optimizations/delivery": {
+      "post": {
+        "tags": [
+          "optimizations"
+        ],
+        "summary": "Optimizar ruta de entregas (A*)",
+        "description": "Run A* route optimisation for a set of pending deliveries.\n\nRequest body: {\"deliveryIds\": [...]}\nReturns: initial route, optimised route, total distance, nodes explored,\nexecution time, and improvement vs. baseline.",
+        "operationId": "optimize_delivery_api_v1_optimizations_delivery_post",
+        "responses": {
+          "501": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/analytics/overview": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Indicadores del dashboard",
+        "description": "Return real-time KPIs from PostgreSQL.\n\nIncludes: active orders by status, revenue this month, overdue orders,\ntop products, average production days, payment recovery rate.\nAll values computed from app schema — no hardcoded numbers.",
+        "operationId": "analytics_overview_api_v1_analytics_overview_get",
+        "responses": {
+          "501": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/analytics/ml/models": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Versiones y métricas de modelos ML",
+        "description": "Return all model versions with their metrics and activation status.\n\nMetrics are stored in app.model_versions.metrics (JSON) — never hardcoded.",
+        "operationId": "ml_model_list_api_v1_analytics_ml_models_get",
+        "responses": {
+          "501": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
+      "CustomerCreate": {
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Fullname"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 254
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "documentNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documentnumber"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "district": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "District"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fullName"
+        ],
+        "title": "CustomerCreate",
+        "description": "Customer contact is required by the database contract."
+      },
+      "CustomerListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CustomerOut"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "total",
+          "page",
+          "pageSize"
+        ],
+        "title": "CustomerListResponse"
+      },
+      "CustomerOut": {
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Fullname"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 254
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "documentNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documentnumber"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "district": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "District"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "profileUserId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profileuserid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fullName",
+          "id",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "CustomerOut"
+      },
+      "CustomerResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CustomerOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "CustomerResponse"
+      },
+      "CustomerUpdate": {
+        "properties": {
+          "fullName": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fullname"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "documentNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documentnumber"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "district": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "District"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "title": "CustomerUpdate",
+        "description": "All fields optional for PATCH semantics."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
       "HealthResponse": {
         "properties": {
           "status": {
@@ -157,6 +1374,916 @@
           "data"
         ],
         "title": "MeResponse"
+      },
+      "MediaAssetConfirm": {
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "catalog_image",
+              "payment_voucher"
+            ],
+            "title": "Purpose"
+          },
+          "publicId": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Publicid"
+          },
+          "version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Version"
+          },
+          "signature": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 40,
+            "title": "Signature"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "jpg",
+              "jpeg",
+              "png",
+              "webp",
+              "pdf"
+            ],
+            "title": "Format"
+          },
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "image",
+              "raw"
+            ],
+            "title": "Resourcetype"
+          },
+          "bytes": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Bytes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "purpose",
+          "publicId",
+          "version",
+          "signature",
+          "format",
+          "resourceType",
+          "bytes"
+        ],
+        "title": "MediaAssetConfirm"
+      },
+      "MediaAssetOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "externalId": {
+            "type": "string",
+            "title": "Externalid"
+          },
+          "mediaType": {
+            "type": "string",
+            "title": "Mediatype"
+          },
+          "access": {
+            "type": "string",
+            "enum": [
+              "public",
+              "private"
+            ],
+            "title": "Access"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "downloadUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Downloadurl"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "externalId",
+          "mediaType",
+          "access",
+          "createdAt"
+        ],
+        "title": "MediaAssetOut"
+      },
+      "MediaAssetResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/MediaAssetOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "MediaAssetResponse"
+      },
+      "MediaSignatureData": {
+        "properties": {
+          "cloudName": {
+            "type": "string",
+            "title": "Cloudname"
+          },
+          "apiKey": {
+            "type": "string",
+            "title": "Apikey"
+          },
+          "timestamp": {
+            "type": "integer",
+            "title": "Timestamp"
+          },
+          "signature": {
+            "type": "string",
+            "title": "Signature"
+          },
+          "publicId": {
+            "type": "string",
+            "title": "Publicid"
+          },
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "image",
+              "raw"
+            ],
+            "title": "Resourcetype"
+          },
+          "deliveryType": {
+            "type": "string",
+            "enum": [
+              "upload",
+              "private"
+            ],
+            "title": "Deliverytype"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "jpg",
+              "jpeg",
+              "png",
+              "webp",
+              "pdf"
+            ],
+            "title": "Format"
+          },
+          "uploadUrl": {
+            "type": "string",
+            "title": "Uploadurl"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cloudName",
+          "apiKey",
+          "timestamp",
+          "signature",
+          "publicId",
+          "resourceType",
+          "deliveryType",
+          "format",
+          "uploadUrl"
+        ],
+        "title": "MediaSignatureData"
+      },
+      "MediaSignatureRequest": {
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "catalog_image",
+              "payment_voucher"
+            ],
+            "title": "Purpose"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "jpg",
+              "jpeg",
+              "png",
+              "webp",
+              "pdf"
+            ],
+            "title": "Format"
+          }
+        },
+        "type": "object",
+        "required": [
+          "purpose",
+          "format"
+        ],
+        "title": "MediaSignatureRequest"
+      },
+      "MediaSignatureResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/MediaSignatureData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "MediaSignatureResponse"
+      },
+      "OrderDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "quoteId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quoteid"
+          },
+          "customerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customerid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "materials_pending",
+              "cutting",
+              "assembly",
+              "finishing",
+              "ready",
+              "delivered",
+              "installed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "PEN"
+          },
+          "totalMinor": {
+            "type": "integer",
+            "title": "Totalminor"
+          },
+          "depositRequiredMinor": {
+            "type": "integer",
+            "title": "Depositrequiredminor"
+          },
+          "paidMinor": {
+            "type": "integer",
+            "title": "Paidminor"
+          },
+          "balanceMinor": {
+            "type": "integer",
+            "title": "Balanceminor"
+          },
+          "promisedDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promiseddate"
+          },
+          "deliveredAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deliveredat"
+          },
+          "installedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Installedat"
+          },
+          "version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Version"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          },
+          "statusHistory": {
+            "items": {
+              "$ref": "#/components/schemas/OrderStatusEventOut"
+            },
+            "type": "array",
+            "title": "Statushistory"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "quoteId",
+          "customerId",
+          "status",
+          "totalMinor",
+          "depositRequiredMinor",
+          "paidMinor",
+          "balanceMinor",
+          "version",
+          "createdAt",
+          "updatedAt",
+          "statusHistory"
+        ],
+        "title": "OrderDetailOut"
+      },
+      "OrderDetailResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/OrderDetailOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "OrderDetailResponse"
+      },
+      "OrderListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/OrderOut"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "total",
+          "page",
+          "pageSize"
+        ],
+        "title": "OrderListResponse"
+      },
+      "OrderOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "quoteId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quoteid"
+          },
+          "customerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customerid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "materials_pending",
+              "cutting",
+              "assembly",
+              "finishing",
+              "ready",
+              "delivered",
+              "installed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "PEN"
+          },
+          "totalMinor": {
+            "type": "integer",
+            "title": "Totalminor"
+          },
+          "depositRequiredMinor": {
+            "type": "integer",
+            "title": "Depositrequiredminor"
+          },
+          "paidMinor": {
+            "type": "integer",
+            "title": "Paidminor"
+          },
+          "balanceMinor": {
+            "type": "integer",
+            "title": "Balanceminor"
+          },
+          "promisedDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promiseddate"
+          },
+          "deliveredAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deliveredat"
+          },
+          "installedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Installedat"
+          },
+          "version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Version"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "quoteId",
+          "customerId",
+          "status",
+          "totalMinor",
+          "depositRequiredMinor",
+          "paidMinor",
+          "balanceMinor",
+          "version",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "OrderOut"
+      },
+      "OrderResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/OrderOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "OrderResponse"
+      },
+      "OrderStatusEventOut": {
+        "properties": {
+          "previousStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "confirmed",
+                  "materials_pending",
+                  "cutting",
+                  "assembly",
+                  "finishing",
+                  "ready",
+                  "delivered",
+                  "installed",
+                  "cancelled"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previousstatus"
+          },
+          "newStatus": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "materials_pending",
+              "cutting",
+              "assembly",
+              "finishing",
+              "ready",
+              "delivered",
+              "installed",
+              "cancelled"
+            ],
+            "title": "Newstatus"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurredat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "previousStatus",
+          "newStatus",
+          "note",
+          "occurredAt"
+        ],
+        "title": "OrderStatusEventOut"
+      },
+      "OrderStatusPatch": {
+        "properties": {
+          "newStatus": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "materials_pending",
+              "cutting",
+              "assembly",
+              "finishing",
+              "ready",
+              "delivered",
+              "installed",
+              "cancelled"
+            ],
+            "title": "Newstatus"
+          },
+          "version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Version"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "newStatus",
+          "version"
+        ],
+        "title": "OrderStatusPatch",
+        "description": "Request body for PATCH /orders/{id}/status."
+      },
+      "PaymentCreate": {
+        "properties": {
+          "amountMinor": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Amountminor"
+          },
+          "currency": {
+            "type": "string",
+            "const": "PEN",
+            "title": "Currency",
+            "default": "PEN"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "cash",
+              "bank_transfer",
+              "card",
+              "other"
+            ],
+            "title": "Method"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          },
+          "paymentDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Paymentdate"
+          },
+          "voucherAssetId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voucherassetid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amountMinor",
+          "method",
+          "paymentDate"
+        ],
+        "title": "PaymentCreate",
+        "description": "Body for POST /orders/{order_id}/payments.\n\nIdempotency-Key must be provided as an HTTP header by the client."
+      },
+      "PaymentListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/PaymentOut"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "total",
+          "page",
+          "pageSize"
+        ],
+        "title": "PaymentListResponse"
+      },
+      "PaymentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "orderId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Orderid"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "title": "Amountminor"
+          },
+          "currency": {
+            "type": "string",
+            "const": "PEN",
+            "title": "Currency"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "cash",
+              "bank_transfer",
+              "card",
+              "other"
+            ],
+            "title": "Method"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          },
+          "paymentDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Paymentdate"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "recorded",
+              "voided"
+            ],
+            "title": "Status"
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "orderId",
+          "amountMinor",
+          "currency",
+          "method",
+          "paymentDate",
+          "status"
+        ],
+        "title": "PaymentOut"
+      },
+      "PaymentResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PaymentOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "PaymentResponse"
+      },
+      "PaymentVoidRequest": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "PaymentVoidRequest",
+        "description": "Body for POST /payments/{payment_id}/void."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
       }
     },
     "securitySchemes": {
