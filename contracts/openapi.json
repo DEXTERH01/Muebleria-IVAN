@@ -446,15 +446,20 @@
         ],
         "summary": "Create Quote",
         "operationId": "create_quote_api_v1_quotes_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/QuoteCreateRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -477,12 +482,66 @@
               }
             }
           }
-        },
+        }
+      },
+      "get": {
+        "tags": [
+          "quotes"
+        ],
+        "summary": "List Quotes",
+        "operationId": "list_quotes_api_v1_quotes_get",
         "security": [
           {
             "HTTPBearer": []
           }
-        ]
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Pagesize"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/quotes/{quote_id}": {
@@ -1439,15 +1498,37 @@
         "tags": [
           "optimizations"
         ],
-        "summary": "Optimizar secuencia de producción (Hill Climbing)",
-        "description": "Run Hill Climbing on a selection of active orders.\n\nRequest body: {\"orderIds\": [...], \"weights\": {\"delayDays\": 10, ...}}\nReturns: initial sequence, optimised sequence, score improvement, iterations,\nstop reason, and execution time.",
+        "summary": "Optimizar secuencia de producción con Hill Climbing",
+        "description": "Suggest a sequence; this endpoint never changes production jobs.",
         "operationId": "optimize_production_api_v1_optimizations_production_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductionOptimizationRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
-          "501": {
+          "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationRunResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1464,15 +1545,37 @@
         "tags": [
           "optimizations"
         ],
-        "summary": "Optimizar ruta de entregas (A*)",
-        "description": "Run A* route optimisation for a set of pending deliveries.\n\nRequest body: {\"deliveryIds\": [...]}\nReturns: initial route, optimised route, total distance, nodes explored,\nexecution time, and improvement vs. baseline.",
+        "summary": "Optimizar ruta de entregas con A*",
+        "description": "Suggest a route over provided distances; no delivery is modified.",
         "operationId": "optimize_delivery_api_v1_optimizations_delivery_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeliveryOptimizationRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
-          "501": {
+          "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationRunResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -1974,6 +2077,42 @@
         ],
         "title": "DeliveryAddressSnapshot",
         "description": "Address captured when an approved quote becomes an order."
+      },
+      "DeliveryOptimizationRequest": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Start"
+          },
+          "stops": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "minItems": 1,
+            "title": "Stops"
+          },
+          "distances": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Distances"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "stops",
+          "distances"
+        ],
+        "title": "DeliveryOptimizationRequest"
       },
       "EstimateItemData": {
         "properties": {
@@ -2548,6 +2687,80 @@
           "data"
         ],
         "title": "MediaSignatureResponse"
+      },
+      "OptimizationRunData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "algorithm": {
+            "type": "string",
+            "enum": [
+              "astar",
+              "hill_climbing"
+            ],
+            "title": "Algorithm"
+          },
+          "baseline": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Baseline"
+          },
+          "result": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Result"
+          },
+          "improvement": {
+            "type": "number",
+            "title": "Improvement"
+          },
+          "durationMs": {
+            "type": "integer",
+            "title": "Durationms"
+          },
+          "randomSeed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Randomseed"
+          },
+          "advisory": {
+            "type": "boolean",
+            "title": "Advisory",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "algorithm",
+          "baseline",
+          "result",
+          "improvement",
+          "durationMs",
+          "randomSeed"
+        ],
+        "title": "OptimizationRunData"
+      },
+      "OptimizationRunResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/OptimizationRunData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "OptimizationRunResponse"
       },
       "OrderDetailOut": {
         "properties": {
@@ -4040,6 +4253,110 @@
         "type": "object",
         "title": "ProductUpdateRequest"
       },
+      "ProductionOptimizationRequest": {
+        "properties": {
+          "tasks": {
+            "items": {
+              "$ref": "#/components/schemas/ProductionTaskRequest"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Tasks"
+          },
+          "weights": {
+            "$ref": "#/components/schemas/ProductionWeightsRequest"
+          },
+          "randomSeed": {
+            "type": "integer",
+            "title": "Randomseed",
+            "default": 2026
+          },
+          "restarts": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 0.0,
+            "title": "Restarts",
+            "default": 5
+          },
+          "maxIterations": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 1.0,
+            "title": "Maxiterations",
+            "default": 100
+          }
+        },
+        "type": "object",
+        "required": [
+          "tasks"
+        ],
+        "title": "ProductionOptimizationRequest"
+      },
+      "ProductionTaskRequest": {
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Taskid"
+          },
+          "material": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Material"
+          },
+          "durationHours": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Durationhours"
+          },
+          "dueInHours": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Dueinhours"
+          },
+          "readyInHours": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Readyinhours",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "taskId",
+          "material",
+          "durationHours",
+          "dueInHours"
+        ],
+        "title": "ProductionTaskRequest"
+      },
+      "ProductionWeightsRequest": {
+        "properties": {
+          "delayDays": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Delaydays",
+            "default": 10
+          },
+          "materialChanges": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Materialchanges",
+            "default": 3
+          },
+          "idleHours": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Idlehours",
+            "default": 2
+          }
+        },
+        "type": "object",
+        "title": "ProductionWeightsRequest"
+      },
       "QuoteConvertRequest": {
         "properties": {
           "expectedQuoteVersion": {
@@ -4403,6 +4720,49 @@
           "lineTotalMinor"
         ],
         "title": "QuoteItemData"
+      },
+      "QuoteListData": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QuoteData"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize"
+        ],
+        "title": "QuoteListData"
+      },
+      "QuoteListResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/QuoteListData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "QuoteListResponse"
       },
       "QuoteResponse": {
         "properties": {

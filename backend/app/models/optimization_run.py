@@ -9,7 +9,7 @@ from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, Text
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Integer, Numeric, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -40,7 +40,7 @@ class OptimizationRun(Base):
     improvement: Mapped[Decimal] = mapped_column(Numeric(12, 5), nullable=False)
 
     # Random seed used (for Hill Climbing restarts reproducibility)
-    random_seed: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    random_seed: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     duration_ms: Mapped[int] = mapped_column(Integer, nullable=False)
 
     requested_by: Mapped[UUID | None] = mapped_column(
