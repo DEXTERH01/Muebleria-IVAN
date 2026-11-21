@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: muebleria-ivan-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install .
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: MUEBLERIA_ENVIRONMENT
+        value: demo
+      - key: MUEBLERIA_DATABASE_URL
+        sync: false
+      - key: MUEBLERIA_SUPABASE_URL
+        sync: false
+      - key: MUEBLERIA_CORS_ORIGINS
+        sync: false
+      - key: MUEBLERIA_SUPABASE_JWT_AUDIENCE
+        value: authenticated
+      - key: MUEBLERIA_CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: MUEBLERIA_CLOUDINARY_API_KEY
+        sync: false
+      - key: MUEBLERIA_CLOUDINARY_API_SECRET
+        sync: false
+      - key: MUEBLERIA_CLOUDINARY_SIGNATURE_ALGORITHM
+        value: sha1

@@ -3,11 +3,11 @@
 ## Estado general
 
 - Fecha de referencia: 2026-11-21.
-- Fase actual: Fase 6 implementada; preparación de calidad y despliegue.
-- Estado: Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. La Fase 5 incluye algoritmos, persistencia y visualización administrativa. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback.
+- Fase actual: Fase 8, preparación del despliegue de demo.
+- Estado: Fases 1–6 están implementadas en ramas/PRs. Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. Las visualizaciones administrativas de optimización están implementadas. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback. Fase 7 tiene protocolo de prueba de usuario y vista administrativa responsive; faltan sesiones y mediciones reales. Para Fase 8 ya existe Blueprint de Render y guía de variables, pero ningún hosting está conectado aún.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: validar cargas reales de Cloudinary, integrar la visualización de ML y comenzar las verificaciones de calidad de la Fase 7.
-- Avance global: Fases 1 a 6 cumplen sus criterios técnicos. Quedan la Fase 7, el despliegue de Fase 8 y dos pendientes administrativos de Fase 0.
+- Próxima puerta de control: fusionar los PR pendientes en orden, conectar Render y Netlify con variables reales, y ejecutar smoke test público de catálogo, autenticación, cotización y taller.
+- Avance global: Fases 1 a 6 cumplen sus criterios técnicos. En Fase 7 quedan validación E2E, accesibilidad, pruebas con usuarios y rendimiento. En Fase 8 queda conectar servicios y ejecutar smoke test. Siguen dos pendientes administrativos de Fase 0.
 
 ## Cómo actualizar este seguimiento
 
@@ -145,7 +145,7 @@ Criterio de salida: modelos reproducibles, evaluados, versionados e integrados s
 - [ ] Añadir pruebas E2E con Playwright.
 - [ ] Revisar responsive.
 - [ ] Revisar accesibilidad.
-- [ ] Preparar protocolo de prueba de usuario.
+- [x] Preparar protocolo de prueba de usuario. Evidencia: `docs/PROTOCOLO_PRUEBA_USUARIO.md`.
 - [ ] Ejecutar pruebas con cinco a ocho participantes.
 - [ ] Calcular SUS y tasa de tareas completadas.
 - [ ] Medir P50, P95, errores e inferencia.
@@ -155,6 +155,8 @@ Criterio de salida: flujos críticos aprobados y resultados reales documentados.
 
 ## Fase 8. Despliegue y presentación
 
+- [x] Preparar Blueprint para desplegar FastAPI en Render. Evidencia: `render.yaml`, plan gratuito para demo y health check `/health`.
+- [x] Documentar variables y pasos de publicación. Evidencia: `docs/DESPLIEGUE_DEMO.md`.
 - [ ] Desplegar frontend en Netlify.
 - [ ] Desplegar backend en Render.
 - [ ] Configurar Supabase y Cloudinary de demo.

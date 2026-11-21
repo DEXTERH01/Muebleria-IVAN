@@ -48,6 +48,10 @@ Desde la raíz:
 
 También se puede verificar una sola área con `-Scope frontend` o `-Scope backend`.
 
+## Despliegue de demo
+
+Render y Netlify se configuran siguiendo [`docs/DESPLIEGUE_DEMO.md`](docs/DESPLIEGUE_DEMO.md). Render usa el Blueprint `render.yaml`; Netlify toma el build desde `netlify.toml` y requiere variables públicas de API y Supabase configuradas antes de construir.
+
 ## Trabajo en equipo
 
 Antes de modificar el proyecto, leer:
@@ -63,6 +67,6 @@ No se trabaja directamente sobre `main`. Cada cambio se desarrolla en una rama `
 
 ## Estado funcional actual
 
-El frontend ya incluye catálogo, cotizador, seguimiento de pedidos, administración, producción, pagos y panel analítico con datos locales. El backend dispone de configuración, documentación OpenAPI, endpoint de salud y pruebas iniciales. Las siguientes fases reemplazarán progresivamente los datos locales por Supabase y reglas ejecutadas por FastAPI.
+El frontend React ya consume el catálogo, cotizaciones, pedidos, operaciones del taller, optimizaciones y ML mediante FastAPI; Supabase se utiliza en el navegador para autenticación. El backend implementa PostgreSQL/Supabase, roles, catálogo, cotizaciones, flujo del taller, pagos, algoritmos y modelos consultivos. Las fases 7 y 8 completarán pruebas de experiencia, configuración del hosting y demo pública.
 
-Los resultados de ML se presentarán como resultados de datos controlados de prueba hasta que exista suficiente historial operativo; nunca se mostrarán métricas inventadas como si fueran reales.
+Los resultados ML se etiquetan `Datos de prueba` hasta que exista suficiente historial operativo; las métricas se calculan desde el dataset reproducible y no se escriben a mano.
