@@ -97,6 +97,9 @@ class FakeRepository:
             return self.value
         return ProductAggregate(product, [], [], [], [])
 
+    def get_aggregates(self, products, *, available_only=True):
+        return [self.get_aggregate(product, available_only=available_only) for product in products]
+
     def add(self, product):
         self.value = ProductAggregate(product, [], [], [], [])
 
