@@ -4,10 +4,10 @@
 
 - Fecha de referencia: 2026-11-21.
 - Fase actual: Fase 8, preparación del despliegue de demo.
-- Estado: Fases 1–6 están implementadas en ramas/PRs. Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. Las visualizaciones administrativas de optimización están implementadas. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback. Fase 7 tiene protocolo de prueba de usuario y vista administrativa responsive; faltan sesiones y mediciones reales. Para Fase 8 ya existe Blueprint de Render y guía de variables, pero ningún hosting está conectado aún.
+- Estado: Fases 1–6 están implementadas. Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. Las visualizaciones administrativas de optimización están implementadas. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback. Fase 7 tiene protocolo de prueba de usuario y vista administrativa responsive; faltan sesiones y mediciones reales. Fase 8 tiene frontend en Netlify (`https://muebleriaivan.netlify.app`), backend en Render (`https://muebleria-ivan.onrender.com`) y catálogo conectado a Supabase; falta completar la validación integral de los flujos públicos y administrativos.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: fusionar los PR pendientes en orden, conectar Render y Netlify con variables reales, y ejecutar smoke test público de catálogo, autenticación, cotización y taller.
-- Avance global: Fases 1 a 6 cumplen sus criterios técnicos. En Fase 7 quedan validación E2E, accesibilidad, pruebas con usuarios y rendimiento. En Fase 8 queda conectar servicios y ejecutar smoke test. Siguen dos pendientes administrativos de Fase 0.
+- Próxima puerta de control: ejecutar smoke test público de catálogo, autenticación, cotización y taller; luego completar la evidencia de Fase 7.
+- Avance global: Fases 1 a 6 cumplen sus criterios técnicos. En Fase 7 quedan validación E2E, accesibilidad, pruebas con usuarios y rendimiento. En Fase 8 los servicios están desplegados; queda validar los flujos completos y preparar los materiales de presentación. Siguen dos pendientes administrativos de Fase 0.
 
 ## Cómo actualizar este seguimiento
 
@@ -85,6 +85,8 @@ Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas
 - [x] Generar cliente TypeScript desde OpenAPI. Evidencia: `frontend/src/api/generated/schema.d.ts`, `frontend/src/api/modules/`.
 - [x] Reemplazar datos locales del catálogo.
 - [x] Añadir pruebas del cálculo de precios.
+- [x] Mostrar las imágenes reales de Cloudinary en tarjetas y detalle. Evidencia: 52 imágenes distintas responden correctamente y se consumen desde la API en producción.
+- [x] Sustituir descripciones de demo y precios repetidos por contenido individual del catálogo. Evidencia: `data/catalog/catalog_merchandising.csv`, `backend/scripts/sync_catalog_merchandising.py`; 52 productos actualizados en Supabase, sin descripciones de demo y con 40 precios base distintos.
 
 Criterio de salida: catálogo y cotización funcionan sin depender de datos escritos en el frontend.
 
@@ -157,12 +159,12 @@ Criterio de salida: flujos críticos aprobados y resultados reales documentados.
 
 - [x] Preparar Blueprint para desplegar FastAPI en Render. Evidencia: `render.yaml`, plan gratuito para demo y health check `/health`.
 - [x] Documentar variables y pasos de publicación. Evidencia: `docs/DESPLIEGUE_DEMO.md`.
-- [ ] Desplegar frontend en Netlify.
-- [ ] Desplegar backend en Render.
-- [ ] Configurar Supabase y Cloudinary de demo.
-- [ ] Configurar variables y CORS.
-- [ ] Validar pipeline de despliegue.
-- [ ] Ejecutar smoke test en producción de demo.
+- [x] Desplegar frontend en Netlify. Evidencia: `https://muebleriaivan.netlify.app`.
+- [x] Desplegar backend en Render. Evidencia: `https://muebleria-ivan.onrender.com/health`.
+- [x] Configurar Supabase y Cloudinary de demo. Evidencia: catálogo público devuelve 52 productos con imágenes de Cloudinary desde Supabase.
+- [x] Configurar variables y CORS. Evidencia: el frontend de Netlify consume la API de Render.
+- [x] Validar pipeline de despliegue. Evidencia: pipeline de CI aprobado en `main`; el frontend se publica desde Netlify.
+- [ ] Ejecutar smoke test integral en producción de demo. Parcial: el endpoint público de catálogo devuelve 52 productos, con 52 imágenes distintas respondiendo HTTP 200, cero descripciones demo y 40 precios base distintos.
 - [ ] Preparar informe de métricas.
 - [ ] Preparar arquitectura final.
 - [ ] Preparar guion de demostración.
