@@ -77,14 +77,14 @@ Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas
 
 ## Fase 3. Catálogo y cotizaciones
 
-- [ ] Migrar productos a PostgreSQL.
-- [ ] Implementar endpoints de catálogo.
-- [ ] Implementar administración del catálogo.
-- [ ] Migrar reglas del cotizador al backend.
-- [ ] Persistir cotizaciones.
+- [x] Migrar productos a PostgreSQL.
+- [x] Implementar endpoints de catálogo.
+- [x] Implementar administración del catálogo.
+- [x] Migrar reglas del cotizador al backend.
+- [x] Persistir cotizaciones.
 - [ ] Generar cliente TypeScript desde OpenAPI.
-- [ ] Reemplazar datos locales del catálogo.
-- [ ] Añadir pruebas del cálculo de precios.
+- [x] Reemplazar datos locales del catálogo.
+- [x] Añadir pruebas del cálculo de precios.
 
 Criterio de salida: catálogo y cotización funcionan sin depender de datos escritos en el frontend.
 
