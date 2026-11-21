@@ -44,6 +44,22 @@ Servicios locales:
 .\.venv\Scripts\python.exe -m ruff check .
 ```
 
+Para ejecutar la integración completa de la Fase 4 contra el entorno local de
+Supabase, primero aplica migraciones y seed con `supabase db reset`. Después
+carga los datos locales sin imprimir las claves y ejecuta la prueba:
+
+```powershell
+$supabaseLocal = supabase status -o json | ConvertFrom-Json
+$env:SUPABASE_TEST_DATABASE_URL = $supabaseLocal.DB_URL -replace '^postgresql://', 'postgresql+psycopg://'
+$env:SUPABASE_TEST_URL = $supabaseLocal.API_URL
+$env:SUPABASE_TEST_PUBLISHABLE_KEY = $supabaseLocal.PUBLISHABLE_KEY
+.\.venv\Scripts\python.exe -m pytest tests\integration\test_phase4_workflow_postgres.py
+```
+
+La prueba crea usuarios y registros únicos en el entorno local. Como auditoría,
+historial y pagos son inmutables, usa `supabase db reset` para limpiar esos datos
+de prueba cuando termines.
+
 ## Actualizar el contrato del frontend
 
 Después de modificar rutas o esquemas, desde la raíz del repositorio:
