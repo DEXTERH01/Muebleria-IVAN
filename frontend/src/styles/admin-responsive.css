@@ -1,0 +1,243 @@
+@media (max-width: 1000px) {
+  .sidebar {
+    width: 76px;
+    padding: 20px 8px;
+  }
+
+  .sidebar-caption,
+  .sidebar-bottom {
+    display: none;
+  }
+
+  .sidebar nav a {
+    justify-content: center;
+    padding: 11px 8px;
+    font-size: 0;
+  }
+
+  .sidebar nav a span {
+    width: auto;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .admin-main {
+    width: calc(100% - 76px);
+    margin-left: 76px;
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-shell {
+    display: block;
+  }
+
+  .sidebar {
+    position: sticky;
+    inset: 0 0 auto;
+    width: 100%;
+    height: auto;
+    min-height: 58px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sidebar > .logo {
+    flex: 0 0 auto;
+  }
+
+  .sidebar .logo-symbol {
+    width: 34px;
+    height: 34px;
+  }
+
+  .sidebar nav {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  .sidebar nav a {
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    padding: 9px 10px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .sidebar nav a span {
+    width: 15px;
+    margin-right: 5px;
+    font-size: 13px;
+  }
+
+  .admin-main {
+    width: 100%;
+    margin: 0;
+    padding: 0 14px 40px;
+  }
+
+  .admin-header {
+    min-height: 72px;
+    height: auto;
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  .admin-header p {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+
+  .admin-header h1 {
+    font-size: 21px;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-user {
+    gap: 6px;
+  }
+
+  .admin-user > span {
+    width: 31px;
+    height: 31px;
+  }
+
+  .admin-user b {
+    font-size: 10px;
+  }
+
+  .admin-user small {
+    font-size: 8px;
+  }
+
+  .stats-grid {
+    gap: 8px;
+  }
+
+  .stat-card {
+    gap: 8px;
+    min-width: 0;
+    padding: 12px 10px;
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .stat-card strong {
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+
+  .page-actions,
+  .kanban-intro {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .page-actions .search {
+    width: 100%;
+  }
+
+  .page-actions > .btn {
+    justify-content: center;
+  }
+
+  .admin-card {
+    padding: 16px;
+  }
+
+  .admin-card .table-wrap {
+    margin-right: -16px;
+    padding-right: 16px;
+  }
+
+  .kanban {
+    grid-template-columns: repeat(5, minmax(230px, 82vw));
+    margin-right: -14px;
+    padding-right: 14px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .kanban-column {
+    scroll-snap-align: start;
+    min-height: 0;
+  }
+
+  .payment-summary {
+    flex-wrap: wrap;
+  }
+
+  .payment-summary .stat-card {
+    flex: 1 1 145px;
+    width: auto;
+  }
+
+  .tip {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .tip .btn {
+    margin-left: 0;
+  }
+
+  .balance-alert,
+  .order-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .admin-main {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .sidebar {
+    gap: 6px;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .sidebar nav a {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .admin-user > span,
+  .admin-user small {
+    display: none;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
