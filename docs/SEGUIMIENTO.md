@@ -4,9 +4,9 @@
 
 - Fecha de referencia: 2026-11-21.
 - Fase actual: Fase 2, base de datos y autenticación.
-- Estado: plataforma de identidad y sesiones backend completa en rama `codex/backend-auth-platform`; pendiente integrar migración de Cristian (DB-01) y pruebas con Supabase real.
+- Estado: plataforma de identidad y sesiones backend completa; migración DB-01 integrada localmente en `6b3cf89`. Pendiente ejecutar reset y pgTAP contra Supabase local y las pruebas ORM con PostgreSQL.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: integrar `codex/database-catalog` cuando esté disponible; ajustar modelo `Profile` al SQL definitivo; añadir pruebas de integración con PostgreSQL real.
+- Próxima puerta de control: validar `supabase db reset` y `supabase test db`; ejecutar `backend/tests/integration/test_profile_postgres.py` con `SUPABASE_TEST_DATABASE_URL`.
 
 ## Cómo actualizar este seguimiento
 
@@ -64,11 +64,13 @@ Criterio de salida: frontend y backend construyen y sus pruebas se ejecutan loca
 - [ ] Crear migración base completa. Responsable: Cristian; revisión: Dexter.
 - [ ] Crear seed reproducible. Responsable: Cristian.
 - [ ] Implementar RLS, perfiles y roles. Responsable: Cristian; revisión: Dexter.
-- [x] Preparar conexión, sesiones y modelo de perfil SQLAlchemy. Responsable: Dexter. Evidencia: `backend/app/core/database.py`, `backend/app/models/profile.py`, `backend/tests/test_security.py`. Columnas: `user_id`, `role`, `active`, `full_name`, `phone`, `created_at`, `updated_at` (contrato con `docs/BASE_DATOS.md`).
+- [x] Preparar conexión, sesiones y modelo de perfil SQLAlchemy. Responsable: Dexter. Evidencia: `backend/app/core/database.py`, `backend/app/models/profile.py`, `backend/tests/test_security.py`. `Profile` coincide con `app.profiles`: enum `app.user_role`, columnas `text`, timestamps no nulos y FK a `auth.users`.
 - [ ] Integrar Supabase Auth en React. Responsable: Cristian.
 - [x] Verificar JWT de firma asimétrica en FastAPI y rol desde perfil. Responsable: Dexter. Evidencia: `backend/app/core/security.py`, `backend/app/api/v1/auth.py`, `backend/tests/test_security.py`, `backend/tests/test_auth_endpoint.py`. CurrentUser incluye `full_name`, `phone`, `created_at`. Pendiente prueba con proyecto Supabase real.
 - [ ] Probar permisos de visitante, cliente, operador y administrador. Responsable: ambos.
 - [ ] Probar aislamiento entre clientes. Responsable: ambos.
+
+Integración PostgreSQL añadida en `backend/tests/integration/test_profile_postgres.py`; los dos casos se omiten si no se define `SUPABASE_TEST_DATABASE_URL`. La migración, seed y pruebas pgTAP de Cristian están integradas localmente desde `codex/database-catalog` (`1f4480e`), pero falta ejecutarlas con Supabase local.
 
 Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas positivas y negativas.
 
@@ -86,6 +88,8 @@ Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas
 Criterio de salida: catálogo y cotización funcionan sin depender de datos escritos en el frontend.
 
 ## Fase 4. Operación del taller
+
+Avance local: existen routers y modelos iniciales para clientes, pedidos, pagos, media, analítica y optimizaciones. Los endpoints actuales responden `501 Pendiente implementación`; aún no cuentan con servicios ni pruebas de módulo y sus modelos deben revisarse contra la migración antes de usarlos.
 
 - [ ] Convertir cotización a pedido.
 - [ ] Implementar estados y transiciones.
