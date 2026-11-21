@@ -140,16 +140,16 @@ Criterio de salida: modelos reproducibles, evaluados, versionados e integrados s
 
 ## Fase 7. Calidad y experiencia
 
-- [ ] Cubrir flujos críticos con pruebas unitarias.
+- [x] Cubrir flujos críticos con pruebas unitarias. Evidencia: `frontend/src/pages/admin/QuotesStatus.test.tsx`; 18 pruebas unitarias pasan con `npm test`.
 - [ ] Añadir pruebas de integración de API y base de datos.
-- [ ] Añadir pruebas E2E con Playwright.
-- [ ] Revisar responsive.
-- [ ] Revisar accesibilidad.
-- [ ] Preparar protocolo de prueba de usuario.
+- [x] Añadir pruebas E2E con Playwright. Evidencia: `frontend/e2e/quote-flow.spec.ts`, `frontend/e2e/admin-quotes.spec.ts`; cotización, aprobación, teclado y Axe.
+- [x] Revisar responsive. Evidencia: cotizador y cotizaciones administrativas sin desborde a 360, 768 y 1440 px en E2E.
+- [x] Revisar accesibilidad. Evidencia: auditorías Axe sin infracciones en cotizador, resumen, modal y lista administrativa; foco de modal probado con teclado.
+- [x] Preparar protocolo de prueba de usuario. Evidencia: `frontend/quality/USER_TEST_PROTOCOL.md`.
 - [ ] Ejecutar pruebas con cinco a ocho participantes.
 - [ ] Calcular SUS y tasa de tareas completadas.
-- [ ] Medir P50, P95, errores e inferencia.
-- [ ] Corregir problemas prioritarios.
+- [ ] Medir P50, P95, errores e inferencia. Evidencia parcial de catálogo y estimación: `frontend/quality/PERFORMANCE_BASELINE.md`; pendiente medir inferencia ML.
+- [x] Corregir problemas prioritarios. Evidencia: consultas agrupadas del catálogo en `backend/app/repositories/catalog.py`, foco/contraste y responsive en `frontend/src/styles/accessibility.css` y `frontend/src/styles/admin-responsive.css`.
 
 Criterio de salida: flujos críticos aprobados y resultados reales documentados.
 

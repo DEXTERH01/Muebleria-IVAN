@@ -1,3 +1,7 @@
+:root {
+  --muted: #70655c;
+}
+
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -23,6 +27,10 @@ textarea:focus-visible,
 .modal:focus-visible {
   outline: 3px solid #6b4028;
   outline-offset: 4px;
+}
+
+.sidebar-caption {
+  color: #6e6259;
 }
 
 @media (prefers-reduced-motion: reduce) {
