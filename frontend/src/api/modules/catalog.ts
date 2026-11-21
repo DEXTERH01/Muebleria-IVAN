@@ -1,66 +1,13 @@
+import type { components } from '../generated/schema';
 import { apiRequest } from '../client/http';
 
-export interface ProductImage {
-  id: string;
-  secureUrl: string;
-  altText: string;
-  position: number;
-  width: number | null;
-  height: number | null;
-}
-
-export interface CatalogOption {
-  id: string;
-  code: string;
-  name: string;
-  description: string;
-  priceAdjustmentMinor: number;
-  priceAdjustmentPercent: string;
-  isDefault: boolean;
-}
-
-export interface ProductSummary {
-  id: string;
-  slug: string;
-  name: string;
-  description: string;
-  category: string;
-  basePriceMinor: number;
-  minProductionDays: number;
-  maxProductionDays: number;
-  primaryImage: ProductImage | null;
-}
-
-export interface MeasurementLimits {
-  minWidthMm: number;
-  maxWidthMm: number;
-  minHeightMm: number;
-  maxHeightMm: number;
-  minDepthMm: number;
-  maxDepthMm: number;
-}
-
-export interface ProductDetail extends ProductSummary {
-  active: boolean;
-  measurementLimits: MeasurementLimits;
-  images: ProductImage[];
-  materials: CatalogOption[];
-  finishes: CatalogOption[];
-  accessories: CatalogOption[];
-}
-
-interface ProductListResponse {
-  data: {
-    items: ProductSummary[];
-    page: number;
-    pageSize: number;
-    total: number;
-  };
-}
-
-interface ProductResponse {
-  data: ProductDetail;
-}
+export type ProductImage = components['schemas']['ProductImageData'];
+export type CatalogOption = components['schemas']['CatalogOptionData'];
+export type ProductSummary = components['schemas']['ProductSummaryData'];
+export type MeasurementLimits = components['schemas']['MeasurementLimits'];
+export type ProductDetail = components['schemas']['ProductDetailData'];
+type ProductListResponse = components['schemas']['ProductListResponse'];
+type ProductResponse = components['schemas']['ProductResponse'];
 
 export async function listProducts(filters: {
   category?: string;
