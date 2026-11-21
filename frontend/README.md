@@ -14,6 +14,10 @@ npm install
 npm run dev
 ```
 
+Para habilitar inicio de sesión, copia `.env.example` como `.env.local` y completa
+la URL de Supabase y su clave `anon` pública. No uses la `service_role` en el frontend.
+En Supabase Auth, configura la URL local y `/restablecer-contrasena` como destinos permitidos.
+
 ## Verificación
 
 ```powershell

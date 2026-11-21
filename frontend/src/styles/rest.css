@@ -362,6 +362,80 @@
   padding: 11px 13px;
 }
 
+.auth-page {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: min(760px, calc(100vh - 150px));
+  padding: 56px 20px 72px;
+}
+.auth-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  max-width: 480px;
+  padding: 38px;
+  width: 100%;
+}
+.auth-card h1 {
+  color: var(--brown);
+  font-size: 34px;
+  margin: 12px 0;
+}
+.auth-card > p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.auth-form { display: grid; gap: 16px; margin-top: 24px; }
+.auth-form label {
+  color: #625b55;
+  display: grid;
+  font-size: 12px;
+  font-weight: 600;
+  gap: 7px;
+}
+.auth-form input {
+  background: white;
+  border: 1.5px solid var(--line);
+  border-radius: 9px;
+  color: var(--ink);
+  padding: 12px;
+  width: 100%;
+}
+.auth-form input:focus {
+  border-color: var(--beige);
+  box-shadow: 0 0 0 3px rgba(122,82,48,.1);
+  outline: 0;
+}
+.auth-form .btn { justify-content: center; margin-top: 4px; }
+.auth-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+.auth-links button {
+  background: none;
+  border: 0;
+  color: var(--wood);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+}
+.auth-links button:hover { text-decoration: underline; }
+.form-success {
+  background: var(--green-light);
+  border-left: 3px solid var(--green);
+  border-radius: 0 8px 8px 0;
+  color: var(--green);
+  font-size: 12.5px;
+  line-height: 1.5;
+  padding: 11px 13px;
+}
+.portal-email { color: var(--brown) !important; font-weight: 600; }
+
 /* Estimate sidebar */
 .estimate {
   position: sticky;
@@ -522,6 +596,7 @@
   .quote-form { padding: 6px 18px; }
   .choice-grid, .choice-grid.three, .accessories { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
+  .auth-card { padding: 26px 22px; }
   .contact-grid label:first-child { grid-column: auto; }
   .measure-grid { gap: 8px; }
   .swatches { gap: 14px; flex-wrap: wrap; }
