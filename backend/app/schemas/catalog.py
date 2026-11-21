@@ -26,6 +26,14 @@ class ProductImageData(ApiModel):
     height: int | None = None
 
 
+class ProductImageAttachRequest(ApiModel):
+    asset_id: UUID
+    alt_text: str = Field(min_length=2, max_length=300)
+    position: int = Field(default=0, ge=0, le=1000)
+    width: int | None = Field(default=None, gt=0)
+    height: int | None = Field(default=None, gt=0)
+
+
 class CatalogOptionData(ApiModel):
     id: UUID
     code: str

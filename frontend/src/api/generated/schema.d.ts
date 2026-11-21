@@ -97,6 +97,23 @@ export interface paths {
         patch: operations["update_product_api_v1_products__product_id__patch"];
         trace?: never;
     };
+    "/api/v1/products/{product_id}/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attach Product Image */
+        post: operations["attach_product_image_api_v1_products__product_id__images_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/quotes/estimate": {
         parameters: {
             query?: never;
@@ -139,7 +156,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** List Quotes */
+        get: operations["list_quotes_api_v1_quotes_get"];
         put?: never;
         /** Create Quote */
         post: operations["create_quote_api_v1_quotes_post"];
@@ -217,6 +235,23 @@ export interface paths {
         head?: never;
         /** Actualizar cliente */
         patch: operations["update_customer_api_v1_customers__customer_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/quotes/{quote_id}/convert": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Convertir cotización aprobada en pedido */
+        post: operations["convert_quote_to_order_api_v1_quotes__quote_id__convert_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/orders": {
@@ -576,6 +611,18 @@ export interface components {
             district?: string | null;
             /** Notes */
             notes?: string | null;
+        };
+        /**
+         * DeliveryAddressSnapshot
+         * @description Address captured when an approved quote becomes an order.
+         */
+        DeliveryAddressSnapshot: {
+            /** Address */
+            address: string;
+            /** District */
+            district: string;
+            /** Reference */
+            reference?: string | null;
         };
         /** EstimateItemData */
         EstimateItemData: {
@@ -1239,6 +1286,25 @@ export interface components {
             /** Accessories */
             accessories: components["schemas"]["CatalogOptionData"][];
         };
+        /** ProductImageAttachRequest */
+        ProductImageAttachRequest: {
+            /**
+             * Assetid
+             * Format: uuid
+             */
+            assetId: string;
+            /** Alttext */
+            altText: string;
+            /**
+             * Position
+             * @default 0
+             */
+            position: number;
+            /** Width */
+            width?: number | null;
+            /** Height */
+            height?: number | null;
+        };
         /** ProductImageData */
         ProductImageData: {
             /**
@@ -1329,6 +1395,14 @@ export interface components {
             maxDepthMm?: number | null;
             /** Active */
             active?: boolean | null;
+        };
+        /** QuoteConvertRequest */
+        QuoteConvertRequest: {
+            /** Expectedquoteversion */
+            expectedQuoteVersion: number;
+            deliveryAddress: components["schemas"]["DeliveryAddressSnapshot"];
+            /** Promiseddate */
+            promisedDate?: string | null;
         };
         /** QuoteCreateRequest */
         QuoteCreateRequest: {
@@ -1453,6 +1527,21 @@ export interface components {
             breakdown: components["schemas"]["PricingBreakdownData"];
             /** Linetotalminor */
             lineTotalMinor: number;
+        };
+        /** QuoteListData */
+        QuoteListData: {
+            /** Items */
+            items: components["schemas"]["QuoteData"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Pagesize */
+            pageSize: number;
+        };
+        /** QuoteListResponse */
+        QuoteListResponse: {
+            data: components["schemas"]["QuoteListData"];
         };
         /** QuoteResponse */
         QuoteResponse: {
@@ -1706,6 +1795,41 @@ export interface operations {
             };
         };
     };
+    attach_product_image_api_v1_products__product_id__images_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductImageAttachRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     estimate_quote_api_v1_quotes_estimate_post: {
         parameters: {
             query?: never;
@@ -1779,6 +1903,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PricingRuleResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_quotes_api_v1_quotes_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteListResponse"];
                 };
             };
             /** @description Validation Error */
@@ -2010,6 +2166,43 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CustomerResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    convert_quote_to_order_api_v1_quotes__quote_id__convert_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                quote_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuoteConvertRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderResponse"];
                 };
             };
             /** @description Validation Error */
