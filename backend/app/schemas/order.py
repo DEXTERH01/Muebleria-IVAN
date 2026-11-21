@@ -69,6 +69,24 @@ class OrderStatusPatch(BaseModel):
     note: str | None = Field(default=None, max_length=500)
 
 
+class DeliveryAddressSnapshot(BaseModel):
+    """Address captured when an approved quote becomes an order."""
+
+    model_config = _cfg
+
+    address: str = Field(min_length=5, max_length=300)
+    district: str = Field(min_length=2, max_length=100)
+    reference: str | None = Field(default=None, max_length=300)
+
+
+class QuoteConvertRequest(BaseModel):
+    model_config = _cfg
+
+    expected_quote_version: int = Field(gt=0)
+    delivery_address: DeliveryAddressSnapshot
+    promised_date: date | None = None
+
+
 class OrderResponse(BaseModel):
     data: OrderOut
 

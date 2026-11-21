@@ -4,7 +4,7 @@
 
 - Fecha de referencia: 2026-11-21.
 - Fase actual: Fase 2, base de datos y autenticación.
-- Estado: Fase 2 sigue abierta. La migración base, el seed determinista, las políticas RLS y las pruebas pgTAP ya están en el repositorio; falta ejecutarlos en Supabase, correr las pruebas ORM contra PostgreSQL y completar la integración React Auth. La suite backend disponible pasa: 41 aprobadas y 3 pruebas de integración omitidas por falta de `SUPABASE_TEST_DATABASE_URL`. Los modelos coinciden con las columnas declaradas en la migración. También hay avances locales de BE-03 para clientes, producción, pagos y media.
+- Estado: Fase 2 sigue abierta. La migración base, el seed determinista, las políticas RLS y las pruebas pgTAP ya están en el repositorio; falta ejecutarlos en Supabase, correr las pruebas ORM contra PostgreSQL y completar la integración React Auth. En la última validación backend pasaron 60 pruebas, se omitieron 3 de PostgreSQL por falta de `SUPABASE_TEST_DATABASE_URL` y se excluyó 1 prueba HTTP de catálogo que queda esperando en el entorno Windows. Los modelos coinciden con las columnas declaradas en la migración. También hay avances locales de BE-03 para clientes, producción, pagos y media.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
 - Próxima puerta de control: instalar/iniciar Supabase CLI y runtime local, validar `supabase db reset` y `supabase test db`, ejecutar `backend/tests/integration/` con `SUPABASE_TEST_DATABASE_URL` y terminar React Auth; después retomar Fase 3 (catálogo y cotizaciones).
 - Avance global: 9 fases numeradas (0–8); Fase 1 está cumplida, Fase 0 está definida pero conserva dos pendientes administrativos (fecha/formato de entrega y duración de exposición), Fase 2 está activa y quedan 6 fases posteriores (3–8). En total, 7 fases numeradas siguen abiertas o por iniciar si se cuenta también la fase activa.
@@ -90,9 +90,9 @@ Criterio de salida: catálogo y cotización funcionan sin depender de datos escr
 
 ## Fase 4. Operación del taller
 
-Avance local: están implementados clientes, lectura y transiciones de pedidos con historial, pagos idempotentes con reversión auditada y endpoints para firmar cargas y registrar vouchers privados de Cloudinary. La instalación con saldo pendiente requiere rol administrador y motivo registrado en auditoría; las pruebas también verifican que un cliente no pueda consultar vouchers o pagos de otro. Falta validar cargas reales con una cuenta Cloudinary, asociar imágenes a productos, convertir cotizaciones a pedidos y probar el flujo completo. Analítica y optimizaciones siguen pendientes para sus fases posteriores.
+Avance local: están implementados clientes, conversión de cotizaciones aprobadas a pedidos, lectura y transiciones de pedidos con historial, pagos idempotentes con reversión auditada y endpoints para firmar cargas y registrar vouchers privados de Cloudinary. La conversión conserva snapshots de artículos, requiere control de versión e idempotencia y deja auditoría. La instalación con saldo pendiente requiere administrador y motivo; las pruebas también cubren aislamiento entre clientes. Falta validar cargas reales con Cloudinary, asociar imágenes a productos y probar el flujo completo contra Supabase.
 
-- [ ] Convertir cotización a pedido.
+- [x] Convertir cotización a pedido. Evidencia: `backend/app/api/v1/orders.py`, `backend/app/schemas/order.py`, `backend/tests/test_operations_api.py`.
 - [x] Implementar estados y transiciones. Evidencia: `backend/app/api/v1/orders.py`, `backend/tests/test_operations_api.py`.
 - [x] Guardar historial de estados. Evidencia: `backend/app/models/order_status_event.py`, `backend/app/api/v1/orders.py`.
 - [x] Implementar clientes. Evidencia: `backend/app/api/v1/customers.py`, `backend/app/schemas/customer.py`.
@@ -107,10 +107,11 @@ Criterio de salida: cotización, pedido, producción, pago e instalación funcio
 
 ## Fase 5. Algoritmos de búsqueda
 
-- [ ] Definir dataset de rutas y distancias.
-- [ ] Implementar A*.
-- [ ] Crear línea base para rutas.
-- [ ] Medir ruta, nodos y tiempo.
+- Avance local: A* ya busca el orden de visita de hasta 12 paradas sobre una matriz simétrica de distancias. Incluye un conjunto sintético reproducible y compara la ruta sugerida con el orden inicial. Aún no está conectado al endpoint ni persiste ejecuciones; las distancias no representan tráfico real.
+- [x] Definir dataset de rutas y distancias. Evidencia: `backend/app/algorithms/route_dataset.py`.
+- [x] Implementar A*. Evidencia: `backend/app/algorithms/astar.py`.
+- [x] Crear línea base para rutas. Evidencia: el orden recibido se usa como ruta inicial en `optimize_route`.
+- [x] Medir ruta, nodos y tiempo. Evidencia: `AStarRouteResult` en `backend/app/algorithms/astar.py`.
 - [ ] Definir función objetivo de producción.
 - [ ] Implementar Hill Climbing.
 - [ ] Añadir reinicios aleatorios.

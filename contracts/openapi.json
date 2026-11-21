@@ -818,6 +818,75 @@
         }
       }
     },
+    "/api/v1/quotes/{quote_id}/convert": {
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Convertir cotización aprobada en pedido",
+        "operationId": "convert_quote_to_order_api_v1_quotes__quote_id__convert_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quote_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Quote Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteConvertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/orders": {
       "get": {
         "tags": [
@@ -1870,6 +1939,41 @@
         "type": "object",
         "title": "CustomerUpdate",
         "description": "All fields optional for PATCH semantics."
+      },
+      "DeliveryAddressSnapshot": {
+        "properties": {
+          "address": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 5,
+            "title": "Address"
+          },
+          "district": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 2,
+            "title": "District"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "address",
+          "district"
+        ],
+        "title": "DeliveryAddressSnapshot",
+        "description": "Address captured when an approved quote becomes an order."
       },
       "EstimateItemData": {
         "properties": {
@@ -3935,6 +4039,36 @@
         },
         "type": "object",
         "title": "ProductUpdateRequest"
+      },
+      "QuoteConvertRequest": {
+        "properties": {
+          "expectedQuoteVersion": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Expectedquoteversion"
+          },
+          "deliveryAddress": {
+            "$ref": "#/components/schemas/DeliveryAddressSnapshot"
+          },
+          "promisedDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promiseddate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "expectedQuoteVersion",
+          "deliveryAddress"
+        ],
+        "title": "QuoteConvertRequest"
       },
       "QuoteCreateRequest": {
         "properties": {
