@@ -4,9 +4,10 @@
 
 - Fecha de referencia: 2026-11-21.
 - Fase actual: Fase 2, base de datos y autenticación.
-- Estado: plataforma de identidad y sesiones backend en desarrollo; faltan migración, Supabase Auth en React y pruebas integradas con base real.
+- Estado: Fase 2 sigue abierta. La migración base, el seed determinista, las políticas RLS y las pruebas pgTAP ya están en el repositorio; falta ejecutarlos en Supabase, correr las pruebas ORM contra PostgreSQL y completar la integración React Auth. La suite backend disponible pasa: 41 aprobadas y 3 pruebas de integración omitidas por falta de `SUPABASE_TEST_DATABASE_URL`. Los modelos coinciden con las columnas declaradas en la migración. También hay avances locales de BE-03 para clientes, producción, pagos y media.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: integrar Supabase Auth, migraciones iniciales y la base del nuevo frontend por dominios.
+- Próxima puerta de control: instalar/iniciar Supabase CLI y runtime local, validar `supabase db reset` y `supabase test db`, ejecutar `backend/tests/integration/` con `SUPABASE_TEST_DATABASE_URL` y terminar React Auth; después retomar Fase 3 (catálogo y cotizaciones).
+- Avance global: 9 fases numeradas (0–8); Fase 1 está cumplida, Fase 0 está definida pero conserva dos pendientes administrativos (fecha/formato de entrega y duración de exposición), Fase 2 está activa y quedan 6 fases posteriores (3–8). En total, 7 fases numeradas siguen abiertas o por iniciar si se cuenta también la fase activa.
 
 ## Cómo actualizar este seguimiento
 
@@ -61,14 +62,16 @@ Criterio de salida: frontend y backend construyen y sus pruebas se ejecutan loca
 
 - [x] Definir el modelo completo y sus criterios. Responsable: equipo. Evidencia: `docs/BASE_DATOS.md`.
 - [ ] Crear proyecto de Supabase para demo. Responsable: Cristian.
-- [ ] Crear migración base completa. Responsable: Cristian; revisión: Dexter.
-- [ ] Crear seed reproducible. Responsable: Cristian.
-- [ ] Implementar RLS, perfiles y roles. Responsable: Cristian; revisión: Dexter.
-- [x] Preparar conexión, sesiones y modelo de perfil SQLAlchemy. Responsable: Dexter. Evidencia: `backend/app/core/database.py`, `backend/app/models/profile.py`, `backend/tests/test_security.py`. Pendiente verificar contra migración real.
+- [x] Crear migración base completa. Responsable: Cristian; revisión: Dexter. Evidencia: `supabase/migrations/20261121000100_initial_schema.sql`; ejecución local pendiente.
+- [x] Crear seed reproducible. Responsable: Cristian. Evidencia: `supabase/seed.sql`; ejecución local pendiente.
+- [x] Implementar RLS, perfiles y roles. Responsable: Cristian; revisión: Dexter. Evidencia: migración y pruebas `supabase/tests/database/03_rls_test.sql`; ejecución pgTAP pendiente.
+- [x] Preparar conexión, sesiones y modelo de perfil SQLAlchemy. Responsable: Dexter. Evidencia: `backend/app/core/database.py`, `backend/app/models/profile.py`, `backend/tests/test_security.py`. `Profile` coincide con `app.profiles`: enum `app.user_role`, columnas `text`, timestamps no nulos y FK a `auth.users`.
 - [ ] Integrar Supabase Auth en React. Responsable: Cristian.
-- [x] Verificar JWT de firma asimétrica en FastAPI y rol desde perfil. Responsable: Dexter. Evidencia: `backend/app/core/security.py`, `backend/app/api/v1/auth.py`, `backend/tests/test_security.py`. Pendiente prueba con proyecto Supabase real.
+- [x] Verificar JWT de firma asimétrica en FastAPI y rol desde perfil. Responsable: Dexter. Evidencia: `backend/app/core/security.py`, `backend/app/api/v1/auth.py`, `backend/tests/test_security.py`, `backend/tests/test_auth_endpoint.py`. CurrentUser incluye `full_name`, `phone`, `created_at`. Pendiente prueba con proyecto Supabase real.
 - [ ] Probar permisos de visitante, cliente, operador y administrador. Responsable: ambos.
 - [ ] Probar aislamiento entre clientes. Responsable: ambos.
+
+Integración PostgreSQL añadida en `backend/tests/integration/test_profile_postgres.py`; sus tres casos se omiten si no se define `SUPABASE_TEST_DATABASE_URL`. En esta verificación no estaban disponibles Supabase CLI, Docker ni `psql`, y la variable no está configurada, por lo que no se pudo ejecutar la migración ni las pruebas de base de datos. La migración, seed y pruebas pgTAP de Cristian están integradas desde `codex/database-catalog` (`1f4480e`).
 
 Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas positivas y negativas.
 
@@ -87,14 +90,16 @@ Criterio de salida: catálogo y cotización funcionan sin depender de datos escr
 
 ## Fase 4. Operación del taller
 
+Avance local: están implementados clientes, lectura y transiciones de pedidos con historial, pagos idempotentes con reversión auditada y endpoints para firmar cargas y registrar vouchers privados de Cloudinary. La instalación con saldo pendiente requiere rol administrador y motivo registrado en auditoría; las pruebas también verifican que un cliente no pueda consultar vouchers o pagos de otro. Falta validar cargas reales con una cuenta Cloudinary, asociar imágenes a productos, convertir cotizaciones a pedidos y probar el flujo completo. Analítica y optimizaciones siguen pendientes para sus fases posteriores.
+
 - [ ] Convertir cotización a pedido.
-- [ ] Implementar estados y transiciones.
-- [ ] Guardar historial de estados.
-- [ ] Implementar clientes.
-- [ ] Implementar pagos con idempotencia.
-- [ ] Implementar reversión de pagos.
+- [x] Implementar estados y transiciones. Evidencia: `backend/app/api/v1/orders.py`, `backend/tests/test_operations_api.py`.
+- [x] Guardar historial de estados. Evidencia: `backend/app/models/order_status_event.py`, `backend/app/api/v1/orders.py`.
+- [x] Implementar clientes. Evidencia: `backend/app/api/v1/customers.py`, `backend/app/schemas/customer.py`.
+- [x] Implementar pagos con idempotencia. Evidencia: `backend/app/api/v1/payments.py`, `backend/tests/test_operations_api.py`.
+- [x] Implementar reversión de pagos. Evidencia: `backend/app/api/v1/payments.py`, `backend/app/models/audit_log.py`.
 - [ ] Integrar Cloudinary para productos.
-- [ ] Integrar Cloudinary privado para vouchers.
+- [x] Integrar Cloudinary privado para vouchers. Evidencia: `backend/app/api/v1/media.py`, `backend/tests/test_operations_api.py`.
 - [ ] Sustituir `localStorage`.
 - [ ] Probar el flujo completo.
 

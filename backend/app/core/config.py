@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 Environment = Literal["local", "test", "preview", "demo", "production"]
+CloudinaryAlgorithm = Literal["sha1", "sha256"]
 
 
 class Settings(BaseSettings):
@@ -17,6 +18,10 @@ class Settings(BaseSettings):
     database_url: str | None = None
     supabase_url: str | None = None
     supabase_jwt_audience: str = "authenticated"
+    cloudinary_cloud_name: str | None = None
+    cloudinary_api_key: str | None = None
+    cloudinary_api_secret: str | None = None
+    cloudinary_signature_algorithm: CloudinaryAlgorithm = "sha1"
 
     @property
     def supabase_issuer(self) -> str | None:
