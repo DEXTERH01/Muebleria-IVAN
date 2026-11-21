@@ -112,6 +112,7 @@ def test_module_openapi_exposes_expected_routes_without_central_registration() -
         "/api/v1/products",
         "/api/v1/products/{slug}",
         "/api/v1/products/{product_id}",
+        "/api/v1/products/{product_id}/images",
         "/api/v1/pricing-rules",
         "/api/v1/quotes/estimate",
         "/api/v1/quotes",

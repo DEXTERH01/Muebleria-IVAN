@@ -5,14 +5,19 @@ from uuid import UUID, uuid4
 
 from sqlalchemy.exc import IntegrityError
 
-from app.domain.catalog import DuplicateProductError, ProductNotFoundError
-from app.models.catalog import Product
+from app.domain.catalog import (
+    DuplicateProductError,
+    InvalidCatalogMediaError,
+    ProductNotFoundError,
+)
+from app.models.catalog import Product, ProductImage
 from app.repositories.catalog import CatalogRepository, OptionRecord, ProductAggregate
 from app.schemas.catalog import (
     CatalogOptionData,
     MeasurementLimits,
     ProductCreateRequest,
     ProductDetailData,
+    ProductImageAttachRequest,
     ProductImageData,
     ProductListData,
     ProductSummaryData,
@@ -111,6 +116,62 @@ class CatalogService:
         product.updated_at = datetime.now(UTC)
         self.repository.flush()
         self.repository.commit()
+
+    def attach_image(
+        self,
+        product_id: UUID,
+        request: ProductImageAttachRequest,
+        *,
+        cloud_name: str,
+    ) -> ProductDetailData:
+        product = self.repository.get_by_id(product_id, active_only=False)
+        if product is None:
+            raise ProductNotFoundError("El producto solicitado no existe.")
+        asset = self.repository.get_media_asset(request.asset_id)
+        metadata = asset.metadata_json if asset is not None else {}
+        if (
+            asset is None
+            or asset.provider != "cloudinary"
+            or asset.access != "public"
+            or metadata.get("purpose") != "catalog_image"
+            or metadata.get("resource_type") != "image"
+        ):
+            raise InvalidCatalogMediaError(
+                "El recurso no es una imagen pública verificada del catálogo."
+            )
+        version = metadata.get("version")
+        image_format = metadata.get("format")
+        if (
+            not isinstance(version, int)
+            or image_format not in {"jpg", "jpeg", "png", "webp"}
+        ):
+            raise InvalidCatalogMediaError("El recurso no contiene metadatos válidos.")
+        now = datetime.now(UTC)
+        image = ProductImage(
+            id=uuid4(),
+            product_id=product.id,
+            public_id=asset.external_id,
+            secure_url=(
+                f"https://res.cloudinary.com/{cloud_name}/image/upload/"
+                f"v{version}/{asset.external_id}.{image_format}"
+            ),
+            alt_text=request.alt_text.strip(),
+            position=request.position,
+            width=request.width,
+            height=request.height,
+            metadata_={"assetId": str(asset.id), "provider": asset.provider},
+            created_at=now,
+            updated_at=now,
+        )
+        try:
+            self.repository.add_image(image)
+            self.repository.commit()
+        except IntegrityError as exc:
+            self.repository.rollback()
+            raise InvalidCatalogMediaError(
+                "La imagen ya está asociada a un producto."
+            ) from exc
+        return self._detail(self.repository.get_aggregate(product, available_only=False))
 
     @staticmethod
     def _validate_ranges(values: dict[str, int]) -> None:

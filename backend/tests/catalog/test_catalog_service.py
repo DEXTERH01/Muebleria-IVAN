@@ -4,10 +4,19 @@ from uuid import uuid4
 
 import pytest
 
-from app.domain.catalog import DuplicateProductError, ProductNotFoundError
+from app.domain.catalog import (
+    DuplicateProductError,
+    InvalidCatalogMediaError,
+    ProductNotFoundError,
+)
 from app.models.catalog import Material, Product, ProductImage
+from app.models.media_asset import MediaAsset
 from app.repositories.catalog import OptionRecord, ProductAggregate
-from app.schemas.catalog import ProductCreateRequest, ProductUpdateRequest
+from app.schemas.catalog import (
+    ProductCreateRequest,
+    ProductImageAttachRequest,
+    ProductUpdateRequest,
+)
 from app.services.catalog import CatalogService
 
 
@@ -63,6 +72,7 @@ def aggregate(*, active: bool = True) -> ProductAggregate:
 class FakeRepository:
     def __init__(self, value: ProductAggregate | None = None) -> None:
         self.value = value
+        self.media_asset = None
         self.commits = 0
 
     def list_active(self, **_filters):
@@ -89,6 +99,14 @@ class FakeRepository:
 
     def add(self, product):
         self.value = ProductAggregate(product, [], [], [], [])
+
+    def get_media_asset(self, asset_id):
+        if self.media_asset and self.media_asset.id == asset_id:
+            return self.media_asset
+        return None
+
+    def add_image(self, image):
+        self.value.images.append(image)
 
     def flush(self):
         return None
@@ -166,3 +184,56 @@ def test_catalog_rejects_duplicate_slug_and_missing_product() -> None:
         )
     with pytest.raises(ProductNotFoundError):
         service.product_by_slug("no-existe")
+
+
+def test_catalog_attaches_verified_cloudinary_asset() -> None:
+    repository = FakeRepository(aggregate())
+    repository.value.images.clear()
+    repository.media_asset = MediaAsset(
+        id=uuid4(),
+        provider="cloudinary",
+        external_id="muebleria-ivan/catalog/admin/image-id",
+        media_type="image/webp",
+        access="public",
+        owner_user_id=uuid4(),
+        metadata_json={
+            "purpose": "catalog_image",
+            "version": 123,
+            "format": "webp",
+            "resource_type": "image",
+        },
+    )
+    service = CatalogService(repository)
+
+    product = service.attach_image(
+        repository.value.product.id,
+        ProductImageAttachRequest(
+            asset_id=repository.media_asset.id,
+            alt_text="Escritorio de melamina",
+            position=0,
+            width=1200,
+            height=900,
+        ),
+        cloud_name="demo-cloud",
+    )
+
+    assert product.images[0].secure_url == (
+        "https://res.cloudinary.com/demo-cloud/image/upload/"
+        "v123/muebleria-ivan/catalog/admin/image-id.webp"
+    )
+    assert product.images[0].alt_text == "Escritorio de melamina"
+
+
+def test_catalog_rejects_unverified_product_image() -> None:
+    repository = FakeRepository(aggregate())
+    service = CatalogService(repository)
+
+    with pytest.raises(InvalidCatalogMediaError):
+        service.attach_image(
+            repository.value.product.id,
+            ProductImageAttachRequest(
+                asset_id=uuid4(),
+                alt_text="Imagen inválida",
+            ),
+            cloud_name="demo-cloud",
+        )
