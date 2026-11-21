@@ -7,4 +7,5 @@ import './styles/admin.css';
 import './styles/admin-responsive.css';
 import './styles/ai.css';
 import './styles/optimizations.css';
+import './styles/accessibility.css';
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

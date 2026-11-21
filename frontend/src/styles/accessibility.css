@@ -1,0 +1,37 @@
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #6b4028;
+  outline-offset: 3px;
+}
+
+.contact-grid input:focus-visible,
+.auth-form input:focus-visible,
+.payment-form input:focus-visible,
+.payment-form select:focus-visible,
+.quote-convert-form input:focus-visible,
+.measure-input input:focus-visible,
+.money-input input:focus-visible,
+.message-box:focus-visible {
+  outline: 3px solid #6b4028;
+  outline-offset: 2px;
+}
+
+.modal:focus-visible {
+  outline: 3px solid #6b4028;
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

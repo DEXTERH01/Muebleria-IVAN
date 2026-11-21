@@ -272,6 +272,7 @@ export function QuotePage({
                       type="button"
                       onClick={() => setFinishId(option.id)}
                       className={finishId === option.id ? 'selected' : ''}
+                      aria-pressed={finishId === option.id}
                       key={option.id}
                     >
                       <i style={{ backgroundColor: finishColor(option.code) }} />
@@ -317,6 +318,7 @@ export function QuotePage({
                       value={contactEmail}
                       onChange={(event) => setContactEmail(event.target.value)}
                       autoComplete="email"
+                      aria-describedby="contact-help"
                       placeholder="nombre@correo.com"
                     />
                   </label>
@@ -329,10 +331,11 @@ export function QuotePage({
                       minLength={6}
                       maxLength={40}
                       autoComplete="tel"
+                      aria-describedby="contact-help"
                     />
                   </label>
                 </div>
-                <small className="contact-help">Ingresa al menos un correo o teléfono.</small>
+                <small id="contact-help" className="contact-help">Ingresa al menos un correo o teléfono.</small>
               </fieldset>
               {error && <p className="form-error" role="alert">{error}</p>}
               <Button
