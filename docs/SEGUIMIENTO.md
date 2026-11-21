@@ -3,11 +3,11 @@
 ## Estado general
 
 - Fecha de referencia: 2026-11-21.
-- Fase actual: Fase 5, algoritmos de búsqueda; cierre operativo de Fase 4 en paralelo.
-- Estado: Fase 2 quedó validada contra Supabase publicado: conexión ORM, columnas, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento aprobados. La Fase 3 está implementada; la Fase 4 requiere el smoke test completo y credenciales reales de Cloudinary. En Fase 5 los algoritmos y endpoints están implementados y queda la visualización administrativa.
+- Fase actual: Fase 6 implementada en backend; cierres visuales y operativos de Fases 4 y 5 en paralelo.
+- Estado: Fase 2 quedó validada contra Supabase publicado: conexión ORM, columnas, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento aprobados. La Fase 3 está implementada; la Fase 4 requiere el smoke test completo y credenciales reales de Cloudinary. En Fase 5 los algoritmos y endpoints están implementados y queda la visualización administrativa. La Fase 6 ya cuenta con dataset, entrenamiento comparativo, artefactos, registro en Supabase e inferencia consultiva con fallback.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: integrar el flujo frontend de taller de Cristian, ejecutar un smoke test cotización → pedido → pago → instalación y completar la visualización de algoritmos.
-- Avance global: Fases 1, 2 y 3 cumplen sus criterios técnicos; Fases 4 y 5 están cerca del cierre. Quedan Fases 6, 7 y 8, además de dos pendientes administrativos de Fase 0.
+- Próxima puerta de control: ejecutar un smoke test cotización → pedido → pago → instalación, completar las visualizaciones administrativas de algoritmos/ML y preparar el despliegue.
+- Avance global: Fases 1, 2, 3 y 6 cumplen sus criterios técnicos de backend; Fases 4 y 5 están cerca del cierre. Quedan validaciones visuales/E2E de Fase 7, despliegue de Fase 8 y dos pendientes administrativos de Fase 0.
 
 ## Cómo actualizar este seguimiento
 
@@ -123,18 +123,18 @@ Criterio de salida: A* y Hill Climbing tienen pruebas, resultados reproducibles 
 
 ## Fase 6. Machine learning
 
-- [ ] Crear generador reproducible de 500 pedidos sintéticos.
-- [ ] Documentar columnas y relaciones del dataset.
-- [ ] Separar entrenamiento, validación y prueba.
-- [ ] Entrenar modelos de regresión.
-- [ ] Entrenar modelos de clasificación.
-- [ ] Ejecutar K-Means y DBSCAN.
-- [ ] Calcular métricas adecuadas.
-- [ ] Comparar contra líneas base.
-- [ ] Versionar el modelo aprobado.
-- [ ] Servir inferencia desde FastAPI.
-- [ ] Implementar fallback a reglas.
-- [ ] Etiquetar resultados obtenidos con datos de prueba.
+- [x] Crear generador reproducible de 500 pedidos sintéticos. Evidencia: `backend/app/ml/dataset.py`, `data/synthetic/orders_v1.csv`, semilla 2026.
+- [x] Documentar columnas y relaciones del dataset. Evidencia: `data/README.md`.
+- [x] Separar entrenamiento, validación y prueba. Evidencia: separación 350/75/75 en `backend/app/ml/training.py` y manifiesto.
+- [x] Entrenar modelos de regresión. Evidencia: regresión lineal, árbol y Random Forest comparados; modelo activo MAE 0,92270 y R² 0,89811 en prueba.
+- [x] Entrenar modelos de clasificación. Evidencia: regresión logística, KNN, SVM y árbol comparados; modelo activo F1 0,57143 y ROC-AUC 0,70069 en prueba.
+- [x] Ejecutar K-Means y DBSCAN. Evidencia: comparación reproducible en `backend/artifacts/ml/manifest.json`.
+- [x] Calcular métricas adecuadas. Evidencia: MAE, RMSE, R², precision, recall, F1, matriz de confusión, ROC-AUC, Brier, Silhouette y Davies-Bouldin calculadas al entrenar.
+- [x] Comparar contra líneas base. Evidencia: ambos modelos supervisados activos superan su línea base en el conjunto de prueba separado.
+- [x] Versionar el modelo aprobado. Evidencia: tres artefactos v1 con SHA-256 y tres filas activas en `app.model_versions` de Supabase.
+- [x] Servir inferencia desde FastAPI. Evidencia: `POST /api/v1/ml/production-days`, `POST /api/v1/ml/delay-risk` y registro en `app.predictions`.
+- [x] Implementar fallback a reglas. Evidencia: `backend/app/ml/inference.py` valida existencia y hash antes de cargar cada artefacto.
+- [x] Etiquetar resultados obtenidos con datos de prueba. Evidencia: `dataLabel: "Datos de prueba"` en manifiesto, métricas y respuestas API.
 
 Criterio de salida: modelos reproducibles, evaluados, versionados e integrados sin métricas hardcodeadas.
 

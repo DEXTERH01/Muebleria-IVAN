@@ -30,6 +30,18 @@ Las suites SQL administran su propia transacción y terminan con `ROLLBACK`.
 
 Las sesiones SQLAlchemy se cierran al terminar la solicitud. Los servicios que escriban datos deben confirmar explícitamente sus transacciones; esta capa no crea ni modifica tablas. Las migraciones SQL viven en `supabase/migrations/`.
 
+## Machine learning con datos de prueba
+
+El entrenamiento se ejecuta fuera de las solicitudes web. Para reproducir los 500 pedidos sintéticos, comparar los modelos, generar los artefactos versionados y registrar sus métricas en Supabase:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\generate_ml_dataset.py
+.\.venv\Scripts\python.exe scripts\train_ml.py
+.\.venv\Scripts\python.exe scripts\register_ml_models.py
+```
+
+El manifiesto en `artifacts/ml/manifest.json` contiene hashes SHA-256, columnas, separación 70/15/15 y métricas calculadas. La regresión, clasificación y segmentación son consultivas; sus respuestas se etiquetan `Datos de prueba` y nunca modifican pedidos ni precios.
+
 Servicios locales:
 
 - API: `http://127.0.0.1:8000`

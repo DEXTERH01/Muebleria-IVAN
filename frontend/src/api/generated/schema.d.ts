@@ -431,6 +431,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/ml/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listar modelos ML */
+        get: operations["list_models_api_v1_ml_models_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ml/production-days": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Estimar días de producción */
+        post: operations["production_days_api_v1_ml_production_days_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ml/delay-risk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Estimar riesgo de retraso */
+        post: operations["delay_risk_api_v1_ml_delay_risk_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/analytics/overview": {
         parameters: {
             query?: never;
@@ -711,6 +762,46 @@ export interface components {
              */
             environment: "local" | "test" | "preview" | "demo" | "production";
         };
+        /** InferenceData */
+        InferenceData: {
+            /**
+             * Predictionid
+             * Format: uuid
+             */
+            predictionId: string;
+            /**
+             * Problem
+             * @enum {string}
+             */
+            problem: "production_days" | "delay_risk";
+            /** Algorithm */
+            algorithm: string;
+            /** Modelversion */
+            modelVersion: number;
+            /** Output */
+            output: {
+                [key: string]: unknown;
+            };
+            /** Confidence */
+            confidence: number | null;
+            /** Fallbackused */
+            fallbackUsed: boolean;
+            /**
+             * Advisory
+             * @default true
+             */
+            advisory: boolean;
+            /**
+             * Datalabel
+             * @default Datos de prueba
+             * @constant
+             */
+            dataLabel: "Datos de prueba";
+        };
+        /** InferenceResponse */
+        InferenceResponse: {
+            data: components["schemas"]["InferenceData"];
+        };
         /** MeData */
         MeData: {
             /**
@@ -849,6 +940,42 @@ export interface components {
         MediaSignatureResponse: {
             data: components["schemas"]["MediaSignatureData"];
         };
+        /** ModelVersionData */
+        ModelVersionData: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Problem */
+            problem: string;
+            /** Algorithm */
+            algorithm: string;
+            /** Version */
+            version: number;
+            /** Artifacthash */
+            artifactHash: string;
+            /** Parameters */
+            parameters: {
+                [key: string]: unknown;
+            };
+            /** Metrics */
+            metrics: {
+                [key: string]: unknown;
+            };
+            /** Status */
+            status: string;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+        };
+        /** ModelVersionListResponse */
+        ModelVersionListResponse: {
+            /** Data */
+            data: components["schemas"]["ModelVersionData"][];
+        };
         /** OptimizationRunData */
         OptimizationRunData: {
             /**
@@ -946,6 +1073,40 @@ export interface components {
         /** OrderDetailResponse */
         OrderDetailResponse: {
             data: components["schemas"]["OrderDetailOut"];
+        };
+        /** OrderInferenceRequest */
+        OrderInferenceRequest: {
+            /** Widthmm */
+            widthMm: number;
+            /** Heightmm */
+            heightMm: number;
+            /** Depthmm */
+            depthMm: number;
+            /** Accessorycount */
+            accessoryCount: number;
+            /** Itemcount */
+            itemCount: number;
+            /** Complexityscore */
+            complexityScore: number;
+            /** Workshopload */
+            workshopLoad: number;
+            /** Quotedtotalminor */
+            quotedTotalMinor: number;
+            /** Promiseddays */
+            promisedDays: number;
+            /** Customerfrequency */
+            customerFrequency: number;
+            /** Category */
+            category: string;
+            /** Material */
+            material: string;
+            /** District */
+            district: string;
+            /**
+             * Orderid
+             * Format: uuid
+             */
+            orderId: string;
         };
         /** OrderListResponse */
         OrderListResponse: {
@@ -2668,6 +2829,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OptimizationRunResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_models_api_v1_ml_models_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelVersionListResponse"];
+                };
+            };
+        };
+    };
+    production_days_api_v1_ml_production_days_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderInferenceRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InferenceResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delay_risk_api_v1_ml_delay_risk_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderInferenceRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InferenceResponse"];
                 };
             };
             /** @description Validation Error */
