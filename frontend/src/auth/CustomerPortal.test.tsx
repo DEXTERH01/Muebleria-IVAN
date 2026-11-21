@@ -1,12 +1,13 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { listOrders, type ApiOrder } from '../api/modules/orders';
+import { getOrder, listOrders, type ApiOrder, type ApiOrderDetail } from '../api/modules/orders';
 import { CustomerPortal } from './CustomerPortal';
 
-vi.mock('../api/modules/orders', () => ({ listOrders: vi.fn() }));
+vi.mock('../api/modules/orders', () => ({ listOrders: vi.fn(), getOrder: vi.fn() }));
 
 const mockedListOrders = vi.mocked(listOrders);
+const mockedGetOrder = vi.mocked(getOrder);
 const order: ApiOrder = {
   id: 'order-uuid',
   code: 'PED-2026-0001',
@@ -25,9 +26,23 @@ const order: ApiOrder = {
   createdAt: '2026-11-20T12:00:00Z',
   updatedAt: '2026-11-21T12:00:00Z',
 };
+const orderDetail: ApiOrderDetail = {
+  ...order,
+  statusHistory: [
+    {
+      previousStatus: 'confirmed',
+      newStatus: 'cutting',
+      note: 'Material preparado y corte iniciado.',
+      occurredAt: '2026-11-21T12:00:00Z',
+    },
+  ],
+};
 
 describe('CustomerPortal', () => {
-  beforeEach(() => mockedListOrders.mockReset());
+  beforeEach(() => {
+    mockedListOrders.mockReset();
+    mockedGetOrder.mockReset();
+  });
 
   it('shows the customer’s order progress and balance from the API', async () => {
     mockedListOrders.mockResolvedValue([order]);
@@ -38,6 +53,11 @@ describe('CustomerPortal', () => {
     expect(screen.getByText('En corte')).toBeInTheDocument();
     expect(screen.getAllByText('S/ 625')).toHaveLength(2);
     expect(mockedListOrders).toHaveBeenCalledOnce();
+
+    mockedGetOrder.mockResolvedValue(orderDetail);
+    fireEvent.click(screen.getByRole('button', { name: 'Ver historial de etapas' }));
+    expect(await screen.findByText('Material preparado y corte iniciado.')).toBeInTheDocument();
+    expect(mockedGetOrder).toHaveBeenCalledWith(order.id);
   });
 
   it('offers retry after a failed request', async () => {

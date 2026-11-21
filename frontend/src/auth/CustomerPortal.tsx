@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { listOrders, type ApiOrder } from '../api/modules/orders';
+import { getOrder, listOrders, type ApiOrder, type ApiOrderDetail } from '../api/modules/orders';
 import { Button } from '../components/ui';
 import { Footer, Navbar, navigate } from '../components/layout';
 import { date, moneyMinor } from '../utils/format';
@@ -22,6 +22,10 @@ export function CustomerPortal() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [history, setHistory] = useState<Record<string, ApiOrderDetail['statusHistory']>>({});
+  const [historyLoading, setHistoryLoading] = useState<Record<string, boolean>>({});
+  const [historyError, setHistoryError] = useState<Record<string, string>>({});
 
   const loadOrders = useCallback(async () => {
     setLoading(true);
@@ -38,6 +42,29 @@ export function CustomerPortal() {
   useEffect(() => {
     void loadOrders();
   }, [loadOrders, retry]);
+
+  const loadHistory = async (orderId: string) => {
+    if (orderId in history || historyLoading[orderId]) return;
+    setHistoryLoading((current) => ({ ...current, [orderId]: true }));
+    setHistoryError((current) => ({ ...current, [orderId]: '' }));
+    try {
+      const order = await getOrder(orderId);
+      setHistory((current) => ({ ...current, [orderId]: order.statusHistory }));
+    } catch (reason) {
+      setHistoryError((current) => ({
+        ...current,
+        [orderId]: reason instanceof Error ? reason.message : 'No pudimos cargar el historial.',
+      }));
+    } finally {
+      setHistoryLoading((current) => ({ ...current, [orderId]: false }));
+    }
+  };
+
+  const toggleHistory = (orderId: string) => {
+    const opening = !expanded[orderId];
+    setExpanded((current) => ({ ...current, [orderId]: opening }));
+    if (opening) void loadHistory(orderId);
+  };
 
   return (
     <>
@@ -84,6 +111,43 @@ export function CustomerPortal() {
                   <div><dt>Pagado</dt><dd>{moneyMinor(order.paidMinor)}</dd></div>
                   <div><dt>Saldo pendiente</dt><dd>{moneyMinor(order.balanceMinor)}</dd></div>
                 </dl>
+                <button
+                  type="button"
+                  className="order-history-toggle"
+                  aria-expanded={Boolean(expanded[order.id])}
+                  onClick={() => toggleHistory(order.id)}
+                >
+                  {expanded[order.id] ? 'Ocultar historial' : 'Ver historial de etapas'}
+                </button>
+                {expanded[order.id] && (
+                  <div className="order-history-panel">
+                    {historyLoading[order.id] && <p role="status">Cargando historial…</p>}
+                    {historyError[order.id] && (
+                      <p role="alert">
+                        {historyError[order.id]}{' '}
+                        <button type="button" className="text-button" onClick={() => void loadHistory(order.id)}>Reintentar</button>
+                      </p>
+                    )}
+                    {order.id in history && history[order.id].length === 0 && (
+                      <p>Aún no hay cambios de etapa registrados.</p>
+                    )}
+                    {!!history[order.id]?.length && (
+                      <ol className="order-history-list">
+                        {history[order.id].map((event, index) => (
+                          <li key={`${event.occurredAt}-${index}`}>
+                            <span className="order-history-dot" aria-hidden="true" />
+                            <div>
+                              <b>{statusLabel[event.newStatus]}</b>
+                              {event.previousStatus && <span>Desde {statusLabel[event.previousStatus].toLocaleLowerCase('es')}</span>}
+                              {event.note && <p>{event.note}</p>}
+                              <time dateTime={event.occurredAt}>{date(event.occurredAt.slice(0, 10))}</time>
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+                )}
               </article>
             ))}
           </section>

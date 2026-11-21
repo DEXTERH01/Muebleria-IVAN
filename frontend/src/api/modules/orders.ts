@@ -2,17 +2,26 @@ import type { components } from '../generated/schema';
 import { apiRequest } from '../client/http';
 
 export type ApiOrder = components['schemas']['OrderOut'];
+export type ApiOrderDetail = components['schemas']['OrderDetailOut'];
 export type ApiOrderStatus = ApiOrder['status'];
 export type ApiPaymentMethod = components['schemas']['PaymentCreate']['method'];
 export type ApiPayment = components['schemas']['PaymentOut'];
 
 type OrderListResponse = components['schemas']['OrderListResponse'];
 type OrderResponse = components['schemas']['OrderResponse'];
+type OrderDetailResponse = components['schemas']['OrderDetailResponse'];
 type PaymentListResponse = components['schemas']['PaymentListResponse'];
 type PaymentResponse = components['schemas']['PaymentResponse'];
 
 export async function listOrders(): Promise<ApiOrder[]> {
   const response = await apiRequest<OrderListResponse>('/api/v1/orders?page=1&pageSize=100');
+  return response.data;
+}
+
+export async function getOrder(orderId: string): Promise<ApiOrderDetail> {
+  const response = await apiRequest<OrderDetailResponse>(
+    `/api/v1/orders/${encodeURIComponent(orderId)}`,
+  );
   return response.data;
 }
 
