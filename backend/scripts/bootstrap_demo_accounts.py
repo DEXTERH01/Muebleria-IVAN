@@ -2,6 +2,7 @@
 
 import base64
 import binascii
+import getpass
 import json
 import sys
 from dataclasses import dataclass
@@ -185,26 +186,27 @@ def _synchronize_profiles(database_url: str, accounts: list[DemoAccount]) -> Non
 
 def main() -> int:
     project = Settings()
-    secrets = BootstrapSettings()
-    service_key = (
-        secrets.supabase_service_role_key.get_secret_value()
-        if secrets.supabase_service_role_key
-        else ""
-    )
-    password = (
-        secrets.demo_bootstrap_password.get_secret_value()
-        if secrets.demo_bootstrap_password
-        else ""
-    )
-
     if not project.supabase_url:
         raise BootstrapError("Configura MUEBLERIA_SUPABASE_URL en backend/.env.")
     if not project.database_url:
         raise BootstrapError("Configura MUEBLERIA_DATABASE_URL en backend/.env.")
+
+    secrets = BootstrapSettings()
+    service_key = (
+        secrets.supabase_service_role_key.get_secret_value()
+        if secrets.supabase_service_role_key
+        else getpass.getpass("Clave secreta de Supabase (no se mostrará): ")
+    )
+    password = (
+        secrets.demo_bootstrap_password.get_secret_value()
+        if secrets.demo_bootstrap_password
+        else getpass.getpass("Contraseña común para las cuentas demo (no se mostrará): ")
+    )
+
     if not service_key:
-        raise BootstrapError("Configura MUEBLERIA_SUPABASE_SERVICE_ROLE_KEY temporalmente.")
+        raise BootstrapError("La clave secreta de Supabase es obligatoria.")
     if not password:
-        raise BootstrapError("Configura MUEBLERIA_DEMO_BOOTSTRAP_PASSWORD temporalmente.")
+        raise BootstrapError("La contraseña de demo es obligatoria.")
     if len(password) < 8:
         raise BootstrapError("La contraseña de demo debe tener al menos 8 caracteres.")
     _validate_service_key(service_key)

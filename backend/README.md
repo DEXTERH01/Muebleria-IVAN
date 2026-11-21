@@ -33,25 +33,21 @@ Las sesiones SQLAlchemy se cierran al terminar la solicitud. Los servicios que e
 ## Cuentas de demostración por rol
 
 El seed SQL crea perfiles ficticios, pero no cuentas capaces de iniciar sesión. Para crear o
-actualizar cuentas reales de Supabase Auth y sincronizar sus roles en app.profiles, configura
-temporalmente MUEBLERIA_SUPABASE_SERVICE_ROLE_KEY y MUEBLERIA_DEMO_BOOTSTRAP_PASSWORD en el
-entorno de PowerShell. Usa una clave secreta sb_secret_... o la antigua service_role; nunca
-uses la clave publishable/anon. La contraseña debe tener al menos ocho caracteres. El script
-actualiza la contraseña de estas cuentas cada vez que se ejecuta.
+actualizar cuentas reales de Supabase Auth y sincronizar sus roles en app.profiles, ejecuta el
+script desde una terminal. Solicita de forma oculta una clave secreta sb_secret_... o la antigua
+service_role; nunca uses la clave publishable/anon. También solicita una contraseña común de al
+menos ocho caracteres. El script actualiza la contraseña de estas cuentas cada vez que se ejecuta.
 
-Desde la raíz del repositorio, en PowerShell:
+Desde la raíz del repositorio, en PowerShell; cuando la solicite, ingresa la clave secreta del
+proyecto Supabase y luego la contraseña temporal que usarán todas las cuentas:
 
 ~~~powershell
-$env:MUEBLERIA_SUPABASE_SERVICE_ROLE_KEY = Read-Host "Clave secreta de Supabase"
-$env:MUEBLERIA_DEMO_BOOTSTRAP_PASSWORD = Read-Host "Contraseña temporal para las cuentas demo"
 backend\.venv\Scripts\python.exe backend\scripts\bootstrap_demo_accounts.py
-Remove-Item Env:\MUEBLERIA_SUPABASE_SERVICE_ROLE_KEY
-Remove-Item Env:\MUEBLERIA_DEMO_BOOTSTRAP_PASSWORD
 ~~~
 
 El script lee MUEBLERIA_SUPABASE_URL y MUEBLERIA_DATABASE_URL desde backend/.env, no imprime
-la clave ni la contraseña, y puede repetirse para reparar perfiles. Crea estas cuentas con la
-misma contraseña temporal indicada:
+la clave ni la contraseña, no las guarda y puede repetirse para reparar perfiles. Crea estas
+cuentas con la misma contraseña temporal indicada:
 
 | Correo | Rol |
 | --- | --- |
