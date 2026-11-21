@@ -100,7 +100,7 @@ Avance local: están implementados clientes, lectura y transiciones de pedidos c
 - [x] Implementar reversión de pagos. Evidencia: `backend/app/api/v1/payments.py`, `backend/app/models/audit_log.py`.
 - [ ] Integrar Cloudinary para productos.
 - [x] Integrar Cloudinary privado para vouchers. Evidencia: `backend/app/api/v1/media.py`, `backend/tests/test_operations_api.py`.
-- [ ] Sustituir `localStorage`.
+- [x] Sustituir `localStorage` por la API FastAPI de pedidos y pagos. Evidencia: `frontend/src/hooks/useOrders.ts`, `frontend/src/api/modules/orders.ts`.
 - [ ] Probar el flujo completo.
 
 Criterio de salida: cotización, pedido, producción, pago e instalación funcionan de extremo a extremo.

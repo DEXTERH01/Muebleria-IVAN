@@ -25,7 +25,7 @@ import { QuoteSummaryPage } from './pages/QuoteSummaryPage';
 function AppRoutes() {
   const [path, setPath] = useState(window.location.pathname);
   const [quote, setQuote] = useState<QuoteData | null>(null);
-  const { orders, updateOrder, registerPayment } = useOrders();
+  const { orders, loading: ordersLoading, error: ordersError, reload, updateOrder, registerPayment } = useOrders();
   const { toast, show } = useToast();
 
   useEffect(() => {
@@ -63,7 +63,11 @@ function AppRoutes() {
     page = (
       <AuthGuard roles={['admin', 'operator']}><KanbanPage
         orders={orders}
-        onMove={(id, status) => updateOrder(id, { status })}
+        onMove={(id, status) => {
+          void updateOrder(id, { status })
+            .then(() => show('Etapa actualizada.'))
+            .catch((error: unknown) => show(error instanceof Error ? error.message : 'No se pudo actualizar el pedido.'));
+        }}
         showToast={show}
       /></AuthGuard>
     );
@@ -75,26 +79,34 @@ function AppRoutes() {
     page = <AuthGuard roles={['admin', 'operator']}><AnalyticsPage orders={orders} /></AuthGuard>;
   }
   else if (adminOrder) {
-    const order = orders.find((item) => item.id === adminOrder[1]) ?? orders[0];
+    const order = orders.find((item) => item.id === adminOrder[1]);
+    if (!order && !ordersLoading) {
+      page = <main className="auth-page"><section className="auth-card"><h1>Pedido no disponible</h1><p>No encontramos ese pedido en la API.</p><button className="text-button" onClick={() => void reload()}>Volver a cargar</button></section></main>;
+    } else if (order) {
     page = (
       <AuthGuard roles={['admin', 'operator']}><OrderDetail
         order={order}
         customer={customers.find((customer) => customer.id === order.customerId)}
         onMove={(id, status) => {
-          updateOrder(id, { status });
-          show('Pedido actualizado correctamente.');
+          void updateOrder(id, { status })
+            .then(() => show('Etapa actualizada.'))
+            .catch((error: unknown) => show(error instanceof Error ? error.message : 'No se pudo actualizar el pedido.'));
         }}
-        onPayment={(id, amount) => {
-          registerPayment(id, amount);
-          show('Pago registrado correctamente.');
+        onPayment={(id, amount, method) => {
+          void registerPayment(id, amount, method)
+            .then(() => show('Pago registrado correctamente.'))
+            .catch((error: unknown) => show(error instanceof Error ? error.message : 'No se pudo registrar el pago.'));
         }}
       /></AuthGuard>
     );
+    }
   } else page = <HomePage />;
 
   return (
     <>
       {page}
+      {ordersLoading && path.startsWith('/admin') && <p className="data-notice" role="status">Cargando pedidos desde la API…</p>}
+      {ordersError && path.startsWith('/admin') && <p className="form-error data-notice" role="alert">{ordersError} <button onClick={() => void reload()}>Reintentar</button></p>}
       {!path.startsWith('/admin') && <AIAssistant orders={orders} />}
       <Toast message={toast} />
     </>
