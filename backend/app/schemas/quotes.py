@@ -88,6 +88,17 @@ class QuoteResponse(ApiModel):
     data: QuoteData
 
 
+class QuoteListData(ApiModel):
+    items: list[QuoteData]
+    total: int
+    page: int
+    page_size: int = Field(alias="pageSize")
+
+
+class QuoteListResponse(ApiModel):
+    data: QuoteListData
+
+
 class QuoteStatusUpdateRequest(ApiModel):
     status: Literal["reviewing", "approved", "rejected", "expired"]
     expected_version: int = Field(gt=0)

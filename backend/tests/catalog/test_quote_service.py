@@ -62,15 +62,26 @@ class FakePricing:
 class FakeQuoteRepository:
     def __init__(self) -> None:
         self.aggregate = None
+        self.aggregates = []
         self.conflict = False
 
     def add(self, quote, items):
         self.aggregate = QuoteAggregate(quote, items)
+        self.aggregates.append(self.aggregate)
 
     def get(self, quote_id):
         if self.aggregate and self.aggregate.quote.id == quote_id:
             return self.aggregate
         return None
+
+    def list_for_user(self, *, owner_user_id, include_all, page, page_size):
+        matching = self.aggregates if include_all else [
+            aggregate
+            for aggregate in self.aggregates
+            if aggregate.quote.owner_user_id == owner_user_id
+        ]
+        start = (page - 1) * page_size
+        return matching[start : start + page_size], len(matching)
 
     def update_status(self, quote_id, *, expected_version, new_status):
         if self.conflict or not self.aggregate:
@@ -132,6 +143,28 @@ def test_quote_access_is_limited_to_owner_or_admin() -> None:
     assert service.get(quote.id, CurrentUser(uuid4(), "admin")).id == quote.id
     with pytest.raises(QuoteAccessError):
         service.get(quote.id, CurrentUser(uuid4(), "customer"))
+
+
+def test_quote_list_is_owner_scoped_and_paginated() -> None:
+    product_id = uuid4()
+    repository = FakeQuoteRepository()
+    service = QuoteService(repository, FakePricing(product_id))
+    owner = CurrentUser(user_id=uuid4(), role="customer")
+    other_owner = CurrentUser(user_id=uuid4(), role="customer")
+    owned_quote = service.create(request(product_id), owner)
+    service.create(request(product_id), other_owner)
+    service.create(request(product_id), None)
+
+    first_page = service.list_for_user(owner, page=1, page_size=1)
+    admin_page = service.list_for_user(
+        CurrentUser(user_id=uuid4(), role="admin"), page=1, page_size=20
+    )
+
+    assert first_page.total == 1
+    assert first_page.page == 1
+    assert first_page.page_size == 1
+    assert [quote.id for quote in first_page.items] == [owned_quote.id]
+    assert admin_page.total == 3
 
 
 def test_quote_status_uses_allowed_transitions_and_optimistic_version() -> None:

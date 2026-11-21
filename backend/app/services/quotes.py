@@ -18,6 +18,7 @@ from app.schemas.quotes import (
     QuoteCreateRequest,
     QuoteData,
     QuoteItemData,
+    QuoteListData,
     QuoteStatusUpdateRequest,
 )
 from app.services.pricing import PricingService
@@ -87,6 +88,20 @@ class QuoteService:
         if user.role != "admin" and aggregate.quote.owner_user_id != user.user_id:
             raise QuoteAccessError("No tienes permiso para consultar esta cotización.")
         return self._data(aggregate)
+
+    def list_for_user(self, user: CurrentUser, *, page: int, page_size: int) -> QuoteListData:
+        aggregates, total = self.repository.list_for_user(
+            owner_user_id=user.user_id,
+            include_all=user.role == "admin",
+            page=page,
+            page_size=page_size,
+        )
+        return QuoteListData(
+            items=[self._data(aggregate) for aggregate in aggregates],
+            total=total,
+            page=page,
+            page_size=page_size,
+        )
 
     def update_status(
         self,
