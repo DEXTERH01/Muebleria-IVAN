@@ -15,18 +15,20 @@ from app.api.v1.media import (
     get_upload_signature,
     verify_cloudinary_upload_signature,
 )
-from app.api.v1.orders import update_order_status
+from app.api.v1.orders import convert_quote_to_order, update_order_status
 from app.api.v1.payments import create_payment, list_payments, void_payment
 from app.core.config import Settings
 from app.core.security import CurrentUser
 from app.models.audit_log import AuditLog
 from app.models.customer import Customer
 from app.models.media_asset import MediaAsset
+from app.models.order import Order
+from app.models.order_item import OrderItem
 from app.models.order_status_event import OrderStatusEvent
 from app.models.payment import Payment
 from app.schemas.customer import CustomerCreate, CustomerUpdate
 from app.schemas.media import MediaAssetConfirm, MediaSignatureRequest
-from app.schemas.order import OrderStatusPatch
+from app.schemas.order import OrderStatusPatch, QuoteConvertRequest
 from app.schemas.payment import PaymentCreate, PaymentVoidRequest
 
 
@@ -36,6 +38,11 @@ class Result:
 
     def one_or_none(self) -> object:
         return self.value
+
+    def all(self) -> list[object]:
+        if self.value is None:
+            return []
+        return self.value if isinstance(self.value, list) else [self.value]
 
 
 class FakeSession:
@@ -63,14 +70,15 @@ class FakeSession:
         return self._gets.pop(0) if self._gets else None
 
     def add(self, value: object) -> None:
-        if (
-            isinstance(value, (AuditLog, MediaAsset, OrderStatusEvent, Payment))
-            and value.id is None
-        ):
+        if hasattr(value, "id") and value.id is None:
             value.id = uuid4()
         if isinstance(value, Payment) and value.status is None:
             value.status = "recorded"
         self.added.append(value)
+
+    def add_all(self, values: list[object]) -> None:
+        for value in values:
+            self.add(value)
 
     def flush(self) -> None:
         for value in self.added:
@@ -98,6 +106,8 @@ class FakeSession:
                 value.delivered_at = datetime.now(UTC)
             if hasattr(value, "installed_at") and not isinstance(value.installed_at, datetime):
                 value.installed_at = datetime.now(UTC)
+        if isinstance(value, Order):
+            value.balance_minor = value.total_minor - value.paid_minor
 
 
 def _staff(role: str = "operator") -> CurrentUser:
@@ -161,6 +171,72 @@ def test_customer_requires_contact_and_normalizes_values() -> None:
 
     with pytest.raises(ValueError, match="al menos un campo"):
         CustomerUpdate()
+
+
+def test_approved_quote_converts_to_order_with_immutable_item_snapshot() -> None:
+    quote_id = uuid4()
+    quote_item = SimpleNamespace(
+        id=uuid4(),
+        product_id=uuid4(),
+        quantity=2,
+        width_mm=1200,
+        height_mm=800,
+        depth_mm=500,
+        configuration={"drawerCount": 3},
+        calculation_breakdown={"material": {"name": "Melamina"}},
+        accessories=[{"name": "Corredera"}],
+        product_name_snapshot="Cómoda clásica",
+        line_total_minor=240_000,
+        created_at=datetime.now(UTC),
+    )
+    quote = SimpleNamespace(
+        id=quote_id,
+        code="COT-2026-TEST1234",
+        customer_id=None,
+        owner_user_id=None,
+        contact_name="Ana López",
+        contact_email="ana@example.test",
+        contact_phone=None,
+        status="approved",
+        currency="PEN",
+        total_minor=240_000,
+        deposit_minor=120_000,
+        version=1,
+    )
+    session = FakeSession(
+        scalars=[quote, [quote_item]],
+        scalar=[None, None, None],
+    )
+
+    result = convert_quote_to_order(
+        quote_id,
+        QuoteConvertRequest(
+            expectedQuoteVersion=1,
+            deliveryAddress={"address": "Av. Los Robles 123", "district": "San Miguel"},
+        ),
+        _request(),
+        Response(),
+        "convert-key-001",
+        _staff("admin"),
+        session,  # type: ignore[arg-type]
+    )
+
+    next(item for item in session.added if isinstance(item, Order))
+    order_item = next(item for item in session.added if isinstance(item, OrderItem))
+    audit = next(item for item in session.added if isinstance(item, AuditLog))
+    assert result.data.status == "confirmed"
+    assert result.data.total_minor == quote.total_minor
+    assert result.data.deposit_required_minor == quote.deposit_minor
+    assert result.data.paid_minor == 0
+    assert quote.status == "converted"
+    assert quote.version == 2
+    assert order_item.source_quote_item_id == quote_item.id
+    assert order_item.unit_price_minor == 120_000
+    assert order_item.line_total_minor == 240_000
+    assert order_item.configuration_snapshot["configuration"] == {"drawerCount": 3}
+    assert audit.action == "quote.converted"
+    assert audit.new_values["idempotencyKey"] == "convert-key-001"
+    assert session.commits == 1
 
 
 def test_cloudinary_upload_signature_matches_provider_algorithm() -> None:
