@@ -116,7 +116,7 @@ Criterio de salida: cotización, pedido, producción, pago e instalación funcio
 - [x] Implementar Hill Climbing. Evidencia: `backend/app/algorithms/hill_climbing.py`.
 - [x] Añadir reinicios aleatorios. Evidencia: semilla y reinicios configurables en `optimize_production_sequence`.
 - [x] Comparar secuencia inicial y optimizada. Evidencia: `HillClimbingResult` y `POST /api/v1/optimizations/production`.
-- [ ] Crear visualizaciones en administración.
+- [x] Crear visualizaciones en administración. Evidencia: `frontend/src/pages/admin/OptimizationsPage.tsx`; comparación de rutas A* y secuencias Hill Climbing conectadas a API y protegidas para operador/administrador.
 - [x] Persistir ejecuciones y métricas. Evidencia: `backend/app/api/v1/optimizations.py`, `app.optimization_runs`.
 
 Criterio de salida: A* y Hill Climbing tienen pruebas, resultados reproducibles y comparación contra una línea base.
