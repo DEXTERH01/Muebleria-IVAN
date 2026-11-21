@@ -3,11 +3,11 @@
 ## Estado general
 
 - Fecha de referencia: 2026-11-21.
-- Fase actual: Fase 6 implementada en backend; cierres visuales y operativos de Fases 4 y 5 en paralelo.
-- Estado: Fase 2 quedó validada contra Supabase publicado: conexión ORM, columnas, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento aprobados. La Fase 3 está implementada; la Fase 4 requiere el smoke test completo y credenciales reales de Cloudinary. En Fase 5 los algoritmos y endpoints están implementados y queda la visualización administrativa. La Fase 6 ya cuenta con dataset, entrenamiento comparativo, artefactos, registro en Supabase e inferencia consultiva con fallback.
+- Fase actual: Fase 6 implementada; preparación de calidad y despliegue.
+- Estado: Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. La Fase 5 incluye algoritmos, persistencia y visualización administrativa. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: ejecutar un smoke test cotización → pedido → pago → instalación, completar las visualizaciones administrativas de algoritmos/ML y preparar el despliegue.
-- Avance global: Fases 1, 2, 3 y 6 cumplen sus criterios técnicos de backend; Fases 4 y 5 están cerca del cierre. Quedan validaciones visuales/E2E de Fase 7, despliegue de Fase 8 y dos pendientes administrativos de Fase 0.
+- Próxima puerta de control: validar cargas reales de Cloudinary, integrar la visualización de ML y comenzar las verificaciones de calidad de la Fase 7.
+- Avance global: Fases 1 a 6 cumplen sus criterios técnicos. Quedan la Fase 7, el despliegue de Fase 8 y dos pendientes administrativos de Fase 0.
 
 ## Cómo actualizar este seguimiento
 
@@ -101,13 +101,13 @@ Avance local: están implementados clientes, conversión de cotizaciones aprobad
 - [x] Integrar Cloudinary para productos. Evidencia: `backend/app/api/v1/catalog.py`, `frontend/src/api/modules/media.ts`, `frontend/src/pages/admin/CatalogAdminPage.tsx`. Validación con cuenta real pendiente.
 - [x] Integrar Cloudinary privado para vouchers. Evidencia: `backend/app/api/v1/media.py`, `backend/tests/test_operations_api.py`.
 - [x] Sustituir `localStorage` por la API FastAPI de pedidos y pagos. Evidencia: `frontend/src/hooks/useOrders.ts`, `frontend/src/api/modules/orders.ts`.
-- [ ] Probar el flujo completo.
+- [x] Probar el flujo completo. Evidencia: `backend/tests/integration/test_phase4_workflow_postgres.py`; ejecutado contra Supabase local con JWT real y PostgreSQL migrado, desde cotización hasta instalación con aislamiento entre clientes, conversión idempotente, 8 eventos de estado, 2 pagos y saldo final cero.
 
 Criterio de salida: cotización, pedido, producción, pago e instalación funcionan de extremo a extremo.
 
 ## Fase 5. Algoritmos de búsqueda
 
-- Avance local: A* y Hill Climbing ya están conectados a endpoints consultivos y cada ejecución se guarda en `app.optimization_runs`. A* usa matrices simétricas de distancias y Hill Climbing aplica la función documentada con reinicios aleatorios reproducibles. Ninguno modifica pedidos automáticamente y las distancias no representan tráfico real. Falta la visualización administrativa y la prueba contra PostgreSQL publicado.
+- Avance: A* y Hill Climbing están conectados a endpoints consultivos, cada ejecución se guarda en `app.optimization_runs` y la administración permite comparar resultados. Ninguno modifica pedidos automáticamente y las distancias no representan tráfico real.
 - [x] Definir dataset de rutas y distancias. Evidencia: `backend/app/algorithms/route_dataset.py`.
 - [x] Implementar A*. Evidencia: `backend/app/algorithms/astar.py`.
 - [x] Crear línea base para rutas. Evidencia: el orden recibido se usa como ruta inicial en `optimize_route`.
@@ -116,7 +116,7 @@ Criterio de salida: cotización, pedido, producción, pago e instalación funcio
 - [x] Implementar Hill Climbing. Evidencia: `backend/app/algorithms/hill_climbing.py`.
 - [x] Añadir reinicios aleatorios. Evidencia: semilla y reinicios configurables en `optimize_production_sequence`.
 - [x] Comparar secuencia inicial y optimizada. Evidencia: `HillClimbingResult` y `POST /api/v1/optimizations/production`.
-- [ ] Crear visualizaciones en administración.
+- [x] Crear visualizaciones en administración. Evidencia: `frontend/src/pages/admin/OptimizationsPage.tsx`; comparación de rutas A* y secuencias Hill Climbing conectadas a API y protegidas para operador/administrador.
 - [x] Persistir ejecuciones y métricas. Evidencia: `backend/app/api/v1/optimizations.py`, `app.optimization_runs`.
 
 Criterio de salida: A* y Hill Climbing tienen pruebas, resultados reproducibles y comparación contra una línea base.
