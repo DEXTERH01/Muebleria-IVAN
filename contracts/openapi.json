@@ -32,7 +32,8 @@
         "tags": [
           "auth"
         ],
-        "summary": "Me",
+        "summary": "Perfil del usuario autenticado",
+        "description": "Return the authenticated user's public profile fields.\n\nAll fields are loaded by get_current_user in a single DB query so this\nhandler requires no additional database access.",
         "operationId": "me_api_v1_auth_me_get",
         "responses": {
           "200": {
@@ -102,6 +103,40 @@
           "role": {
             "type": "string",
             "title": "Role"
+          },
+          "fullName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fullname"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
           }
         },
         "type": "object",
