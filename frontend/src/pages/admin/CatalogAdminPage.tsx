@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { attachProductImage, getProduct, listProducts, type ProductSummary } from '../../api/modules/catalog';
 import { uploadCatalogImage } from '../../api/modules/media';
 import { AdminLayout } from '../../components/layout';
-import { Button, Modal } from '../../components/ui';
+import { Button, Modal, Pagination } from '../../components/ui';
+import { usePagination } from '../../hooks/usePagination';
 import { moneyMinor } from '../../utils/format';
 
 function ProductImageModal({
@@ -86,6 +87,7 @@ export function CatalogAdminPage({ showToast }: { showToast: (message: string) =
   const [selected, setSelected] = useState<ProductSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { page, pageItems, setPage, totalPages } = usePagination(products, 12);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -120,7 +122,7 @@ export function CatalogAdminPage({ showToast }: { showToast: (message: string) =
       )}
       {!loading && !error && (
         <div className="catalog-admin-grid">
-          {products.map((product) => (
+          {pageItems.map((product) => (
             <article className="admin-card catalog-admin-card" key={product.id}>
               {product.primaryImage ? (
                 <img src={product.primaryImage.secureUrl} alt={product.primaryImage.altText} />
@@ -136,6 +138,15 @@ export function CatalogAdminPage({ showToast }: { showToast: (message: string) =
             </article>
           ))}
         </div>
+      )}
+      {!loading && !error && (
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          totalItems={products.length}
+          onPageChange={setPage}
+          label="productos"
+        />
       )}
       <ProductImageModal
         key={selected?.id ?? 'closed'}

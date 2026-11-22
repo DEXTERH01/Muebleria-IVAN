@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { QuoteData } from './api/modules/quotes';
 import { AuthGuard, AuthPage } from './auth/AuthPage';
@@ -6,7 +6,7 @@ import { AuthProvider } from './auth/AuthProvider';
 import { CustomerPortal } from './auth/CustomerPortal';
 import { AIAssistant } from './components/AIAssistant';
 import { Toast, useToast } from './components/ui';
-import { customers } from './data/customers';
+import { useCustomers } from './hooks/useCustomers';
 import { useOrders } from './hooks/useOrders';
 import { AnalyticsPage } from './pages/admin/AnalyticsPage';
 import { CatalogAdminPage } from './pages/admin/CatalogAdminPage';
@@ -29,8 +29,39 @@ import { QuoteSummaryPage } from './pages/QuoteSummaryPage';
 function AppRoutes() {
   const [path, setPath] = useState(window.location.pathname);
   const [quote, setQuote] = useState<QuoteData | null>(null);
-  const { orders, loading: ordersLoading, error: ordersError, reload, updateOrder, registerPayment } = useOrders();
+  const {
+    orders: apiOrders,
+    loading: ordersLoading,
+    error: ordersError,
+    reload,
+    updateOrder,
+    registerPayment,
+  } = useOrders();
+  const {
+    customers: apiCustomers,
+    loading: customersLoading,
+    error: customersError,
+    reload: reloadCustomers,
+  } = useCustomers();
   const { toast, show } = useToast();
+
+  const orders = useMemo(() => apiOrders.map((order) => ({
+    ...order,
+    customerName: apiCustomers.find((customer) => customer.id === order.customerId)?.name
+      ?? order.customerName,
+  })), [apiCustomers, apiOrders]);
+
+  const customers = useMemo(() => apiCustomers.map((customer) => {
+    const customerOrders = orders.filter((order) => order.customerId === customer.id);
+    const latest = [...customerOrders].sort((left, right) => (
+      right.createdAt.localeCompare(left.createdAt)
+    ))[0];
+    return {
+      ...customer,
+      totalPurchases: customerOrders.reduce((sum, order) => sum + order.total, 0),
+      lastOrder: latest?.code ?? '—',
+    };
+  }), [apiCustomers, orders]);
 
   useEffect(() => {
     const listener = () => setPath(window.location.pathname);
@@ -117,6 +148,8 @@ function AppRoutes() {
       {page}
       {ordersLoading && path.startsWith('/admin') && <p className="data-notice" role="status">Cargando pedidos desde la API…</p>}
       {ordersError && path.startsWith('/admin') && <p className="form-error data-notice" role="alert">{ordersError} <button onClick={() => void reload()}>Reintentar</button></p>}
+      {customersLoading && path === '/admin/clientes' && <p className="data-notice" role="status">Cargando clientes desde la API…</p>}
+      {customersError && path === '/admin/clientes' && <p className="form-error data-notice" role="alert">{customersError} <button onClick={() => void reloadCustomers()}>Reintentar</button></p>}
       {!path.startsWith('/admin') && <AIAssistant orders={orders} />}
       <Toast message={toast} />
     </>

@@ -35,8 +35,10 @@ export async function createQuote(
   return response.data;
 }
 
-export async function listQuotes(): Promise<QuoteListData> {
-  const response = await apiRequest<QuoteListResponse>('/api/v1/quotes?page=1&pageSize=100');
+export async function listQuotes(page = 1, pageSize = 100): Promise<QuoteListData> {
+  const response = await apiRequest<QuoteListResponse>(
+    `/api/v1/quotes?page=${page}&pageSize=${pageSize}`,
+  );
   return response.data;
 }
 
