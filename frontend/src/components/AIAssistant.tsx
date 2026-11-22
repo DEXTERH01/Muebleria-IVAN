@@ -95,6 +95,9 @@ function smartReply(
     return { text: '¡Con gusto! Si me dices qué mueble buscas, te muestro opciones disponibles en el catálogo.' };
   }
   if (containsAny(text, ['cotiz', 'presupuesto', 'calcular', 'precio', 'costo', 'vale', 'comprar'])) {
+    if (!products.length) {
+      return { text: 'Ahora no puedo consultar los diseños ni sus precios. Abre el catálogo para volver a intentarlo; si ya sabes qué mueble buscas, escríbemelo y te indico cómo cotizarlo.', action: { label: 'Abrir catálogo', path: '/catalogo' } };
+    }
     return { text: 'Puedo ayudarte. Elige un producto del catálogo y luego introduce ancho, alto, profundidad y acabados. El cotizador calcula el importe con los precios configurados.', action: { label: 'Abrir cotizador', path: '/cotizador' } };
   }
   if (containsAny(text, ['pago', 'yape', 'plin', 'transferencia', 'efectivo', 'anticipo', 'saldo'])) {
@@ -125,13 +128,13 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
   const auth = useAuth();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [thinking, setThinking] = useState(false);
   const [products, setProducts] = useState<ProductSummary[]>([]);
   const [catalogError, setCatalogError] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: 1, role: 'assistant', text: '¡Hola! Soy Mía. Dime qué mueble buscas o qué necesitas consultar.' },
   ]);
   const endRef = useRef<HTMLDivElement>(null);
+  const nextMessageId = useRef(2);
 
   useEffect(() => {
     let active = true;
@@ -147,21 +150,28 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
     };
   }, []);
 
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages, thinking]);
+  useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages]);
 
   const send = (raw: string) => {
     const text = raw.trim();
-    if (!text || thinking) return;
-    setMessages((current) => [...current, { id: Date.now(), role: 'user', text }]);
+    if (!text) return;
+    const userMessageId = nextMessageId.current++;
+    const assistantMessageId = nextMessageId.current++;
+    let response: Omit<ChatMessage, 'id' | 'role'>;
+    try {
+      response = smartReply(text, orders, products, Boolean(auth?.session));
+    } catch {
+      response = {
+        text: 'No pude procesar esa consulta. Inténtalo otra vez o abre el catálogo para encontrar un diseño.',
+        action: { label: 'Abrir catálogo', path: '/catalogo' },
+      };
+    }
+    setMessages((current) => [
+      ...current,
+      { id: userMessageId, role: 'user', text },
+      { id: assistantMessageId, role: 'assistant', ...response },
+    ]);
     setInput('');
-    setThinking(true);
-    window.setTimeout(() => {
-      const response = catalogError && products.length === 0
-        ? { text: 'El catálogo no está disponible en este momento. Puedes abrir la página y reintentar.' , action: { label: 'Abrir catálogo', path: '/catalogo' } }
-        : smartReply(text, orders, products, Boolean(auth?.session));
-      setMessages((current) => [...current, { id: Date.now() + 1, role: 'assistant', ...response }]);
-      setThinking(false);
-    }, 180);
   };
 
   return <div className="ai-assistant">
@@ -169,7 +179,7 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
       <header>
         <div className="ai-avatar">M</div>
         <div><strong>Mía · Asistente de compras</strong><span><i /> {catalogError ? 'Catálogo sin conexión' : 'Lista para ayudarte'}</span></div>
-        <button onClick={() => setOpen(false)} aria-label="Cerrar asistente">×</button>
+        <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar asistente">×</button>
       </header>
       <div className="ai-chat-caption">Respuestas basadas en el catálogo publicado y los pedidos de tu sesión.</div>
       <div className="ai-messages" aria-live="polite">
@@ -177,13 +187,12 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
           <p>{message.text}</p>
           {message.action && <button onClick={() => navigate(message.action!.path)}>{message.action.label}</button>}
         </div>)}
-        {thinking && <div className="ai-typing" aria-label="Mía está escribiendo"><i/><i/><i/></div>}
         <div ref={endRef}/>
       </div>
-      <div className="ai-suggestions">{suggestions.map((item) => <button key={item} onClick={() => send(item)}>{item}</button>)}</div>
+      <div className="ai-suggestions">{suggestions.map((item) => <button type="button" key={item} onClick={() => send(item)}>{item}</button>)}</div>
       <form onSubmit={(event) => { event.preventDefault(); send(input); }}>
         <input aria-label="Escribe tu consulta" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Escribe tu consulta…" />
-        <button type="submit" aria-label="Enviar mensaje" disabled={!input.trim() || thinking}>↑</button>
+        <button type="submit" aria-label="Enviar mensaje" disabled={!input.trim()}>↑</button>
       </form>
     </section>}
     <button className="ai-launcher" onClick={() => setOpen((value) => !value)} aria-label={open ? 'Cerrar asistente virtual' : 'Abrir asistente virtual'}>

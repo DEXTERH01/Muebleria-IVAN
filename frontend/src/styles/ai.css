@@ -29,3 +29,11 @@
   .ai-launcher { width: 56px; height: 56px; }
   .ai-chat { inset: 12px 12px 82px; width: auto; height: auto; max-height: none; }
 }
+
+/* Keep Mía clear of the sticky site navigation and show all quick actions. */
+.ai-chat { height: min(590px, calc(100vh - 183px)); max-height: calc(100vh - 183px); }
+.ai-messages { min-height: 0; }
+.ai-suggestions { flex-wrap: wrap; overflow-x: hidden; overflow-y: auto; max-height: 100px; }
+@media(max-width:560px) {
+  .ai-chat { height: auto; max-height: none; }
+}
