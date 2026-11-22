@@ -165,7 +165,7 @@ Criterio de salida: flujos críticos aprobados y resultados reales documentados.
 - [x] Configurar variables y CORS. Evidencia: el frontend de Netlify consume la API de Render.
 - [x] Validar pipeline de despliegue. Evidencia: pipeline de CI aprobado en `main`; el frontend se publica desde Netlify.
 - [x] Crear cuentas de demo para los roles cliente, operador y administrador. Evidencia: `backend/scripts/bootstrap_demo_accounts.py`; cuatro inicios de sesión HTTP 200, correos confirmados, identidades email y roles verificados en Supabase.
-- [ ] Ejecutar smoke test integral en producción de demo. Parcial: el catálogo devuelve 52 productos, con 52 imágenes distintas respondiendo HTTP 200, cero descripciones demo y 40 precios base distintos; las cuatro cuentas demo inician sesión en Supabase Auth. Pendiente confirmar `/api/v1/auth/me` después del redespliegue de Render con la URL de Supabase declarada en `render.yaml`.
+- [ ] Ejecutar smoke test integral en producción de demo. Parcial: el catálogo devuelve 52 productos, con 52 imágenes distintas respondiendo HTTP 200, cero descripciones demo y 40 precios base distintos. Las cuatro cuentas demo inician sesión y `/api/v1/auth/me` devuelve HTTP 200 con los roles `admin`, `operator` y `customer` esperados. Quedan los flujos completos de cotización y taller.
 - [ ] Preparar informe de métricas.
 - [ ] Preparar arquitectura final.
 - [ ] Preparar guion de demostración.
