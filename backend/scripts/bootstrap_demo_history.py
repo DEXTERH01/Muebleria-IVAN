@@ -323,9 +323,22 @@ def build_demo_rows(reference: dict[str, object]) -> dict[str, list[dict]]:
                 "id": str(accessory["id"]),
                 "code": accessory["code"],
                 "name": accessory["name"],
+                "adjustmentMinor": 6_500,
             }
             for accessory in accessories[:accessory_count]
         ]
+        selected_material = {
+            "id": str(material["id"]),
+            "code": material["code"],
+            "name": material["name"],
+            "adjustmentMinor": 0,
+        }
+        selected_finish = {
+            "id": str(finish["id"]),
+            "code": finish["code"],
+            "name": finish["name"],
+            "adjustmentMinor": 0,
+        }
         size_factor = (
             0.68
             + 0.26 * width / product["max_width_mm"]
@@ -406,11 +419,21 @@ def build_demo_rows(reference: dict[str, object]) -> dict[str, list[dict]]:
                 "product_name_snapshot": product["name"],
                 "base_price_minor": product["base_price_minor"],
                 "calculation_breakdown": {
-                    "referenceBaseMinor": product["base_price_minor"],
-                    "sizeFactor": round(size_factor, 4),
-                    "accessoriesMinor": accessory_count * 6_500,
-                    "adjustmentsMinor": adjustments,
-                    "dataLabel": "Datos sintéticos",
+                    "pricing": {
+                        "referenceBaseMinor": product["base_price_minor"],
+                        "sizeAdjustedBaseMinor": rounded_minor(
+                            product["base_price_minor"] * size_factor
+                        ),
+                        "materialMinor": 0,
+                        "finishMinor": 0,
+                        "accessoriesMinor": accessory_count * 6_500,
+                        "rulesMinor": 0,
+                        "unitTotalMinor": line_total // quantity,
+                    },
+                    "material": selected_material,
+                    "finish": selected_finish,
+                    "appliedRules": [],
+                    "syntheticTag": TAG,
                 },
                 "line_total_minor": line_total,
                 "created_at": created_at,
