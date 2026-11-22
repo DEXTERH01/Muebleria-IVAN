@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { navigate } from './layout';
-import { money, orderStatusLabel, paymentStatusLabel } from '../utils/format';
+
+import { listProducts, type ProductSummary } from '../api/modules/catalog';
+import { useAuth } from '../auth/AuthProvider';
 import type { Order } from '../types';
+import { money, orderStatusLabel, paymentStatusLabel } from '../utils/format';
+import { navigate } from './layout';
 
 interface ChatMessage {
   id: number;
@@ -10,91 +13,140 @@ interface ChatMessage {
   action?: { label: string; path: string };
 }
 
-const suggestions = ['Cotizar un closet', 'Consultar PED-001', 'Formas de pago', 'Tiempo de entrega'];
-
+const suggestions = ['Quiero un ropero', '¿Cuánto cuesta?', 'Consultar mi pedido', 'Cómo cotizo'];
+const normalize = (text: string) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const containsAny = (text: string, terms: string[]) => terms.some((term) => text.includes(term));
 
-function orderReply(text: string, orders: Order[]): Omit<ChatMessage, 'id' | 'role'> | null {
-  const code = text.toUpperCase().match(/PED-\d{3}/)?.[0];
-  const namedOrder = orders.find((item) => text.includes(item.customerName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')));
+function findProduct(text: string, products: ProductSummary[]): ProductSummary | undefined {
+  const exact = products.find((product) => normalize(`${product.name} ${product.slug}`)
+    .split(' ')
+    .some((word) => word.length > 3 && text.includes(word)));
+  if (exact) return exact;
+
+  const categoryTerms = [
+    { terms: ['closet', 'ropero', 'armario'], matches: ['dormitorio', 'ropero', 'closet'] },
+    { terms: ['cocina', 'repostero'], matches: ['cocina', 'repostero'] },
+    { terms: ['escritorio', 'oficina'], matches: ['escritorio', 'oficina'] },
+    { terms: ['televisor', 'television', 'tv', 'sala'], matches: ['centro tv', 'entretenimiento', 'sala'] },
+    { terms: ['comedor', 'mesa'], matches: ['comedor', 'mesa'] },
+    { terms: ['zapato', 'zapatera'], matches: ['zapatera', 'zapatos'] },
+  ];
+  const category = categoryTerms.find(({ terms }) => containsAny(text, terms));
+  if (!category) return undefined;
+  return products.find((product) => containsAny(
+    normalize(`${product.name} ${product.category} ${product.slug}`),
+    category.matches,
+  ));
+}
+
+function orderReply(
+  input: string,
+  orders: Order[],
+  authenticated: boolean,
+): Omit<ChatMessage, 'id' | 'role'> | null {
+  const code = input.toUpperCase().match(/PED(?:-DEMO)?-\d{4}(?:-\d{4})?|PED-\d{3,}/)?.[0];
+  const normalized = normalize(input);
+  const namedOrder = orders.find((order) => normalized.includes(normalize(order.customerName)));
   if (!code && !namedOrder) return null;
-  const order = namedOrder ?? orders.find((item) => item.id === code);
-  if (!order) return { text: `No encontré el pedido ${code}. Verifica el código o comunícate con nosotros por WhatsApp.` };
+
+  const order = namedOrder ?? orders.find((item) => item.id.toUpperCase() === code);
+  if (!order) {
+    return authenticated
+      ? { text: `No encuentro ${code ?? 'ese pedido'} entre los pedidos disponibles en tu cuenta. Revisa el código o entra a Mi cuenta para ver tu historial.`, action: { label: 'Ir a mi cuenta', path: '/mi-cuenta' } }
+      : { text: 'Para proteger la información de cada cliente, inicia sesión con la cuenta asociada al pedido y podré mostrarte el seguimiento.', action: { label: 'Iniciar sesión', path: '/iniciar-sesion' } };
+  }
+
+  const delivery = order.deliveryDate
+    ? new Intl.DateTimeFormat('es-PE', { day: '2-digit', month: 'long', year: 'numeric' })
+      .format(new Date(`${order.deliveryDate}T12:00:00`))
+    : 'por coordinar';
   return {
-    text: `${order.id} corresponde a ${order.productType}. Estado: ${orderStatusLabel[order.status]}. Entrega: ${new Intl.DateTimeFormat('es-PE', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date(`${order.deliveryDate}T12:00:00`))}. Estado de pago: ${paymentStatusLabel[order.paymentStatus]}. Saldo: ${money(order.remainingBalance)}.`,
-    action: { label: 'Ver detalle del pedido', path: `/admin/pedido/${order.id}` },
+    text: `${order.code}: estado ${orderStatusLabel[order.status]}; entrega ${delivery}; pago ${paymentStatusLabel[order.paymentStatus]}; saldo ${money(order.remainingBalance)}.`,
+    action: { label: 'Ver mi cuenta', path: '/mi-cuenta' },
   };
 }
 
-function smartReply(input: string, orders: Order[]): Omit<ChatMessage, 'id' | 'role'> {
-  const text = input.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  const orderResponse = orderReply(text, orders);
-  if (orderResponse) return orderResponse;
+function smartReply(
+  input: string,
+  orders: Order[],
+  products: ProductSummary[],
+  authenticated: boolean,
+): Omit<ChatMessage, 'id' | 'role'> {
+  const text = normalize(input);
+  const status = orderReply(input, orders, authenticated);
+  if (status) return status;
+
+  const product = findProduct(text, products);
+  if (product) {
+    const price = `El precio base publicado de ${product.name} es ${money(product.basePriceMinor / 100)}. La cotización final depende de las medidas y opciones que elijas.`;
+    const asksQuote = containsAny(text, ['cotiz', 'presupuesto', 'precio', 'cuanto', 'costo', 'vale', 'comprar']);
+    return {
+      text: `${price} ${product.description}`,
+      action: asksQuote
+        ? { label: `Cotizar ${product.name}`, path: `/cotizador?producto=${encodeURIComponent(product.slug)}` }
+        : { label: `Ver ${product.name}`, path: `/producto/${encodeURIComponent(product.slug)}` },
+    };
+  }
+
   if (containsAny(text, ['hola', 'buenos dias', 'buenas tardes', 'buenas noches', 'hey'])) {
-    return { text: '¡Hola! Soy Mía. Puedo ayudarte a elegir un diseño, comparar materiales, calcular una cotización o consultar el avance de tu pedido. ¿Qué necesitas hoy?' };
+    return { text: '¡Hola! Puedo ayudarte a encontrar un diseño del catálogo, revisar su precio base, iniciar una cotización o consultar el seguimiento de un pedido de tu cuenta.' };
   }
   if (containsAny(text, ['gracias', 'muchas gracias'])) {
-    return { text: '¡Con gusto! Cuando quieras podemos continuar con tu proyecto. Estoy aquí para ayudarte.' };
+    return { text: '¡Con gusto! Si me dices qué mueble buscas, te muestro opciones disponibles en el catálogo.' };
   }
-  if (containsAny(text, ['closet', 'ropero'])) {
-    return { text: 'Para un closet recomiendo medir ancho, alto y profundidad del espacio. Puedes elegir distribución interior, cajones, barras, iluminación y tipo de puertas. El Closet Siena es una excelente referencia.', action: { label: 'Cotizar un closet', path: '/cotizador?producto=closet-siena' } };
-  }
-  if (containsAny(text, ['cocina', 'repostero'])) {
-    return { text: 'Diseñamos cocinas según el espacio disponible, ubicación de electrodomésticos y necesidades de almacenamiento. La cotización considera módulos, material, herrajes y accesorios.', action: { label: 'Ver cocinas', path: '/catalogo' } };
-  }
-  if (containsAny(text, ['escritorio', 'oficina'])) {
-    return { text: 'Podemos adaptar escritorios para estudio, trabajo o espacios compactos. Indica el ancho disponible y si necesitas cajones, repisas o pasacables.', action: { label: 'Explorar escritorios', path: '/catalogo' } };
-  }
-  if (containsAny(text, ['television', 'tv', 'sala'])) {
-    return { text: 'Los muebles de TV pueden incluir panel, cajones, puertas y canaletas para ocultar cables. Te recomiendo definir primero el ancho del televisor y la pared disponible.', action: { label: 'Ver muebles de sala', path: '/catalogo' } };
-  }
-  if (containsAny(text, ['cotiz', 'presupuesto', 'calcular'])) {
-    return { text: '¡Claro! Para calcular tu proyecto necesito el tipo de mueble, medidas, material, acabado y accesorios. Obtendrás el total estimado y la distribución de pago 50/50.', action: { label: 'Empezar cotización', path: '/cotizador' } };
-  }
-  if (containsAny(text, ['material', 'melamina', 'mdf'])) {
-    return { text: 'Para uso diario recomiendo melamina de 18 mm. La melamina premium ofrece mejores acabados; el MDF es ideal cuando buscas superficies pintadas o detalles especiales.' };
-  }
-  if (containsAny(text, ['color', 'acabado', 'roble', 'nogal', 'blanco', 'gris', 'negro', 'natural'])) {
-    return { text: 'Tenemos acabados Roble, Nogal, Blanco, Gris, Negro y Natural. Roble aporta calidez, Blanco amplía visualmente el ambiente y Nogal ofrece un estilo más elegante.' };
-  }
-  if (containsAny(text, ['medida', 'medir', 'ancho', 'alto', 'profundidad'])) {
-    return { text: 'Mide el ancho, alto y profundidad en centímetros. Toma cada medida en dos puntos y usa la menor para evitar desniveles. Para proyectos empotrados recomendamos una validación final en el domicilio.' };
-  }
-  if (containsAny(text, ['accesorio', 'corredera', 'bisagra', 'tirador', 'led', 'organizador'])) {
-    return { text: 'Puedes agregar correderas telescópicas, bisagras de cierre suave, tiradores premium, iluminación LED y organizadores interiores. El cotizador suma cada opción automáticamente.' };
-  }
-  if (containsAny(text, ['precio', 'cuanto', 'costo', 'vale'])) {
-    return { text: 'El precio depende de medidas, material y accesorios. Nuestro cotizador genera una referencia y separa automáticamente el 50% de anticipo y el 50% contra entrega.', action: { label: 'Calcular precio', path: '/cotizador' } };
+  if (containsAny(text, ['cotiz', 'presupuesto', 'calcular', 'precio', 'costo', 'vale', 'comprar'])) {
+    return { text: 'Puedo ayudarte. Elige un producto del catálogo y luego introduce ancho, alto, profundidad y acabados. El cotizador calcula el importe con los precios configurados.', action: { label: 'Abrir cotizador', path: '/cotizador' } };
   }
   if (containsAny(text, ['pago', 'yape', 'plin', 'transferencia', 'efectivo', 'anticipo', 'saldo'])) {
-    return { text: 'Trabajamos con el esquema 50/50: 50% de anticipo para iniciar la fabricación y 50% contra entrega o instalación. Puedes pagar con Yape, Plin, transferencia o efectivo.' };
+    return { text: 'En el detalle de cada cotización verás el anticipo calculado. Cuando la cotización se convierte en pedido, puedes consultar pagos y saldo en Mi cuenta.' };
   }
   if (containsAny(text, ['demora', 'tiempo', 'entrega', 'dias', 'cuando'])) {
-    return { text: 'El tiempo depende del tipo y complejidad del mueble. Luego de confirmar medidas y anticipo te indicamos una fecha de entrega, y podrás seguir cada etapa desde material comprado hasta instalación.' };
+    return { text: 'El plazo depende del modelo y la configuración. La fecha se confirma al coordinar el pedido; luego puedes revisar las etapas desde Mi cuenta.' };
   }
-  if (containsAny(text, ['pedido', 'estado', 'seguimiento'])) {
-    return { text: 'Escribe tu código de pedido, por ejemplo PED-001, y te mostraré su etapa de producción, fecha de entrega y estado de pago.' };
+  if (containsAny(text, ['pedido', 'estado', 'seguimiento', 'ped-'])) {
+    return authenticated
+      ? { text: 'Puedo buscar pedidos asociados a tu sesión. Escríbeme el código completo que aparece en Mi cuenta, por ejemplo PED-DEMO-2026-0001.' }
+      : { text: 'El seguimiento es privado. Inicia sesión con la cuenta del cliente y luego escribe el código completo del pedido.', action: { label: 'Iniciar sesión', path: '/iniciar-sesion' } };
   }
-  if (containsAny(text, ['whatsapp', 'contacto', 'asesor', 'persona', 'llamar'])) {
-    return { text: 'Al terminar tu cotización encontrarás la opción “Enviar por WhatsApp”. Prepararé todos los detalles del proyecto en un mensaje para que un asesor continúe la atención.' };
+  if (containsAny(text, ['medida', 'medir', 'ancho', 'alto', 'profundidad'])) {
+    return { text: 'Mide el ancho, alto y profundidad en centímetros. Toma cada medida en dos puntos y usa la menor si hay desniveles. El cotizador te pedirá esas medidas para el modelo elegido.', action: { label: 'Ver catálogo', path: '/catalogo' } };
   }
-  if (containsAny(text, ['direccion', 'ubicacion', 'lima', 'donde'])) {
-    return { text: 'Atendemos proyectos en Lima. La dirección de instalación se confirma al registrar el pedido y coordinamos la visita directamente contigo.' };
+  if (containsAny(text, ['catalogo', 'modelos', 'disenos', 'muebles'])) {
+    const count = products.length;
+    return { text: count ? `El catálogo tiene ${count} diseños publicados con precio base e imágenes. Dime qué ambiente buscas y te sugiero uno.` : 'El catálogo no está respondiendo en este momento. Puedes volver a intentarlo desde la página de catálogo.', action: { label: 'Abrir catálogo', path: '/catalogo' } };
   }
-  if (containsAny(text, ['catalogo', 'modelos', 'diseños', 'muebles'])) {
-    return { text: 'Nuestro catálogo incluye cocinas, closets, centros de TV y escritorios. Todos los modelos pueden personalizarse según tu espacio.', action: { label: 'Ver catálogo', path: '/catalogo' } };
+  if (!products.length) {
+    return { text: 'No puedo cargar el catálogo ahora. Prueba de nuevo en unos momentos o abre la página de catálogo.' , action: { label: 'Abrir catálogo', path: '/catalogo' } };
   }
-  return { text: 'Puedo ayudarte con diseños, materiales, medidas, cotizaciones, pagos, entregas y seguimiento. También puedes escribir un código como PED-001 para consultar un pedido.' };
+  return { text: 'Puedo buscar diseños, consultar precios base, iniciar cotizaciones y explicar el seguimiento. Prueba con “ropero”, “mesa de comedor” o “cotizar escritorio”.' };
 }
 
 export function AIAssistant({ orders }: { orders: Order[] }) {
+  const auth = useAuth();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [thinking, setThinking] = useState(false);
+  const [products, setProducts] = useState<ProductSummary[]>([]);
+  const [catalogError, setCatalogError] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: 1, role: 'assistant', text: '¡Hola! Soy Mía, la asistente virtual de Mueblería Iván. ¿Qué mueble tienes en mente?' },
+    { id: 1, role: 'assistant', text: '¡Hola! Soy Mía. Dime qué mueble buscas o qué necesitas consultar.' },
   ]);
   const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let active = true;
+    listProducts()
+      .then((response) => {
+        if (active) setProducts(response.items);
+      })
+      .catch(() => {
+        if (active) setCatalogError(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages, thinking]);
 
   const send = (raw: string) => {
@@ -104,30 +156,34 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
     setInput('');
     setThinking(true);
     window.setTimeout(() => {
-      setMessages((current) => [...current, { id: Date.now() + 1, role: 'assistant', ...smartReply(text, orders) }]);
+      const response = catalogError && products.length === 0
+        ? { text: 'El catálogo no está disponible en este momento. Puedes abrir la página y reintentar.' , action: { label: 'Abrir catálogo', path: '/catalogo' } }
+        : smartReply(text, orders, products, Boolean(auth?.session));
+      setMessages((current) => [...current, { id: Date.now() + 1, role: 'assistant', ...response }]);
       setThinking(false);
-    }, 650);
+    }, 180);
   };
 
   return <div className="ai-assistant">
     {open && <section className="ai-chat" aria-label="Asistente virtual Mía">
       <header>
         <div className="ai-avatar">M</div>
-        <div><strong>Mía · Asistente virtual</strong><span><i /> Disponible ahora</span></div>
+        <div><strong>Mía · Asistente de compras</strong><span><i /> {catalogError ? 'Catálogo sin conexión' : 'Lista para ayudarte'}</span></div>
         <button onClick={() => setOpen(false)} aria-label="Cerrar asistente">×</button>
       </header>
-      <div className="ai-messages">
+      <div className="ai-chat-caption">Respuestas basadas en el catálogo publicado y los pedidos de tu sesión.</div>
+      <div className="ai-messages" aria-live="polite">
         {messages.map((message) => <div className={`ai-message ${message.role}`} key={message.id}>
           <p>{message.text}</p>
-          {message.action && <button onClick={() => navigate(message.action!.path)}>{message.action.label} →</button>}
+          {message.action && <button onClick={() => navigate(message.action!.path)}>{message.action.label}</button>}
         </div>)}
         {thinking && <div className="ai-typing" aria-label="Mía está escribiendo"><i/><i/><i/></div>}
         <div ref={endRef}/>
       </div>
       <div className="ai-suggestions">{suggestions.map((item) => <button key={item} onClick={() => send(item)}>{item}</button>)}</div>
       <form onSubmit={(event) => { event.preventDefault(); send(input); }}>
-        <input aria-label="Escribe tu consulta" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Escribe tu consulta..." />
-        <button type="submit" aria-label="Enviar mensaje">↑</button>
+        <input aria-label="Escribe tu consulta" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Escribe tu consulta…" />
+        <button type="submit" aria-label="Enviar mensaje" disabled={!input.trim() || thinking}>↑</button>
       </form>
     </section>}
     <button className="ai-launcher" onClick={() => setOpen((value) => !value)} aria-label={open ? 'Cerrar asistente virtual' : 'Abrir asistente virtual'}>
