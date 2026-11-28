@@ -1,17 +1,42 @@
 /* Keep the desktop homepage balanced without changing the mobile composition. */
 @media (min-width: 621px) {
+  .navbar {
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: clamp(24px, 5.2vw, 88px);
+    width: 100%;
+  }
+
   .home-hero {
-    max-width: 1600px;
+    max-width: none;
     grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
     gap: clamp(28px, 4vw, 64px);
-    padding-inline: clamp(24px, 5vw, 76px);
+    padding-inline: clamp(24px, 5.2vw, 88px);
+    width: 100%;
   }
+
+  .home-collection {
+    max-width: none;
+    padding-inline: clamp(24px, 5.2vw, 88px);
+    width: 100%;
+  }
+
+  .home-process { padding-inline: clamp(24px, 5.2vw, 88px); }
+  .home-final-copy { padding-inline: clamp(24px, 5.2vw, 88px); }
 
   .home-hero-copy { min-width: 0; }
 
   .home-hero h1 {
     font-size: clamp(46px, 4.3vw, 70px);
     text-wrap: balance;
+  }
+}
+
+@media (min-width: 1081px) {
+  .home-hero { min-height: min(650px, calc(100vh - 78px)); }
+  .home-hero-media {
+    height: clamp(420px, 38vw, 560px);
+    min-height: 0;
   }
 }
 
@@ -35,4 +60,52 @@
     height: clamp(390px, 54vw, 560px);
     min-height: 0;
   }
+}
+
+@media (min-width: 621px) and (max-width: 1000px) {
+  .navbar { height: 68px; position: relative; }
+  .navbar .nav-actions { display: none; }
+  .navbar nav.primary-nav {
+    align-items: stretch;
+    background: #fff;
+    border-bottom: 1px solid #e8e5df;
+    box-shadow: 0 14px 25px rgba(35, 29, 23, .1);
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    left: 0;
+    padding: 12px 20px 18px;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 1px);
+    z-index: 101;
+  }
+  .navbar nav.primary-nav.is-open { display: flex; }
+  .navbar nav.primary-nav a { font-size: 15px; padding: 12px 8px; }
+  .navbar .nav-mobile-actions {
+    border-top: 1px solid #eee9e2;
+    display: grid;
+    gap: 5px;
+    margin-top: 4px;
+    padding-top: 10px;
+  }
+  .navbar .nav-mobile-actions > button:not(.btn) {
+    background: transparent;
+    border: 0;
+    color: #4c4239;
+    padding: 11px 8px;
+    text-align: left;
+  }
+  .navbar .nav-mobile-actions .btn { justify-content: center; margin-top: 4px; padding: 12px; }
+  .menu-toggle {
+    background: #fff;
+    border: 1px solid #e4ded6;
+    border-radius: 5px;
+    display: grid;
+    gap: 5px;
+    height: 43px;
+    place-content: center;
+    width: 43px;
+  }
+  .menu-toggle span { background: #3d332b; display: block; height: 2px; width: 18px; }
 }
