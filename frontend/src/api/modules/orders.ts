@@ -6,6 +6,8 @@ export type ApiOrderDetail = components['schemas']['OrderDetailOut'];
 export type ApiOrderStatus = ApiOrder['status'];
 export type ApiPaymentMethod = components['schemas']['PaymentCreate']['method'];
 export type ApiPayment = components['schemas']['PaymentOut'];
+export type ApiPaymentCreate = components['schemas']['PaymentCreate'];
+export type PaymentHandler = (orderId: string, input: ApiPaymentCreate, idempotencyKey: string) => Promise<void>;
 
 type OrderListResponse = components['schemas']['OrderListResponse'];
 type OrderResponse = components['schemas']['OrderResponse'];
@@ -60,13 +62,14 @@ export async function listPayments(orderId: string): Promise<ApiPayment[]> {
 
 export async function createPayment(
   orderId: string,
-  input: components['schemas']['PaymentCreate'],
+  input: ApiPaymentCreate,
+  idempotencyKey: string = crypto.randomUUID(),
 ): Promise<ApiPayment> {
   const response = await apiRequest<PaymentResponse>(
     `/api/v1/orders/${encodeURIComponent(orderId)}/payments`,
     {
       method: 'POST',
-      headers: { 'Idempotency-Key': crypto.randomUUID() },
+      headers: { 'Idempotency-Key': idempotencyKey },
       body: JSON.stringify(input),
     },
   );

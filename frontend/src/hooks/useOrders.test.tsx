@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { listOrders, setOrderStatus, type ApiOrder } from '../api/modules/orders';
+import { createPayment, listOrders, setOrderStatus, type ApiOrder } from '../api/modules/orders';
 import { useAuth } from '../auth/AuthProvider';
 import { useOrders } from './useOrders';
 
@@ -53,5 +53,21 @@ describe('production transitions through the API', () => {
     await expect(result.current.updateOrder(order.code, { status: 'material-pendiente' }))
       .rejects.toThrow('Los pedidos solo pueden avanzar');
     expect(setOrderStatus).not.toHaveBeenCalled();
+  });
+
+  it('sends integer amounts and voucher metadata with the same operation key on retry', async () => {
+    const { result } = renderHook(() => useOrders());
+    await waitFor(() => expect(result.current.orders).toHaveLength(1));
+    const input = {
+      amountMinor: 10001, currency: 'PEN', method: 'bank_transfer', paymentDate: '2026-11-28',
+      reference: 'REF-123', voucherAssetId: 'private-voucher',
+    } as const;
+    vi.mocked(createPayment).mockRejectedValueOnce(new Error('Network error')).mockResolvedValueOnce({ id: 'payment-id' } as never);
+    await expect(result.current.registerPayment(order.code, input, 'payment-key')).rejects.toThrow('Network error');
+    expect(listOrders).toHaveBeenCalledOnce();
+    await act(async () => result.current.registerPayment(order.code, input, 'payment-key'));
+    expect(createPayment).toHaveBeenNthCalledWith(1, order.id, input, 'payment-key');
+    expect(createPayment).toHaveBeenNthCalledWith(2, order.id, input, 'payment-key');
+    expect(listOrders).toHaveBeenCalledTimes(2);
   });
 });
