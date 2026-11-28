@@ -604,18 +604,6 @@ img.detail-main-visual {
 }
 .auth-links button:hover { text-decoration: underline; }
 .auth-links button:focus-visible { border-radius: 3px; outline: 2px solid var(--wood); outline-offset: 3px; }
-.auth-security-note {
-  align-items: center;
-  border-top: 1px solid var(--line);
-  color: #8c8179 !important;
-  display: flex;
-  font-size: 10.5px;
-  gap: 7px;
-  justify-content: center;
-  margin-top: 34px !important;
-  padding-top: 18px;
-}
-.auth-security-note span { color: var(--green); font-weight: 800; }
 .form-success {
   background: var(--green-light);
   border-left: 3px solid var(--green);
@@ -808,6 +796,18 @@ img.detail-main-visual {
 .quote-total-card .btn-secondary:hover { background: rgba(255,255,255,.1); }
 
 /* ─── RESPONSIVE CATALOG & DETAIL ─────────────────────────────── */
+@media (min-width: 861px) {
+  .auth-page { padding: 24px 24px 32px; }
+  .auth-layout { max-width: 1040px; min-height: 520px; }
+  .auth-showcase { padding: 34px 40px 30px; }
+  .auth-showcase-copy h2 { font-size: 44px; }
+  .auth-benefits { gap: 12px; margin: 24px 0 20px; }
+  .auth-layout .auth-card { padding: 38px 42px 32px; }
+  .auth-card h1 { font-size: 40px; }
+  .auth-form { gap: 14px; margin-top: 23px; }
+  .auth-form input { min-height: 46px; }
+  .auth-form .btn { min-height: 46px; }
+}
 @media (max-width: 860px) {
   .auth-page { align-items: flex-start; }
   .auth-layout { grid-template-columns: 1fr; max-width: 680px; }

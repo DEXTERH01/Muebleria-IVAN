@@ -189,7 +189,6 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
             {mode === 'register' && <button onClick={() => navigate('/iniciar-sesion')}>Ya tengo una cuenta</button>}
             {mode === 'recovery' && <button onClick={() => navigate('/iniciar-sesion')}>Volver al inicio de sesión</button>}
           </div>
-          <p className="auth-security-note"><span aria-hidden="true">✓</span> Acceso cifrado y protegido por Supabase Auth</p>
           </section>
         </div>
       </main>
