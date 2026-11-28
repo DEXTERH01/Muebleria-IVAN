@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assistant/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assistant Chat */
+        post: operations["assistant_chat_api_v1_assistant_chat_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/me": {
         parameters: {
             query?: never;
@@ -545,6 +562,24 @@ export interface components {
             version: number;
             /** Adjustmentminor */
             adjustmentMinor: number;
+        };
+        /** AssistantChatData */
+        AssistantChatData: {
+            /** Message */
+            message: string;
+            /** Provider */
+            provider: string;
+            /** Model */
+            model: string;
+        };
+        /** AssistantChatRequest */
+        AssistantChatRequest: {
+            /** Message */
+            message: string;
+        };
+        /** AssistantChatResponse */
+        AssistantChatResponse: {
+            data: components["schemas"]["AssistantChatData"];
         };
         /** CatalogOptionData */
         CatalogOptionData: {
@@ -1866,6 +1901,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    assistant_chat_api_v1_assistant_chat_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantChatRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantChatResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

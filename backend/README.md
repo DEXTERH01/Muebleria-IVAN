@@ -19,6 +19,18 @@ Para activar la Fase 2 configura en `backend/.env` una URL PostgreSQL con el dri
 
 Las cargas firmadas de media requieren `MUEBLERIA_CLOUDINARY_CLOUD_NAME`, `MUEBLERIA_CLOUDINARY_API_KEY` y `MUEBLERIA_CLOUDINARY_API_SECRET`. El secreto solo se usa en el backend. Los tests de integración PostgreSQL se activan con `SUPABASE_TEST_DATABASE_URL` apuntando a una base local migrada y sembrada.
 
+## Asistente Mía con Groq
+
+Mía mantiene sus respuestas deterministas para catálogo, cotizaciones y pedidos, y usa
+Groq solo como fallback para preguntas abiertas sobre muebles. Crea una API key en Groq y
+configura `MUEBLERIA_GROQ_API_KEY` exclusivamente en `backend/.env` o en Render. Nunca la
+expongas como variable `VITE_*` ni la guardes en Git.
+
+El modelo predeterminado es `openai/gpt-oss-20b`. Se puede cambiar con
+`MUEBLERIA_GROQ_MODEL`. El endpoint público `POST /api/v1/assistant/chat` limita las
+consultas por cliente; si falta la clave, Groq no responde o se agota la cuota, el frontend
+continúa usando el bot local basado en reglas.
+
 Para validar una base Supabase publicada sin conservar datos de prueba, configura
 `MUEBLERIA_DATABASE_URL` y ejecuta:
 
