@@ -8,4 +8,5 @@ import './styles/admin-responsive.css';
 import './styles/ai.css';
 import './styles/optimizations.css';
 import './styles/accessibility.css';
+import './styles/home-responsive.css';
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
