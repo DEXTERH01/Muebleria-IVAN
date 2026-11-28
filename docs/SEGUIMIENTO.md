@@ -142,15 +142,15 @@ Criterio de salida: modelos reproducibles, evaluados, versionados e integrados s
 
 ## Fase 7. Calidad y experiencia
 
-- [x] Cubrir flujos críticos con pruebas unitarias. Evidencia: `frontend/src/pages/admin/QuotesStatus.test.tsx`; 18 pruebas unitarias pasan con `npm test`.
-- [ ] Añadir pruebas de integración de API y base de datos.
-- [x] Añadir pruebas E2E con Playwright. Evidencia: `frontend/e2e/quote-flow.spec.ts`, `frontend/e2e/admin-quotes.spec.ts`; cotización, aprobación, teclado y Axe.
+- [x] Cubrir flujos críticos con pruebas unitarias. Evidencia: `frontend/src/pages/admin/QuotesStatus.test.tsx`; 20 pruebas unitarias en 10 archivos pasaron con `npm run test` el 2026-11-28; `npm run build` también pasó.
+- [x] Añadir pruebas de integración de API y base de datos. Evidencia: `backend/tests/integration/test_profile_postgres.py` y `backend/tests/integration/test_phase4_workflow_postgres.py`; el recorrido de Fase 4 se ejecutó contra Supabase local y las 68 comprobaciones pgTAP contra Supabase publicado se registraron el 2026-11-21. No se repitieron en esta estación el 2026-11-28 porque Supabase local no estaba iniciado.
+- [x] Añadir pruebas E2E con Playwright. Evidencia: `frontend/e2e/quote-flow.spec.ts`, `frontend/e2e/admin-quotes.spec.ts`; los tres casos de cotización, aprobación, teclado, Axe y responsive pasaron con `npm run test:e2e` el 2026-11-28.
 - [x] Revisar responsive. Evidencia: cotizador y cotizaciones administrativas sin desborde a 360, 768 y 1440 px en E2E.
 - [x] Revisar accesibilidad. Evidencia: auditorías Axe sin infracciones en cotizador, resumen, modal y lista administrativa; foco de modal probado con teclado.
 - [x] Preparar protocolo de prueba de usuario. Evidencia: `docs/PROTOCOLO_PRUEBA_USUARIO.md`, `frontend/quality/USER_TEST_PROTOCOL.md`.
 - [ ] Ejecutar pruebas con cinco a ocho participantes.
 - [ ] Calcular SUS y tasa de tareas completadas.
-- [ ] Medir P50, P95, errores e inferencia. Evidencia parcial de catálogo y estimación: `frontend/quality/PERFORMANCE_BASELINE.md`; pendiente medir inferencia ML.
+- [ ] Medir P50, P95, errores e inferencia. Evidencia parcial local y pública de catálogo y estimación en `frontend/quality/PERFORMANCE_BASELINE.md`; 36 solicitudes públicas sin errores el 2026-11-28. Pendiente inferencia ML en entorno controlado y muestra mayor con concurrencia.
 - [x] Corregir problemas prioritarios. Evidencia: consultas agrupadas del catálogo en `backend/app/repositories/catalog.py`, foco/contraste y responsive en `frontend/src/styles/accessibility.css` y `frontend/src/styles/admin-responsive.css`.
 
 Criterio de salida: flujos críticos aprobados y resultados reales documentados.
