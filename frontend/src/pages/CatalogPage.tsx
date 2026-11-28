@@ -3,7 +3,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { listProducts, type ProductSummary } from '../api/modules/catalog';
 import { ProductCard } from '../components/catalog';
 import { Footer, Navbar } from '../components/layout';
-import { Button } from '../components/ui';
+import { Button, Pagination } from '../components/ui';
+import { usePagination } from '../hooks/usePagination';
+
+const CATALOG_PAGE_SIZE = 12;
 
 export function CatalogPage() {
   const [products, setProducts] = useState<ProductSummary[]>([]);
@@ -45,6 +48,7 @@ export function CatalogPage() {
       && `${product.name} ${product.description}`.toLocaleLowerCase('es').includes(needle)
     ));
   }, [category, products, query]);
+  const { page, pageItems, setPage, totalPages } = usePagination(filtered, CATALOG_PAGE_SIZE);
 
   return (
     <>
@@ -62,7 +66,10 @@ export function CatalogPage() {
                 key={item}
                 role="tab"
                 aria-selected={category === item}
-                onClick={() => setCategory(item)}
+                onClick={() => {
+                  setCategory(item);
+                  setPage(1);
+                }}
                 className={category === item ? 'selected' : ''}
               >
                 {item}
@@ -73,7 +80,10 @@ export function CatalogPage() {
             <span>⌕</span>
             <input
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setPage(1);
+              }}
               placeholder="Buscar muebles..."
               aria-label="Buscar muebles"
             />
@@ -93,8 +103,15 @@ export function CatalogPage() {
               {filtered.length} {filtered.length === 1 ? 'diseño encontrado' : 'diseños encontrados'}
             </p>
             <div className="product-grid">
-              {filtered.map((product) => <ProductCard product={product} key={product.id} />)}
+              {pageItems.map((product) => <ProductCard product={product} key={product.id} />)}
             </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={filtered.length}
+              onPageChange={setPage}
+              label="diseños"
+            />
             {filtered.length === 0 && (
               <div className="empty">
                 <b>No encontramos ese diseño.</b>

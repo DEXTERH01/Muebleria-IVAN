@@ -80,6 +80,7 @@
   font-size: 13.5px;
 }
 .results { font-size: 13px; color: var(--muted); margin: 8px 0 20px; }
+.catalog-page > .pagination { margin-top: 32px; padding-inline: 0; }
 
 /* ─── PRODUCT GRID ─────────────────────────────────────────────── */
 .product-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
