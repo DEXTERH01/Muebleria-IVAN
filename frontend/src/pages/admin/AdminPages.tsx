@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AdminLayout, navigate } from '../../components/layout';
+import { AdminLayout, navigate, navigateBack } from '../../components/layout';
 import { Button, Modal, Pagination, PaymentBadge, StatCard, StatusBadge } from '../../components/ui';
 import type { Customer, Order, OrderStatus } from '../../types';
 import type { PaymentHandler } from '../../api/modules/orders';
@@ -7,7 +7,57 @@ import { PaymentModal } from './PaymentModal';
 export { PaymentModal } from './PaymentModal';
 import { usePagination } from '../../hooks/usePagination';
 import { date, money, statusSteps } from '../../utils/format';
-export function Dashboard({orders}:{orders:Order[]}){const active=orders.filter(o=>o.status!=='instalado').length;const due=orders.filter(o=>o.status==='listo').length;const pending=orders.reduce((sum,o)=>sum+o.remainingBalance,0);const currentMonth=new Date().toISOString().slice(0,7);const monthlySales=orders.filter(o=>o.createdAt.startsWith(currentMonth)).reduce((sum,o)=>sum+o.total,0);return <AdminLayout title="Buenos días, Iván" subtitle="RESUMEN GENERAL"><div className="dashboard"><section className="stats-grid"><StatCard icon="▦" label="Pedidos activos" value={String(active)}/><StatCard icon="◴" label="Por entregar" value={String(due)} tone="amber"/><StatCard icon="S/" label="Saldos pendientes" value={money(pending)} tone="red"/><StatCard icon="↗" label="Ventas del mes" value={money(monthlySales)} tone="green"/></section><section className="dash-grid"><article className="admin-card recent"><div className="card-title"><div><h2>Pedidos recientes</h2><p>Los últimos movimientos de tu taller.</p></div><button className="text-button" onClick={()=>navigate('/admin/pedidos')}>Ver todos →</button></div><OrdersTable orders={orders.slice(0,5)}/></article><article className="admin-card production"><div className="card-title"><div><h2>Resumen de producción</h2><p>Estado de los proyectos activos.</p></div></div>{statusSteps.map(status=><div className="production-row" key={status}><StatusBadge status={status}/><span>{orders.filter(o=>o.status===status).length} pedidos</span></div>)}</article></section><section className="tip"><span>✦</span><p><b>Recordatorio importante.</b> Revisa los pedidos listos para entrega y confirma que el saldo final esté registrado antes de coordinar la instalación.</p><Button variant="ghost" onClick={()=>navigate('/admin/pagos')}>Ver saldos pendientes →</Button></section></div></AdminLayout>}
+import { useAuth } from '../../auth/AuthProvider';
+import { getDemandForecast } from '../../utils/analytics';
+const dashboardWidgets = [
+  { id: 'metrics', label: 'Indicadores comerciales' },
+  { id: 'sales', label: 'Ingresos y ventas' },
+  { id: 'recent', label: 'Pedidos recientes' },
+  { id: 'production', label: 'Producción' },
+  { id: 'forecast', label: 'Proyección de demanda' },
+] as const;
+type DashboardWidget = typeof dashboardWidgets[number]['id'];
+const dashboardPreferenceKey = 'muebleria.dashboard.widgets.v1';
+function loadDashboardWidgets(): DashboardWidget[] {
+  try {
+    const saved: unknown = JSON.parse(localStorage.getItem(dashboardPreferenceKey) ?? 'null');
+    if (Array.isArray(saved)) return dashboardWidgets.map(({id})=>id).filter(id=>saved.includes(id));
+  } catch { /* Use the default panel arrangement. */ }
+  return dashboardWidgets.map(({id})=>id);
+}
+export function Dashboard({orders}:{orders:Order[]}){
+  const auth=useAuth();
+  const [visible,setVisible]=useState<DashboardWidget[]>(loadDashboardWidgets);
+  const [customizing,setCustomizing]=useState(false);
+  const active=orders.filter(o=>o.status!=='instalado').length;
+  const due=orders.filter(o=>o.status==='listo').length;
+  const pending=orders.reduce((sum,o)=>sum+o.remainingBalance,0);
+  const now=new Date();
+  const currentMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const monthlyOrders=orders.filter(o=>o.createdAt.startsWith(currentMonth));
+  const monthlySales=monthlyOrders.reduce((sum,o)=>sum+o.total,0);
+  const received=monthlyOrders.reduce((sum,o)=>sum+o.advancePaid,0);
+  const forecast=getDemandForecast(30,orders);
+  const projected=forecast[forecast.length-1]?.value??0;
+  const maxForecast=Math.max(1,...forecast.map(point=>point.value));
+  const name=auth?.profile?.fullName?.split(' ')[0]??'equipo';
+  const toggleWidget=(id:DashboardWidget)=>setVisible(current=>{
+    const next=current.includes(id)?current.filter(item=>item!==id):[...current,id];
+    localStorage.setItem(dashboardPreferenceKey,JSON.stringify(next));
+    return next;
+  });
+  return <AdminLayout title={`Hola, ${name}`} subtitle="RESUMEN GENERAL"><div className="dashboard dashboard-custom">
+    <div className="dashboard-toolbar"><button className="text-button" onClick={()=>setCustomizing(value=>!value)} aria-expanded={customizing}>{customizing?'Listo':'⚙ Personalizar paneles'}</button><button className="text-button" onClick={navigateBack}>← Volver atrás</button></div>
+    {customizing&&<section className="dashboard-customizer" aria-label="Personalizar paneles"><strong>Mostrar en mi resumen</strong>{dashboardWidgets.map(widget=><label key={widget.id}><input type="checkbox" checked={visible.includes(widget.id)} onChange={()=>toggleWidget(widget.id)}/>{widget.label}</label>)}</section>}
+    {visible.includes('metrics')&&<section className="stats-grid"><StatCard icon="▦" label="Pedidos activos" value={String(active)}/><StatCard icon="◴" label="Por entregar" value={String(due)} tone="amber"/><StatCard icon="S/" label="Saldo pendiente" value={money(pending)} tone="red"/><StatCard icon="↗" label="Pedidos del mes" value={String(monthlyOrders.length)} tone="green"/></section>}
+    {visible.includes('sales')&&<section className="dashboard-financial"><article className="admin-card"><small>VENTAS CONFIRMADAS ESTE MES</small><strong>{money(monthlySales)}</strong><span>Valor total de pedidos registrados</span></article><article className="admin-card"><small>INGRESOS COBRADOS ESTE MES</small><strong>{money(received)}</strong><span>Pagos registrados en esos pedidos</span></article><article className="admin-card"><small>SALDO PENDIENTE</small><strong>{money(pending)}</strong><span>Saldo de todos los pedidos activos</span></article></section>}
+    <section className="dash-grid">
+      {visible.includes('recent')&&<article className="admin-card recent"><div className="card-title"><div><h2>Pedidos recientes</h2><p>Últimos pedidos de la API.</p></div><button className="text-button" onClick={()=>navigate('/admin/pedidos')}>Ver todos →</button></div><OrdersTable orders={orders.slice(0,5)}/></article>}
+      {visible.includes('production')&&<article className="admin-card production"><div className="card-title"><div><h2>Resumen de producción</h2><p>Distribución actual por etapa.</p></div></div>{statusSteps.map(status=><div className="production-row" key={status}><StatusBadge status={status}/><span>{orders.filter(o=>o.status===status).length} pedidos</span></div>)}</article>}
+    </section>
+    {visible.includes('forecast')&&<section className="admin-card dashboard-forecast"><div className="card-title"><div><h2>Demanda estimada</h2><p>Proyección lineal de pedidos basada en hasta seis meses del historial.</p></div><button className="text-button" onClick={()=>navigate('/admin/analitica')}>Ver análisis →</button></div><div className="dashboard-bars" role="img" aria-label={`Proyección consultiva: ${projected} pedidos para el próximo mes`}>{forecast.map(point=><div key={`${point.label}-${point.projected?'future':'past'}`} className={point.projected?'projected':''}><span>{point.value}</span><i style={{height:`${Math.max(8,point.value/maxForecast*96)}px`}}/><small>{point.label}</small></div>)}</div><small className="forecast-disclaimer">Estimación orientativa, no es una predicción de ingresos ni sustituye el registro real.</small></section>}
+    <section className="tip"><span>✦</span><p><b>Revisa los cobros pendientes.</b> Los indicadores se calculan con los pedidos y pagos disponibles para tu cuenta.</p><Button variant="ghost" onClick={()=>navigate('/admin/pagos')}>Ver pagos →</Button></section>
+  </div></AdminLayout>}
 export function OrdersTable({orders}:{orders:Order[]}){return <div className="table-wrap"><table><thead><tr><th>Código</th><th>Cliente</th><th>Proyecto</th><th>Entrega</th><th>Estado</th><th>Pago</th><th></th></tr></thead><tbody>{orders.map(o=><tr key={o.id}><td><b>{o.id}</b></td><td>{o.customerName}</td><td>{o.productType}</td><td>{date(o.deliveryDate)}</td><td><StatusBadge status={o.status}/></td><td><PaymentBadge status={o.paymentStatus}/></td><td><button className="arrow-link" onClick={()=>navigate(`/admin/pedido/${o.id}`)}>→</button></td></tr>)}</tbody></table></div>}
 export function OrdersPage({orders}:{orders:Order[]}){const [query,setQuery]=useState('');const list=orders.filter(o=>`${o.id} ${o.customerName} ${o.productType}`.toLowerCase().includes(query.toLowerCase()));const {page,pageItems,setPage,totalPages}=usePagination(list,12);useEffect(()=>setPage(1),[query,setPage]);return <AdminLayout title="Pedidos" subtitle="GESTIÓN DE PEDIDOS"><div className="page-actions"><label className="search"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar por cliente o pedido..."/></label><Button onClick={()=>navigate('/cotizador')}>+ Nuevo pedido</Button></div><article className="admin-card"><div className="card-title"><div><h2>Todos los pedidos</h2><p>{list.length} proyectos registrados</p></div></div><OrdersTable orders={pageItems}/><Pagination page={page} totalPages={totalPages} totalItems={list.length} onPageChange={setPage} label="pedidos"/></article></AdminLayout>}
 const columns:OrderStatus[]=['material-pendiente','corte','armado','listo','instalado'];
