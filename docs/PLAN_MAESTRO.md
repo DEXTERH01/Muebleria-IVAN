@@ -265,9 +265,9 @@ La migración desde el prototipo actual será:
 
 El nombre público y oficial de la empresa dentro del sistema es **Mueblería Iván** y será el único nombre utilizado en interfaces, documentación y metadatos públicos.
 
-El recurso oficial es `frontend/public/assets/brand/muebleria-ivan-logo.svg`: un monograma geométrico M/I, inspirado en la precisión de ensambles y cortes, sin representar un mueble de forma literal. Se utiliza en navegación, panel administrativo y favicon. El logotipo horizontal está en `frontend/public/assets/brand/muebleria-ivan-horizontal.svg`; las variantes están documentadas en `docs/IDENTIDAD_VISUAL.md`.
+El recurso oficial es `frontend/public/assets/brand/muebleria-ivan-logo.svg`: un emblema geométrico con silueta M y dos puertas de gabinete, basado en la referencia visual de la marca. El frontend lo dibuja mediante paths SVG inline para animar las puertas; los archivos vectoriales de firma, impresión, favicon y sus especificaciones están en `docs/IDENTIDAD_VISUAL.md`.
 
-La paleta de marca usa marrón nogal `#3D2B1F`, terracota `#A45C40`, beige natural `#D8C4AD`, marfil `#F5F2ED` y negro cálido `#26221E`. El símbolo usa como máximo dos colores a la vez, conserva su transparencia y proporción, y tiene versiones monocromática e invertida.
+La paleta de marca usa marrón nogal `#3D2B1F`, terracota `#A45C40`, beige natural `#D8C4AD`, marfil `#F5F2ED` y negro cálido `#26221E`. El emblema usa como máximo dos tintas a la vez, conserva su proporción y tiene versiones monocromática e invertida.
 
 ## Arquitectura
 

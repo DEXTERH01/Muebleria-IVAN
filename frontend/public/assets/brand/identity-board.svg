@@ -1,124 +1,112 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" fill="none">
   <rect width="1600" height="1200" fill="#F5F2ED" />
-
-  <g fill="#26221E">
-    <text x="80" y="65" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="3">MUEBLERÍA IVÁN / SISTEMA DE IDENTIDAD</text>
-    <text x="1520" y="65" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="2">PROPUESTA 01 · LIMA, PERÚ</text>
-    <path d="M80 92H1520" stroke="#D8C4AD" />
-    <text x="80" y="160" font-family="'Playfair Display', Georgia, serif" font-size="48" font-weight="600">Geometría que deja huella.</text>
-    <text x="82" y="198" fill="#6B625B" font-family="Inter, Arial, sans-serif" font-size="18">Una firma contemporánea para diseñar y fabricar a medida.</text>
-
-    <text x="80" y="245" fill="#A45C40" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2">01 / LOGOTIPO PRINCIPAL</text>
+  <g font-family="Inter, Arial, sans-serif" fill="#26221E">
+    <text x="80" y="62" font-size="15" font-weight="700" letter-spacing="3">MUEBLERÍA IVÁN / SISTEMA DE IDENTIDAD</text>
+    <text x="1520" y="62" text-anchor="end" font-size="13" letter-spacing="2">LIMA, PERÚ · 2026</text>
+    <path d="M80 88H1520" stroke="#D8C4AD" />
+    <text x="80" y="147" font-family="'Playfair Display', Georgia, serif" font-size="42" font-weight="600">Diseño a medida, hecho para durar.</text>
+    <text x="80" y="176" fill="#6B625B" font-size="16">La silueta del gabinete se convierte en una firma simple, reproducible y propia.</text>
+    <text x="80" y="215" fill="#A45C40" font-size="12" font-weight="700" letter-spacing="2">01 / FIRMA PRINCIPAL</text>
   </g>
 
-  <g transform="translate(80 270)">
-    <g transform="translate(0 8) scale(1.05)">
-      <path fill="#3D2B1F" d="M18 112V18h17l45 39 45-39h17v94h-23V60L80 92 41 60v52H18Z" />
-      <path fill="#A45C40" d="M73 84h14v28H73z" />
-    </g>
-    <text x="190" y="92" fill="#3D2B1F" font-family="'Playfair Display', Georgia, serif" font-size="56" font-weight="600" letter-spacing="-1.5">
+  <g transform="translate(80 224)">
+    <path fill="#3D2B1F" d="M24 222V26L140 101 256 26v196h-48v-99l-68 43-68-43v99H24Z" />
+    <path fill="#D8C4AD" d="m78 130 56 36v50H78zm68 36 56-36v86h-56z" />
+    <path fill="#3D2B1F" d="M124 174h6v22h-6zm26 0h6v22h-6z" />
+    <path stroke="#D8C4AD" stroke-width="2" d="M320 28v176" />
+    <text x="370" y="112" fill="#3D2B1F" font-family="Inter, Arial, sans-serif" font-size="62" font-weight="700" letter-spacing="-2.5">
       <tspan>Mueblería </tspan><tspan fill="#A45C40" font-style="italic">Iván</tspan>
     </text>
-  </g>
-  <g fill="#26221E" font-family="Inter, Arial, sans-serif">
-    <text x="1190" y="250" fill="#A45C40" font-size="13" font-weight="700" letter-spacing="2">MONOGRAMA M/I</text>
-    <text x="1190" y="405" fill="#6B625B" font-size="13">Precisión en el encuentro de las líneas.</text>
-  </g>
-  <g transform="translate(1200 267) scale(.9)">
-    <path fill="#3D2B1F" d="M18 112V18h17l45 39 45-39h17v94h-23V60L80 92 41 60v52H18Z" />
-    <path fill="#A45C40" d="M73 84h14v28H73z" />
+    <text x="374" y="158" fill="#26221E" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="600" letter-spacing="5">DISEÑO A TU MEDIDA</text>
   </g>
 
-  <path d="M80 440H1520" stroke="#D8C4AD" />
-
-  <g fill="#26221E" font-family="Inter, Arial, sans-serif">
-    <text x="80" y="484" fill="#A45C40" font-size="13" font-weight="700" letter-spacing="2">02 / VARIACIONES</text>
-    <text x="80" y="526" font-size="16" font-weight="600">Vertical</text>
-    <text x="386" y="526" font-size="16" font-weight="600">Una tinta</text>
-    <text x="692" y="526" font-size="16" font-weight="600">Invertida</text>
+  <g font-family="Inter, Arial, sans-serif" fill="#26221E">
+    <text x="1240" y="238" fill="#A45C40" font-size="12" font-weight="700" letter-spacing="2">EMBLEMA</text>
+    <text x="1240" y="410" fill="#6B625B" font-size="12">Silueta de gabinete · M estructural</text>
+  </g>
+  <g transform="translate(1250 250) scale(.65)">
+    <path fill="#3D2B1F" d="M24 222V26L140 101 256 26v196h-48v-99l-68 43-68-43v99H24Z" />
+    <path fill="#D8C4AD" d="m78 130 56 36v50H78zm68 36 56-36v86h-56z" />
+    <path fill="#3D2B1F" d="M124 174h6v22h-6zm26 0h6v22h-6z" />
   </g>
 
-  <g transform="translate(80 550)">
-    <g transform="translate(62 0) scale(.8)">
-      <path fill="#3D2B1F" d="M18 112V18h17l45 39 45-39h17v94h-23V60L80 92 41 60v52H18Z" />
-      <path fill="#A45C40" d="M73 84h14v28H73z" />
+  <path d="M80 486H1520" stroke="#D8C4AD" />
+  <g font-family="Inter, Arial, sans-serif" fill="#26221E">
+    <text x="80" y="528" fill="#A45C40" font-size="12" font-weight="700" letter-spacing="2">02 / VERSIONES</text>
+    <text x="80" y="565" font-size="15" font-weight="600">Vertical</text>
+    <text x="355" y="565" font-size="15" font-weight="600">Una tinta</text>
+    <text x="660" y="565" font-size="15" font-weight="600">Invertida</text>
+  </g>
+
+  <g transform="translate(80 585)">
+    <g transform="translate(35 0) scale(.55)">
+      <path fill="#3D2B1F" d="M24 222V26L140 101 256 26v196h-48v-99l-68 43-68-43v99H24Z" />
+      <path fill="#D8C4AD" d="m78 130 56 36v50H78zm68 36 56-36v86h-56z" />
+      <path fill="#3D2B1F" d="M124 174h6v22h-6zm26 0h6v22h-6z" />
     </g>
-    <text x="128" y="144" text-anchor="middle" fill="#3D2B1F" font-family="'Playfair Display', Georgia, serif" font-size="27" font-weight="600">
-      <tspan>Mueblería </tspan><tspan fill="#A45C40" font-style="italic">Iván</tspan>
-    </text>
+    <text x="112" y="159" text-anchor="middle" fill="#3D2B1F" font-size="23" font-weight="700">Mueblería <tspan fill="#A45C40" font-style="italic">Iván</tspan></text>
+    <text x="112" y="184" text-anchor="middle" fill="#26221E" font-size="10" font-weight="600" letter-spacing="2">DISEÑO A TU MEDIDA</text>
   </g>
 
-  <g transform="translate(386 592)">
-    <g transform="translate(0 0) scale(.65)" fill="#26221E">
-      <path d="M18 112V18h17l45 39 45-39h17v94h-23V60L80 92 41 60v52H18Z" />
-      <path d="M73 84h14v28H73z" />
+  <g transform="translate(355 605)">
+    <g transform="scale(.58)">
+      <path fill="#26221E" d="M24 222V26L140 101 256 26v196h-48v-99l-68 43-68-43v99H24Z" />
+      <path fill="#F5F2ED" d="m78 130 56 36v50H78zm68 36 56-36v86h-56z" />
+      <path fill="#26221E" d="M124 174h6v22h-6zm26 0h6v22h-6z" />
     </g>
-    <text x="0" y="120" fill="#26221E" font-family="'Playfair Display', Georgia, serif" font-size="28" font-weight="600">Mueblería Iván</text>
-    <text x="0" y="148" fill="#6B625B" font-family="Inter, Arial, sans-serif" font-size="13">Una sola tinta · negro cálido</text>
+    <text x="0" y="155" fill="#26221E" font-size="24" font-weight="700">Mueblería Iván</text>
+    <text x="0" y="180" fill="#26221E" font-size="10" font-weight="600" letter-spacing="2">DISEÑO A TU MEDIDA</text>
   </g>
 
-  <g transform="translate(692 550)">
-    <rect width="280" height="176" fill="#26221E" />
-    <g transform="translate(26 28) scale(.68)">
-      <path fill="#F5F2ED" d="M18 112V18h17l45 39 45-39h17v94h-23V60L80 92 41 60v52H18Z" />
-      <path fill="#D8C4AD" d="M73 84h14v28H73z" />
+  <g transform="translate(660 580)">
+    <rect width="280" height="180" fill="#26221E" />
+    <g transform="translate(18 24) scale(.55)">
+      <path fill="#F5F2ED" d="M24 222V26L140 101 256 26v196h-48v-99l-68 43-68-43v99H24Z" />
+      <path fill="#3D2B1F" d="m78 130 56 36v50H78zm68 36 56-36v86h-56z" />
+      <path fill="#F5F2ED" d="M124 174h6v22h-6zm26 0h6v22h-6z" />
     </g>
-    <text x="127" y="97" fill="#F5F2ED" font-family="'Playfair Display', Georgia, serif" font-size="27" font-weight="600">
-      <tspan>Mueblería </tspan><tspan fill="#D8C4AD" font-style="italic">Iván</tspan>
-    </text>
-    <text x="127" y="123" fill="#D8C4AD" font-family="Inter, Arial, sans-serif" font-size="11" letter-spacing="1.4">LIMA · PERÚ</text>
+    <text x="108" y="92" fill="#F5F2ED" font-size="22" font-weight="700">Mueblería <tspan fill="#D8C4AD" font-style="italic">Iván</tspan></text>
+    <text x="108" y="118" fill="#D8C4AD" font-size="9" font-weight="600" letter-spacing="1.5">DISEÑO A TU MEDIDA</text>
   </g>
 
-  <path d="M1010 462V790" stroke="#D8C4AD" />
-  <g fill="#26221E" font-family="Inter, Arial, sans-serif">
-    <text x="1050" y="484" fill="#A45C40" font-size="13" font-weight="700" letter-spacing="2">03 / PALETA CROMÁTICA</text>
-    <rect x="1050" y="514" width="78" height="78" fill="#3D2B1F" />
-    <rect x="1144" y="514" width="78" height="78" fill="#A45C40" />
-    <rect x="1238" y="514" width="78" height="78" fill="#D8C4AD" />
-    <rect x="1332" y="514" width="78" height="78" fill="#F5F2ED" stroke="#D8C4AD" />
-    <rect x="1426" y="514" width="78" height="78" fill="#26221E" />
-    <text x="1050" y="618" font-size="12" font-weight="700">Nogal</text>
-    <text x="1050" y="638" fill="#6B625B" font-size="11">#3D2B1F</text>
-    <text x="1144" y="618" font-size="12" font-weight="700">Terracota</text>
-    <text x="1144" y="638" fill="#6B625B" font-size="11">#A45C40</text>
-    <text x="1238" y="618" font-size="12" font-weight="700">Beige</text>
-    <text x="1238" y="638" fill="#6B625B" font-size="11">#D8C4AD</text>
-    <text x="1332" y="618" font-size="12" font-weight="700">Marfil</text>
-    <text x="1332" y="638" fill="#6B625B" font-size="11">#F5F2ED</text>
-    <text x="1426" y="618" font-size="12" font-weight="700">Negro cálido</text>
-    <text x="1426" y="638" fill="#6B625B" font-size="11">#26221E</text>
+  <path d="M984 508V780" stroke="#D8C4AD" />
+  <g font-family="Inter, Arial, sans-serif" fill="#26221E">
+    <text x="1024" y="528" fill="#A45C40" font-size="12" font-weight="700" letter-spacing="2">03 / PALETA</text>
+    <rect x="1024" y="552" width="76" height="70" fill="#3D2B1F" />
+    <rect x="1112" y="552" width="76" height="70" fill="#A45C40" />
+    <rect x="1200" y="552" width="76" height="70" fill="#D8C4AD" />
+    <rect x="1288" y="552" width="76" height="70" fill="#F5F2ED" stroke="#D8C4AD" />
+    <rect x="1376" y="552" width="76" height="70" fill="#26221E" />
+    <text x="1024" y="644" font-size="11" font-weight="700">Nogal</text><text x="1024" y="661" fill="#6B625B" font-size="10">#3D2B1F</text>
+    <text x="1112" y="644" font-size="11" font-weight="700">Terracota</text><text x="1112" y="661" fill="#6B625B" font-size="10">#A45C40</text>
+    <text x="1200" y="644" font-size="11" font-weight="700">Beige</text><text x="1200" y="661" fill="#6B625B" font-size="10">#D8C4AD</text>
+    <text x="1288" y="644" font-size="11" font-weight="700">Marfil</text><text x="1288" y="661" fill="#6B625B" font-size="10">#F5F2ED</text>
+    <text x="1376" y="644" font-size="11" font-weight="700">Negro cálido</text><text x="1376" y="661" fill="#6B625B" font-size="10">#26221E</text>
+    <text x="1024" y="713" fill="#A45C40" font-size="12" font-weight="700" letter-spacing="2">04 / TIPOGRAFÍA</text>
+    <text x="1024" y="751" font-size="22" font-weight="700">Inter Bold <tspan font-style="italic">Iván</tspan></text>
+    <text x="1024" y="774" fill="#6B625B" font-size="12">Inter para firma y navegación</text>
   </g>
 
-  <g fill="#26221E" font-family="Inter, Arial, sans-serif">
-    <text x="1050" y="702" fill="#A45C40" font-size="13" font-weight="700" letter-spacing="2">04 / TIPOGRAFÍA</text>
-    <text x="1050" y="754" font-family="'Playfair Display', Georgia, serif" font-size="35" font-weight="600">Mueblería <tspan fill="#A45C40" font-style="italic">Iván</tspan></text>
-    <text x="1050" y="780" fill="#6B625B" font-size="13">Playfair Display Semibold · firma editorial</text>
-    <text x="1320" y="752" font-size="26" font-weight="500">Inter</text>
-    <text x="1320" y="780" fill="#6B625B" font-size="13">Inter · interfaz y lectura</text>
+  <path d="M80 812H1520" stroke="#D8C4AD" />
+  <g font-family="Inter, Arial, sans-serif" fill="#26221E">
+    <text x="80" y="852" fill="#A45C40" font-size="12" font-weight="700" letter-spacing="2">05 / CABECERA WEB</text>
   </g>
+  <rect x="80" y="876" width="1440" height="176" fill="#FFFFFF" stroke="#D8C4AD" />
+  <g transform="translate(110 900) scale(.3)">
+    <path fill="#3D2B1F" d="M24 222V26L140 101 256 26v196h-48v-99l-68 43-68-43v99H24Z" />
+    <path fill="#D8C4AD" d="m78 130 56 36v50H78zm68 36 56-36v86h-56z" />
+    <path fill="#3D2B1F" d="M124 174h6v22h-6zm26 0h6v22h-6z" />
+  </g>
+  <path stroke="#D8C4AD" stroke-width="1.5" d="M184 906v59" />
+  <text x="205" y="936" fill="#3D2B1F" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="700">Mueblería <tspan fill="#A45C40" font-style="italic">Iván</tspan></text>
+  <text x="206" y="957" fill="#26221E" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="600" letter-spacing="1.6">DISEÑO A TU MEDIDA</text>
+  <g fill="#3D2B1F" font-family="Inter, Arial, sans-serif" font-size="14">
+    <text x="760" y="939">Inicio</text><text x="842" y="939">Catálogo</text><text x="946" y="939">¿Cómo trabajamos?</text>
+  </g>
+  <rect x="1300" y="912" width="178" height="48" fill="#3D2B1F" />
+  <text x="1389" y="942" text-anchor="middle" fill="#F5F2ED" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Cotizar proyecto</text>
 
-  <path d="M80 820H1520" stroke="#D8C4AD" />
-  <g fill="#26221E" font-family="Inter, Arial, sans-serif">
-    <text x="80" y="864" fill="#A45C40" font-size="13" font-weight="700" letter-spacing="2">05 / APLICACIÓN EN CABECERA WEB</text>
-  </g>
-  <rect x="80" y="886" width="1440" height="176" fill="#FFFFFF" stroke="#D8C4AD" />
-  <g transform="translate(110 918)">
-    <g transform="translate(0 0) scale(.34)">
-      <path fill="#3D2B1F" d="M18 112V18h17l45 39 45-39h17v94h-23V60L80 92 41 60v52H18Z" />
-      <path fill="#A45C40" d="M73 84h14v28H73z" />
-    </g>
-    <text x="68" y="39" fill="#3D2B1F" font-family="'Playfair Display', Georgia, serif" font-size="22" font-weight="600">Mueblería <tspan fill="#A45C40" font-style="italic">Iván</tspan></text>
-  </g>
-  <g fill="#3D2B1F" font-family="Inter, Arial, sans-serif" font-size="15">
-    <text x="790" y="958">Inicio</text>
-    <text x="885" y="958">Catálogo</text>
-    <text x="1004" y="958">Cómo trabajamos</text>
-  </g>
-  <rect x="1302" y="925" width="176" height="50" fill="#3D2B1F" />
-  <text x="1390" y="956" text-anchor="middle" fill="#F5F2ED" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Cotizar proyecto</text>
   <path d="M80 1090H1520" stroke="#D8C4AD" />
-  <g fill="#6B625B" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing=".5">
-    <text x="80" y="1124">SÍMBOLO M/I · DOS TINTAS MÁXIMO · FUNCIONA EN UNA SOLA TINTA</text>
-    <text x="1520" y="1124" text-anchor="end">ARCHIVOS VECTORIALES EDITABLES · 2026</text>
-  </g>
+  <text x="80" y="1124" fill="#6B625B" font-family="Inter, Arial, sans-serif" font-size="11" letter-spacing=".5">SÍMBOLO VECTORIAL · DOS COLORES · VARIANTE DE UNA TINTA · ANIMACIÓN DE PUERTAS EN WEB</text>
+  <text x="1520" y="1124" text-anchor="end" fill="#6B625B" font-family="Inter, Arial, sans-serif" font-size="11">SVG EDITABLE · APTO PARA IMPRESIÓN</text>
 </svg>

@@ -1,46 +1,49 @@
 # Identidad visual de Mueblería Iván
 
-## Idea de marca
+## Concepto
 
-El símbolo es un monograma geométrico M/I. La M se construye con tres trazos rectos y un vértice central; el asta de la I nace en ese ensamble y se integra en el espacio negativo. Las proporciones aluden a cortes precisos y uniones de carpintería sin ilustrar muebles, casas ni herramientas. La silueta funciona en una tinta y conserva su lectura a tamaño favicon.
+La marca conserva el emblema de la referencia: una silueta arquitectónica en forma de M que contiene dos puertas de gabinete. Las líneas rectas, el encuentro central y las hojas simétricas evocan diseño a medida y precisión de fabricación. El símbolo se dibuja con formas vectoriales planas, sin degradados, sombras ni texturas.
 
-La firma escribe siempre **Mueblería Iván**, con ambas tildes. Playfair Display aporta el tono editorial: “Mueblería” va en redonda e “Iván” en cursiva. Inter se reserva para navegación, etiquetas y texto de interfaz.
+La firma escribe exactamente **Mueblería Iván**. Usa Inter Bold para “Mueblería” e Inter Bold Italic para “Iván”. El descriptor **DISEÑO A TU MEDIDA** va en mayúsculas con espaciado amplio. Playfair Display queda reservada a titulares editoriales de la interfaz; no forma parte del logotipo.
 
-## Paleta
+## Color y producción
 
 | Nombre | Código | Uso |
 | --- | --- | --- |
-| Marrón nogal | `#3D2B1F` | Símbolo, títulos y firma principal |
-| Terracota | `#A45C40` | Asta I del monograma y acento tipográfico |
-| Beige natural | `#D8C4AD` | Acento para la versión invertida |
-| Marfil | `#F5F2ED` | Fondo claro y tinta de la versión invertida |
-| Negro cálido | `#26221E` | Texto y versión monocromática |
+| Marrón nogal | `#3D2B1F` | Estructura del emblema y nombre |
+| Terracota | `#A45C40` | “Iván” y acento de marca |
+| Beige natural | `#D8C4AD` | Frentes de puertas y divisor |
+| Marfil | `#F5F2ED` | Fondo claro y tinta de versión invertida |
+| Negro cálido | `#26221E` | Descriptor y versión monocromática |
 
-El símbolo principal combina nogal y terracota. No se añaden degradados, sombras, texturas ni contenedores decorativos. La versión monocromática utiliza una única tinta; la invertida usa marfil y beige sobre negro cálido.
+El símbolo principal combina nogal y beige (dos tintas). La variante monocromática usa una sola tinta y conserva las puertas como espacios negativos. La variante invertida usa colores planos sobre un fondo negro cálido. Los SVG se imprimen directamente como vectores y mantienen separadas la estructura, las puertas y las manijas.
 
 ## Tipografía
 
-- **Firma:** Playfair Display Semibold. `Mueblería` en redonda y `Iván` en cursiva.
-- **Interfaz:** Inter para navegación, controles, etiquetas y texto funcional.
-- Si un entorno no carga las fuentes web, los SVG declaran Georgia/serif como alternativa para la firma. El texto de los logotipos permanece como texto editable.
+- **Logotipo:** Inter Bold; “Iván” en Inter Bold Italic.
+- **Descriptor:** Inter Semibold, mayúsculas y tracking amplio.
+- **Interfaz:** Inter para controles, navegación y texto funcional; Playfair Display para titulares editoriales.
+
+Los SVG de firma mantienen el texto editable. Si Inter no está disponible, usan Arial como alternativa sans serif.
 
 ## Archivos vectoriales
 
-Todos los archivos SVG son editables en Illustrator y pueden implementarse directamente en web.
+Todos son SVG editables en Illustrator y aptos para web e impresión.
 
 | Archivo | Uso |
 | --- | --- |
-| `frontend/public/assets/brand/muebleria-ivan-horizontal.svg` | Logotipo principal horizontal |
+| `frontend/public/assets/brand/muebleria-ivan-horizontal.svg` | Logotipo principal con descriptor |
 | `frontend/public/assets/brand/muebleria-ivan-vertical.svg` | Composición vertical |
-| `frontend/public/assets/brand/muebleria-ivan-logo.svg` | Monograma independiente |
-| `frontend/public/assets/brand/muebleria-ivan-monochrome.svg` | Firma monocromática de una tinta |
-| `frontend/public/assets/brand/muebleria-ivan-inverse.svg` | Firma invertida sobre negro cálido |
-| `frontend/public/assets/brand/favicon-16.svg` | Favicon de 16 × 16 |
-| `frontend/public/assets/brand/favicon-32.svg` | Favicon de 32 × 32 |
-| `frontend/public/assets/brand/identity-board.svg` | Lámina de identidad y aplicación de cabecera web |
+| `frontend/public/assets/brand/muebleria-ivan-logo.svg` | Emblema independiente |
+| `frontend/public/assets/brand/muebleria-ivan-emblem-inverse.svg` | Emblema claro para fondos oscuros |
+| `frontend/public/assets/brand/muebleria-ivan-monochrome.svg` | Logotipo de una tinta |
+| `frontend/public/assets/brand/muebleria-ivan-inverse.svg` | Logotipo claro sobre negro cálido |
+| `frontend/public/assets/brand/favicon-16.svg` | Emblema para 16 × 16 px |
+| `frontend/public/assets/brand/favicon-32.svg` | Emblema para 32 × 32 px |
+| `frontend/public/assets/brand/identity-board.svg` | Lámina editorial y aplicación de cabecera web |
 
-El área libre mínima recomendada alrededor del monograma equivale al ancho de su asta central. En tamaños de interfaz se recomienda usar el monograma solo desde 16 px y la firma horizontal desde 180 px de ancho. No inclinar, estirar ni añadir contornos al símbolo.
+## Movimiento e implementación
 
-## Uso en el producto
+`frontend/src/components/BrandMark.tsx` dibuja el emblema con paths SVG inline. La cabecera puede animar cada puerta de forma independiente; la animación respeta `prefers-reduced-motion`. El mismo emblema existe como SVG estático para favicon, documentación e impresión.
 
-La cabecera del frontend usa el monograma nogal/terracota junto a la firma tipográfica. El portal de acceso usa la variante clara del monograma sobre su fondo oscuro. El favicon enlaza versiones optimizadas para 16 y 32 píxeles. La lámina `identity-board.svg` presenta las composiciones, la paleta, la tipografía y una aplicación esquemática de la cabecera.
+La firma principal está en la cabecera junto al divisor y descriptor. El portal de acceso usa el emblema claro sobre fondo oscuro. Se recomienda conservar el espacio libre equivalente al ancho de una manija y no estirar, inclinar, contornear ni añadir efectos al símbolo.

@@ -57,7 +57,7 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
   z-index: 100;
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background: rgba(250,248,245,.82);
+  background: rgba(245,242,237,.88);
   border-bottom: 1px solid rgba(232,226,218,.55);
   transition: box-shadow .3s;
 }
@@ -77,38 +77,68 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
 .logo {
   background: none;
   border: 0;
-  gap: 10px;
+  gap: 12px;
   padding: 0;
   display: flex;
   align-items: center;
   transition: opacity .2s ease;
 }
-.logo:hover { opacity: .82; }
+.logo:hover { opacity: .9; }
+.logo-divider {
+  background: var(--beige);
+  display: block;
+  height: 38px;
+  width: 1px;
+}
+.logo-copy { display: flex; flex-direction: column; gap: 2px; text-align: left; }
 .logo-wordmark {
   color: var(--brown);
-  font-family: 'Playfair Display', serif;
-  font-size: 19px;
-  font-weight: 600;
-  letter-spacing: -.025em;
+  font-family: Inter, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -.035em;
+  line-height: 1.1;
   white-space: nowrap;
 }
-.logo-wordmark i { color: var(--wood); font-style: italic; }
+.logo-wordmark i { color: var(--wood); font-style: italic; font-weight: 700; }
+.logo-tagline {
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .22em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
 .brand-mark {
   display: block;
-  height: 40px;
-  object-fit: contain;
-  width: 50px;
+  flex: 0 0 auto;
+  height: 48px;
+  overflow: visible;
+  width: 56px;
 }
-.brand-mark.is-animated {
-  animation: brand-mark-enter .72s cubic-bezier(.2,.8,.2,1) both;
+.brand-mark-frame { fill: var(--brown); }
+.brand-mark-door { fill: var(--beige); transform-box: fill-box; transform-origin: center; transition: transform .28s ease; }
+.brand-mark-handle { fill: var(--brown); }
+.brand-mark.is-inverse .brand-mark-frame { fill: var(--cream); }
+.brand-mark.is-inverse .brand-mark-door { fill: var(--brown); }
+.brand-mark.is-inverse .brand-mark-handle { fill: var(--cream); }
+.logo:hover .brand-mark-door-left,
+.brand-mark.is-animated .brand-mark-door-left { transform: translateX(-2px) skewY(-1deg); }
+.logo:hover .brand-mark-door-right,
+.brand-mark.is-animated .brand-mark-door-right { transform: translateX(2px) skewY(1deg); }
+.brand-mark.is-animated .brand-mark-door-left { animation: cabinet-close-left .72s ease-out both; }
+.brand-mark.is-animated .brand-mark-door-right { animation: cabinet-close-right .72s ease-out both; }
+@keyframes cabinet-close-left {
+  from { transform: translateX(-5px) skewY(-2deg); }
+  to { transform: translateX(0) skewY(0); }
 }
-@keyframes brand-mark-enter {
-  0% { opacity: 0; transform: scale(.82) rotate(-3deg); }
-  72% { opacity: 1; transform: scale(1.04) rotate(0); }
-  100% { opacity: 1; transform: scale(1) rotate(0); }
+@keyframes cabinet-close-right {
+  from { transform: translateX(5px) skewY(2deg); }
+  to { transform: translateX(0) skewY(0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .brand-mark.is-animated { animation: none; }
+  .brand-mark-door { transition: none; }
+  .brand-mark.is-animated .brand-mark-door { animation: none; }
 }
 
 .navbar nav { display: flex; gap: 6px; margin-left: auto; }
@@ -669,7 +699,11 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
 }
 @media (max-width: 620px) {
   .navbar { position: relative; height: 68px; justify-content: space-between; }
-  .navbar .brand-mark { height: 36px; width: 44px; }
+  .navbar .brand-mark { height: 40px; width: 46px; }
+  .navbar .logo { gap: 9px; }
+  .navbar .logo-divider { height: 32px; }
+  .navbar .logo-wordmark { font-size: 15px; }
+  .navbar .logo-tagline { font-size: 6px; letter-spacing: .19em; }
   .navbar nav.primary-nav { position: absolute; top: calc(100% + 1px); left: 0; right: 0; display: none; align-items: stretch; flex-direction: column; gap: 4px; padding: 12px 20px 18px; background: white; border-bottom: 1px solid #e8e5df; box-shadow: 0 14px 25px rgba(35,29,23,.1); }
   .navbar nav.primary-nav.is-open { display: flex; }
   .navbar nav.primary-nav a { padding: 12px 8px; font-size: 15px; }
