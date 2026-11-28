@@ -20,7 +20,7 @@ export interface AuthContextValue {
   session: Session | null;
   profile: UserProfile | null;
   profileError: string | null;
-  signIn(email: string, password: string): Promise<void>;
+  signIn(email: string, password: string): Promise<UserProfile>;
   signUp(email: string, password: string, fullName: string): Promise<boolean>;
   signOut(): Promise<void>;
   requestPasswordReset(email: string): Promise<void>;
@@ -104,8 +104,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profileError,
     async signIn(email, password) {
       if (!supabase) throw new Error('Configura Supabase para habilitar el inicio de sesión.');
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      if (!data.session) throw new Error('No pudimos crear la sesión. Inténtalo nuevamente.');
+      const response = await apiRequest<MeResponse>('/api/v1/auth/me', {
+        headers: { Authorization: `Bearer ${data.session.access_token}` },
+      });
+      setProfile(response.data);
+      return response.data;
     },
     async signUp(email, password, fullName) {
       if (!supabase) throw new Error('Configura Supabase para habilitar el registro.');

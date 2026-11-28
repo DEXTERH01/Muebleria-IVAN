@@ -6,9 +6,9 @@ import { Footer, Navbar, navigate } from '../components/layout';
 
 type AuthMode = 'login' | 'register' | 'recovery' | 'update-password';
 
-function safeRedirect(): string {
+function safeRedirect(fallback: string): string {
   const target = new URLSearchParams(window.location.search).get('redirect');
-  return target?.startsWith('/') && !target.startsWith('//') ? target : '/mi-cuenta';
+  return target?.startsWith('/') && !target.startsWith('//') ? target : fallback;
 }
 
 export function AuthPage({ mode }: { mode: AuthMode }) {
@@ -17,6 +17,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -29,8 +30,11 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
     try {
       if (!auth?.configured) throw new Error('El inicio de sesión no está configurado todavía.');
       if (mode === 'login') {
-        await auth.signIn(email.trim(), password);
-        navigate(safeRedirect());
+        const profile = await auth.signIn(email.trim(), password);
+        const destination = profile && (profile.role === 'admin' || profile.role === 'operator')
+          ? '/admin'
+          : '/mi-cuenta';
+        navigate(safeRedirect(destination));
       } else if (mode === 'register') {
         const hasSession = await auth.signUp(email.trim(), password, fullName);
         setMessage(
@@ -72,10 +76,32 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
     <>
       <Navbar />
       <main className="auth-page">
-        <section className="auth-card">
-          <span className="kicker">PORTAL MUEBLERÍA IVÁN</span>
-          <h1>{titles[mode]}</h1>
-          <p>{descriptions[mode]}</p>
+        <div className="auth-layout">
+          <aside className="auth-showcase" aria-label="Beneficios del portal de Mueblería Iván">
+            <div className="auth-showcase-brand">
+              <span className="auth-showcase-logo" aria-hidden="true">
+                <img src="/assets/brand/muebleria-ivan-logo.png" alt="" />
+              </span>
+              <span>Mueblería Iván</span>
+            </div>
+            <div className="auth-showcase-copy">
+              <span className="auth-showcase-kicker">TU PROYECTO, SIEMPRE A MANO</span>
+              <h2>Del diseño a la entrega, todo en un solo lugar.</h2>
+              <p>Consulta avances y decisiones de tu mueble con información clara y ordenada.</p>
+            </div>
+            <ul className="auth-benefits">
+              <li><span>01</span><div><strong>Cotizaciones claras</strong><small>Revisa tus propuestas y detalles.</small></div></li>
+              <li><span>02</span><div><strong>Seguimiento sencillo</strong><small>Conoce en qué etapa está tu proyecto.</small></div></li>
+              <li><span>03</span><div><strong>Acceso protegido</strong><small>Tu información permanece vinculada a tu cuenta.</small></div></li>
+            </ul>
+            <p className="auth-showcase-note"><span aria-hidden="true">●</span> Portal seguro para clientes y equipo autorizado</p>
+          </aside>
+          <section className="auth-card">
+            <div className="auth-card-heading">
+              <span className="kicker">PORTAL MUEBLERÍA IVÁN</span>
+              <h1>{titles[mode]}</h1>
+              <p>{descriptions[mode]}</p>
+            </div>
           {!auth?.configured && (
             <div className="form-error" role="alert">
               Configura <code>VITE_SUPABASE_URL</code> y <code>VITE_SUPABASE_ANON_KEY</code> para habilitar Supabase Auth.
@@ -103,7 +129,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
                 Correo electrónico
                 <input
                   type="email"
-                  autoComplete="email"
+                  autoComplete={mode === 'login' ? 'username' : 'email'}
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   required
@@ -113,27 +139,40 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
             {(mode === 'login' || mode === 'register' || mode === 'update-password') && (
               <label>
                 {mode === 'update-password' ? 'Nueva contraseña' : 'Contraseña'}
-                <input
-                  type="password"
-                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  minLength={8}
-                  required
-                />
+                <span className="auth-password-field">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    minLength={8}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="auth-password-toggle"
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    aria-pressed={showPassword}
+                    onClick={() => setShowPassword((visible) => !visible)}
+                  >
+                    {showPassword ? 'Ocultar' : 'Mostrar'}
+                  </button>
+                </span>
               </label>
             )}
             {mode === 'update-password' && (
               <label>
                 Repite la contraseña
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  minLength={8}
-                  required
-                />
+                <span className="auth-password-field">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    minLength={8}
+                    required
+                  />
+                </span>
               </label>
             )}
             {error && <div className="form-error" role="alert">{error}</div>}
@@ -150,7 +189,9 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
             {mode === 'register' && <button onClick={() => navigate('/iniciar-sesion')}>Ya tengo una cuenta</button>}
             {mode === 'recovery' && <button onClick={() => navigate('/iniciar-sesion')}>Volver al inicio de sesión</button>}
           </div>
-        </section>
+          <p className="auth-security-note"><span aria-hidden="true">✓</span> Acceso cifrado y protegido por Supabase Auth</p>
+          </section>
+        </div>
       </main>
       <Footer />
     </>
