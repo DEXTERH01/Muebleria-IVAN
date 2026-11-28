@@ -1,0 +1,284 @@
+{
+  "dataLabel": "Datos de prueba",
+  "dataset": "data/synthetic/orders_v1.csv",
+  "models": [
+    {
+      "algorithm": "linear_regression",
+      "artifactHash": "280be096c528d2f7904d28e5bae30d2c0cd53843a782beb15963562ba081c63d",
+      "artifactPath": "artifacts/ml/production_days_v1.joblib",
+      "features": [
+        "width_mm",
+        "height_mm",
+        "depth_mm",
+        "accessory_count",
+        "item_count",
+        "complexity_score",
+        "workshop_load",
+        "quoted_total_minor",
+        "promised_days",
+        "customer_frequency",
+        "category",
+        "material",
+        "district"
+      ],
+      "metrics": {
+        "baselineTest": {
+          "mae": 2.77333,
+          "r2": -0.00805,
+          "rmse": 3.58143
+        },
+        "baselineValidation": {
+          "mae": 3.26667,
+          "r2": -0.01398,
+          "rmse": 3.97492
+        },
+        "candidateValidation": {
+          "decision_tree": {
+            "mae": 1.81997,
+            "r2": 0.67613,
+            "rmse": 2.24646
+          },
+          "linear_regression": {
+            "mae": 1.05747,
+            "r2": 0.89769,
+            "rmse": 1.26265
+          },
+          "random_forest": {
+            "mae": 1.38667,
+            "r2": 0.80488,
+            "rmse": 1.74367
+          }
+        },
+        "split": {
+          "test": 75,
+          "train": 350,
+          "validation": 75
+        },
+        "test": {
+          "mae": 0.9227,
+          "r2": 0.89811,
+          "rmse": 1.13861
+        }
+      },
+      "parameters": {
+        "copy_X": true,
+        "fit_intercept": true,
+        "n_jobs": null,
+        "positive": false,
+        "tol": 1e-06
+      },
+      "problem": "production_days",
+      "version": 1
+    },
+    {
+      "algorithm": "logistic_regression",
+      "artifactHash": "1b5be9be22f205a88d403d5b48d935e9f0a7c3308784ed3233627cb25e5935b9",
+      "artifactPath": "artifacts/ml/delay_risk_v1.joblib",
+      "features": [
+        "width_mm",
+        "height_mm",
+        "depth_mm",
+        "accessory_count",
+        "item_count",
+        "complexity_score",
+        "workshop_load",
+        "quoted_total_minor",
+        "promised_days",
+        "customer_frequency",
+        "category",
+        "material",
+        "district"
+      ],
+      "metrics": {
+        "baselineTest": {
+          "accuracy": 0.70667,
+          "brierLoss": 0.20729,
+          "confusionMatrix": [
+            [
+              53,
+              0
+            ],
+            [
+              22,
+              0
+            ]
+          ],
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "rocAuc": 0.5
+        },
+        "baselineValidation": {
+          "accuracy": 0.70667,
+          "brierLoss": 0.20729,
+          "confusionMatrix": [
+            [
+              53,
+              0
+            ],
+            [
+              22,
+              0
+            ]
+          ],
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "rocAuc": 0.5
+        },
+        "candidateValidation": {
+          "decision_tree": {
+            "accuracy": 0.6,
+            "brierLoss": 0.25005,
+            "confusionMatrix": [
+              [
+                33,
+                20
+              ],
+              [
+                10,
+                12
+              ]
+            ],
+            "f1": 0.44444,
+            "precision": 0.375,
+            "recall": 0.54545,
+            "rocAuc": 0.62479
+          },
+          "knn": {
+            "accuracy": 0.77333,
+            "brierLoss": 0.17779,
+            "confusionMatrix": [
+              [
+                51,
+                2
+              ],
+              [
+                15,
+                7
+              ]
+            ],
+            "f1": 0.45161,
+            "precision": 0.77778,
+            "recall": 0.31818,
+            "rocAuc": 0.74185
+          },
+          "logistic_regression": {
+            "accuracy": 0.77333,
+            "brierLoss": 0.16383,
+            "confusionMatrix": [
+              [
+                44,
+                9
+              ],
+              [
+                8,
+                14
+              ]
+            ],
+            "f1": 0.62222,
+            "precision": 0.6087,
+            "recall": 0.63636,
+            "rocAuc": 0.81132
+          },
+          "svm": {
+            "accuracy": 0.74667,
+            "brierLoss": 0.16056,
+            "confusionMatrix": [
+              [
+                51,
+                2
+              ],
+              [
+                17,
+                5
+              ]
+            ],
+            "f1": 0.34483,
+            "precision": 0.71429,
+            "recall": 0.22727,
+            "rocAuc": 0.80274
+          }
+        },
+        "split": {
+          "test": 75,
+          "train": 350,
+          "validation": 75
+        },
+        "test": {
+          "accuracy": 0.72,
+          "brierLoss": 0.21036,
+          "confusionMatrix": [
+            [
+              40,
+              13
+            ],
+            [
+              8,
+              14
+            ]
+          ],
+          "f1": 0.57143,
+          "precision": 0.51852,
+          "recall": 0.63636,
+          "rocAuc": 0.70069
+        }
+      },
+      "parameters": {
+        "C": 1.0,
+        "class_weight": "balanced",
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 2000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 2026,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      },
+      "problem": "delay_risk",
+      "version": 1
+    },
+    {
+      "algorithm": "kmeans",
+      "artifactHash": "11b804527533e1a2b767562c8bf7f82ab191cacf1af2be877bd267a865dc964c",
+      "artifactPath": "artifacts/ml/customer_segments_v1.joblib",
+      "features": [
+        "customer_recency_days",
+        "customer_frequency",
+        "customer_total_spend_minor",
+        "customer_avg_ticket_minor",
+        "categories_bought"
+      ],
+      "metrics": {
+        "comparison": {
+          "dbscan": {
+            "clusters": 2,
+            "daviesBouldin": 1.19189,
+            "noisePoints": 48,
+            "silhouette": 0.28507
+          },
+          "kmeans": {
+            "clusters": 4,
+            "daviesBouldin": 1.16963,
+            "noisePoints": 0,
+            "silhouette": 0.2579
+          }
+        },
+        "customers": 98
+      },
+      "parameters": {
+        "nClusters": 4,
+        "randomSeed": 2026
+      },
+      "problem": "customer_segments",
+      "version": 1
+    }
+  ],
+  "randomSeed": 2026,
+  "rows": 500
+}

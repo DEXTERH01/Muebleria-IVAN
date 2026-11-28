@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { getProduct, type ProductDetail } from '../api/modules/catalog';
-import { ProductArtwork, productVisual } from '../components/catalog';
+import { CatalogPhoto, productVisual } from '../components/catalog';
 import { Footer, Navbar, navigate } from '../components/layout';
 import { Button } from '../components/ui';
 import { moneyMinor } from '../utils/format';
@@ -11,6 +11,7 @@ export function ProductDetailPage({ id }: { id: string }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [retry, setRetry] = useState(0);
+  const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -18,7 +19,10 @@ export function ProductDetailPage({ id }: { id: string }) {
     setError(null);
     getProduct(id)
       .then((value) => {
-        if (active) setProduct(value);
+        if (active) {
+          setProduct(value);
+          setSelectedImage(0);
+        }
       })
       .catch((reason: unknown) => {
         if (active) setError(reason instanceof Error ? reason.message : 'No pudimos cargar el producto.');
@@ -32,8 +36,6 @@ export function ProductDetailPage({ id }: { id: string }) {
   }, [id, retry]);
 
   const visual = product ? productVisual(product.category, product.slug) : 'hero';
-  const primaryImage = product?.images[0] ?? product?.primaryImage;
-
   return (
     <>
       <Navbar />
@@ -52,29 +54,34 @@ export function ProductDetailPage({ id }: { id: string }) {
         {product && !loading && !error && (
           <div className="detail-layout">
             <div className="detail-gallery">
-              <ProductArtwork
-                image={primaryImage}
-                visual={visual}
+              <CatalogPhoto
+                image={product.images[selectedImage] ?? product.primaryImage}
+                fallbackKind={visual}
                 className="detail-main-visual"
-                loading="eager"
+                eager
               />
-              <div className="thumbnails">
-                <button className="selected" aria-label="Vista del producto">
-                  <ProductArtwork
-                    image={primaryImage}
-                    visual={visual}
-                    className="detail-thumbnail-image"
-                    decorative
-                  />
-                </button>
-              </div>
+              {product.images.length > 0 && (
+                <div className="thumbnails" aria-label="Galería del producto">
+                  {product.images.map((image, index) => (
+                    <button
+                      key={image.id}
+                      className={selectedImage === index ? 'selected' : ''}
+                      aria-label={`Ver imagen ${index + 1} de ${product.name}`}
+                      aria-pressed={selectedImage === index}
+                      onClick={() => setSelectedImage(index)}
+                    >
+                      <CatalogPhoto image={image} fallbackKind={visual} decorative />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <article className="detail-info">
               <span className="eyebrow">{product.category}</span>
               <h1>{product.name}</h1>
               <p className="detail-description">{product.description}</p>
-              <strong className="price">Desde {moneyMinor(product.basePriceMinor)}</strong>
-              <span className="ref-label">Precio referencial</span>
+              <strong className="price">{moneyMinor(product.basePriceMinor)}</strong>
+              <span className="ref-label">Precio base del modelo</span>
               <hr />
               <dl>
                 <div>
@@ -96,8 +103,8 @@ export function ProductDetailPage({ id }: { id: string }) {
                 </ul>
               </div>
               <p className="notice">
-                Este precio es referencial. El backend calcula la estimación según medidas,
-                materiales y accesorios seleccionados.
+                El precio base corresponde a la configuración estándar. El cotizador calcula
+                el total según las medidas, materiales y accesorios que selecciones.
               </p>
               <div className="detail-actions">
                 <Button onClick={() => navigate(`/cotizador?producto=${product.slug}`)}>

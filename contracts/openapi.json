@@ -12,7 +12,26 @@
           "system"
         ],
         "summary": "Comprobar el estado de la API",
-        "operationId": "health_check_health_get",
+        "operationId": "health_check_health_head",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Comprobar el estado de la API",
+        "operationId": "health_check_health_head",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1645,6 +1664,124 @@
         ]
       }
     },
+    "/api/v1/ml/models": {
+      "get": {
+        "tags": [
+          "machine-learning"
+        ],
+        "summary": "Listar modelos ML",
+        "operationId": "list_models_api_v1_ml_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelVersionListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/ml/production-days": {
+      "post": {
+        "tags": [
+          "machine-learning"
+        ],
+        "summary": "Estimar días de producción",
+        "operationId": "production_days_api_v1_ml_production_days_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderInferenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/ml/delay-risk": {
+      "post": {
+        "tags": [
+          "machine-learning"
+        ],
+        "summary": "Estimar riesgo de retraso",
+        "operationId": "delay_risk_api_v1_ml_delay_risk_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderInferenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/analytics/overview": {
       "get": {
         "tags": [
@@ -2397,6 +2534,85 @@
         ],
         "title": "HealthResponse"
       },
+      "InferenceData": {
+        "properties": {
+          "predictionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Predictionid"
+          },
+          "problem": {
+            "type": "string",
+            "enum": [
+              "production_days",
+              "delay_risk"
+            ],
+            "title": "Problem"
+          },
+          "algorithm": {
+            "type": "string",
+            "title": "Algorithm"
+          },
+          "modelVersion": {
+            "type": "integer",
+            "title": "Modelversion"
+          },
+          "output": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Output"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "fallbackUsed": {
+            "type": "boolean",
+            "title": "Fallbackused"
+          },
+          "advisory": {
+            "type": "boolean",
+            "title": "Advisory",
+            "default": true
+          },
+          "dataLabel": {
+            "type": "string",
+            "const": "Datos de prueba",
+            "title": "Datalabel",
+            "default": "Datos de prueba"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predictionId",
+          "problem",
+          "algorithm",
+          "modelVersion",
+          "output",
+          "confidence",
+          "fallbackUsed"
+        ],
+        "title": "InferenceData"
+      },
+      "InferenceResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/InferenceData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "InferenceResponse"
+      },
       "MeData": {
         "properties": {
           "userId": {
@@ -2746,6 +2962,79 @@
         ],
         "title": "MediaSignatureResponse"
       },
+      "ModelVersionData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "problem": {
+            "type": "string",
+            "title": "Problem"
+          },
+          "algorithm": {
+            "type": "string",
+            "title": "Algorithm"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "artifactHash": {
+            "type": "string",
+            "title": "Artifacthash"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Parameters"
+          },
+          "metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metrics"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "problem",
+          "algorithm",
+          "version",
+          "artifactHash",
+          "parameters",
+          "metrics",
+          "status",
+          "createdAt"
+        ],
+        "title": "ModelVersionData"
+      },
+      "ModelVersionListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ModelVersionData"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ModelVersionListResponse"
+      },
       "OptimizationRunData": {
         "properties": {
           "id": {
@@ -2965,6 +3254,109 @@
           "data"
         ],
         "title": "OrderDetailResponse"
+      },
+      "OrderInferenceRequest": {
+        "properties": {
+          "widthMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 100.0,
+            "title": "Widthmm"
+          },
+          "heightMm": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 100.0,
+            "title": "Heightmm"
+          },
+          "depthMm": {
+            "type": "integer",
+            "maximum": 5000.0,
+            "minimum": 100.0,
+            "title": "Depthmm"
+          },
+          "accessoryCount": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Accessorycount"
+          },
+          "itemCount": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Itemcount"
+          },
+          "complexityScore": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Complexityscore"
+          },
+          "workshopLoad": {
+            "type": "integer",
+            "maximum": 500.0,
+            "minimum": 0.0,
+            "title": "Workshopload"
+          },
+          "quotedTotalMinor": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Quotedtotalminor"
+          },
+          "promisedDays": {
+            "type": "integer",
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Promiseddays"
+          },
+          "customerFrequency": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Customerfrequency"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Category"
+          },
+          "material": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Material"
+          },
+          "district": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "District"
+          },
+          "orderId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Orderid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "widthMm",
+          "heightMm",
+          "depthMm",
+          "accessoryCount",
+          "itemCount",
+          "complexityScore",
+          "workshopLoad",
+          "quotedTotalMinor",
+          "promisedDays",
+          "customerFrequency",
+          "category",
+          "material",
+          "district",
+          "orderId"
+        ],
+        "title": "OrderInferenceRequest"
       },
       "OrderListResponse": {
         "properties": {

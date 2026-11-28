@@ -19,7 +19,65 @@ Para activar la Fase 2 configura en `backend/.env` una URL PostgreSQL con el dri
 
 Las cargas firmadas de media requieren `MUEBLERIA_CLOUDINARY_CLOUD_NAME`, `MUEBLERIA_CLOUDINARY_API_KEY` y `MUEBLERIA_CLOUDINARY_API_SECRET`. El secreto solo se usa en el backend. Los tests de integración PostgreSQL se activan con `SUPABASE_TEST_DATABASE_URL` apuntando a una base local migrada y sembrada.
 
+Para validar una base Supabase publicada sin conservar datos de prueba, configura
+`MUEBLERIA_DATABASE_URL` y ejecuta:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_remote_pgtap.py
+```
+
+Las suites SQL administran su propia transacción y terminan con `ROLLBACK`.
+
 Las sesiones SQLAlchemy se cierran al terminar la solicitud. Los servicios que escriban datos deben confirmar explícitamente sus transacciones; esta capa no crea ni modifica tablas. Las migraciones SQL viven en `supabase/migrations/`.
+
+## Cuentas de demostración por rol
+
+El seed SQL crea perfiles ficticios, pero no cuentas capaces de iniciar sesión. Para crear o
+actualizar cuentas reales de Supabase Auth y sincronizar sus roles en app.profiles, ejecuta el
+script desde una terminal. Solicita de forma oculta una clave secreta sb_secret_... o la antigua
+service_role; nunca uses la clave publishable/anon. También solicita una contraseña común de al
+menos ocho caracteres. El script actualiza la contraseña de estas cuentas cada vez que se ejecuta.
+
+Desde la raíz del repositorio, en PowerShell; cuando la solicite, ingresa la clave secreta del
+proyecto Supabase y luego la contraseña temporal que usarán todas las cuentas:
+
+~~~powershell
+backend\.venv\Scripts\python.exe backend\scripts\bootstrap_demo_accounts.py
+~~~
+
+El script lee MUEBLERIA_SUPABASE_URL y MUEBLERIA_DATABASE_URL desde backend/.env, no imprime
+la clave ni la contraseña, no las guarda y puede repetirse para reparar perfiles. Crea estas
+cuentas con la misma contraseña temporal indicada:
+
+| Correo | Rol |
+| --- | --- |
+| admin.demo@example.com | Administrador (admin) |
+| operador.demo@example.com | Operador (operator) |
+| cliente.ana.demo@example.com | Cliente (customer) |
+| cliente.luis.demo@example.com | Cliente (customer) |
+
+No guardes estas credenciales en el repositorio ni configures la clave secreta en Netlify o Render.
+Para una exposición pública, usa una contraseña temporal y cámbiala o elimina las cuentas al terminar.
+
+Si Supabase Auth responde 429 Too Many Requests o no está disponible durante la preparación de
+la demo, se puede usar el modo de recuperación con la conexión PostgreSQL configurada. Este modo
+crea o actualiza transaccionalmente el usuario, su identidad de correo y el perfil:
+
+~~~powershell
+backend\.venv\Scripts\python.exe backend\scripts\bootstrap_demo_accounts.py --database-auth
+~~~
+
+## Machine learning con datos de prueba
+
+El entrenamiento se ejecuta fuera de las solicitudes web. Para reproducir los 500 pedidos sintéticos, comparar los modelos, generar los artefactos versionados y registrar sus métricas en Supabase:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\generate_ml_dataset.py
+.\.venv\Scripts\python.exe scripts\train_ml.py
+.\.venv\Scripts\python.exe scripts\register_ml_models.py
+```
+
+El manifiesto en `artifacts/ml/manifest.json` contiene hashes SHA-256, columnas, separación 70/15/15 y métricas calculadas. La regresión, clasificación y segmentación son consultivas; sus respuestas se etiquetan `Datos de prueba` y nunca modifican pedidos ni precios.
 
 Servicios locales:
 

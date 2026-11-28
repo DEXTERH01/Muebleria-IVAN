@@ -42,13 +42,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
     let active = true;
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const applySession = (nextSession: Session | null) => {
+      setAccessTokenProvider(() => nextSession?.access_token ?? null);
       if (active) setSession(nextSession);
+    };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      applySession(nextSession);
     });
     supabase.auth.getSession()
       .then(({ data, error }) => {
         if (error) throw error;
-        if (active) setSession(data.session);
+        applySession(data.session);
       })
       .catch((error: unknown) => {
         if (active) setProfileError(error instanceof Error ? error.message : 'No pudimos leer tu sesión.');
@@ -59,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
       subscription.unsubscribe();
+      setAccessTokenProvider(null);
     };
   }, []);
 
@@ -89,11 +94,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [session]);
-
-  useEffect(() => {
-    setAccessTokenProvider(() => session?.access_token ?? null);
-    return () => setAccessTokenProvider(null);
   }, [session]);
 
   const value = useMemo<AuthContextValue>(() => ({

@@ -13,9 +13,19 @@ type OrderDetailResponse = components['schemas']['OrderDetailResponse'];
 type PaymentListResponse = components['schemas']['PaymentListResponse'];
 type PaymentResponse = components['schemas']['PaymentResponse'];
 
+async function listOrderPage(page: number, pageSize: number): Promise<OrderListResponse> {
+  return apiRequest<OrderListResponse>(`/api/v1/orders?page=${page}&pageSize=${pageSize}`);
+}
+
 export async function listOrders(): Promise<ApiOrder[]> {
-  const response = await apiRequest<OrderListResponse>('/api/v1/orders?page=1&pageSize=100');
-  return response.data;
+  const pageSize = 100;
+  const first = await listOrderPage(1, pageSize);
+  const pages = Math.ceil(first.total / pageSize);
+  if (pages <= 1) return first.data;
+  const remaining = await Promise.all(
+    Array.from({ length: pages - 1 }, (_, index) => listOrderPage(index + 2, pageSize)),
+  );
+  return [...first.data, ...remaining.flatMap((page) => page.data)];
 }
 
 export async function getOrder(orderId: string): Promise<ApiOrderDetail> {

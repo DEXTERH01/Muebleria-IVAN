@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import type { ProductSummary } from '../api/modules/catalog';
-import type { ProductImage } from '../api/modules/catalog';
+import type { ProductImage, ProductSummary } from '../api/modules/catalog';
 import { moneyMinor } from '../utils/format';
 import { navigate } from './layout';
 import { Button, ProductVisual } from './ui';
@@ -14,34 +13,36 @@ export function productVisual(category: string, slug: string): string {
   return 'hero';
 }
 
-export function ProductArtwork({
+export function CatalogPhoto({
   image,
-  visual,
-  className,
-  loading = 'lazy',
+  fallbackKind,
+  className = '',
+  eager = false,
   decorative = false,
 }: {
   image?: ProductImage | null;
-  visual: string;
-  className: string;
-  loading?: 'eager' | 'lazy';
+  fallbackKind: string;
+  className?: string;
+  eager?: boolean;
   decorative?: boolean;
 }) {
-  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
 
-  if (!image || failedUrl === image.secureUrl) {
-    return <ProductVisual kind={visual} className={className} />;
+  useEffect(() => setFailed(false), [image?.secureUrl]);
+
+  if (!image || failed) {
+    return <ProductVisual kind={fallbackKind} className={className} />;
   }
 
   return (
     <img
-      className={className}
+      className={`catalog-photo ${className}`}
       src={image.secureUrl}
       alt={decorative ? '' : image.altText}
       aria-hidden={decorative || undefined}
-      loading={loading}
+      loading={eager ? 'eager' : 'lazy'}
       decoding="async"
-      onError={() => setFailedUrl(image.secureUrl)}
+      onError={() => setFailed(true)}
     />
   );
 }
@@ -50,16 +51,12 @@ export function ProductCard({ product }: { product: ProductSummary }) {
   const visual = productVisual(product.category, product.slug);
   return (
     <article className="product-card">
-      <ProductArtwork
-        image={product.primaryImage}
-        visual={visual}
-        className="product-card-photo"
-      />
+      <CatalogPhoto image={product.primaryImage} fallbackKind={visual} />
       <div className="product-copy">
         <span className="eyebrow">{product.category}</span>
         <h3>{product.name}</h3>
         <p>{product.description}</p>
-        <strong>Desde {moneyMinor(product.basePriceMinor)}</strong>
+        <strong>Precio base: {moneyMinor(product.basePriceMinor)}</strong>
         <div className="card-actions">
           <Button variant="secondary" onClick={() => navigate(`/producto/${product.slug}`)}>
             Ver detalle

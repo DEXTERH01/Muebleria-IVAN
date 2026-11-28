@@ -6,7 +6,7 @@ Mueblería Iván es el negocio objetivo de este proyecto de transformación digi
 
 Las reglas contenidas en este plan constituyen los requisitos oficiales del proyecto. El prototipo deberá ejecutar procesos reales de catálogo, cotización, pedidos, producción, pagos y seguimiento. Durante desarrollo y evaluación se utilizarán datos controlados de prueba; los indicadores comerciales solo se considerarán operativos cuando provengan de transacciones registradas por el sistema.
 
-La decisión técnica base es construir un monolito modular con React y TypeScript en el frontend, Python y FastAPI en el backend, PostgreSQL y Auth en Supabase, imágenes en Cloudinary, frontend en Netlify y backend en Render. No se usarán microservicios en esta etapa.
+La decisión técnica base es construir un monolito modular con React y TypeScript en el frontend, Python y FastAPI en el backend, PostgreSQL y Auth en Supabase, imágenes en Cloudinary, frontend en Cloudflare Pages y backend en Render. No se usarán microservicios en esta etapa.
 
 ## Cómo se usará este plan
 
@@ -276,7 +276,7 @@ Navegador
   |
   | HTTPS, JSON, JWT
   v
-React + TypeScript + Vite en Netlify
+React + TypeScript + Vite en Cloudflare Pages
   |                     |
   | autenticación       | carga directa firmada
   v                     v
@@ -312,7 +312,7 @@ El frontend no accederá directamente a las tablas comerciales. Solo utilizará 
 | Pruebas frontend | Vitest, Testing Library y Playwright |
 | Pruebas backend | Pytest y HTTPX |
 | CI/CD | GitHub Actions |
-| Hosting frontend | Netlify |
+| Hosting frontend | Cloudflare Pages |
 | Hosting backend | Render |
 | Contrato | OpenAPI 3.1 generado por FastAPI |
 
@@ -355,7 +355,6 @@ Muebleria Ivan/
 |-- scripts/
 |-- .github/workflows/
 |-- AGENTS.md
-|-- netlify.toml
 `-- README.md
 ```
 
@@ -778,7 +777,7 @@ Criterio de salida: flujos críticos aprobados y resultados documentados.
 
 Entregables:
 
-- Frontend en Netlify.
+- Frontend en Cloudflare Pages.
 - Backend en Render.
 - Supabase y Cloudinary configurados.
 - Pipeline de despliegue.

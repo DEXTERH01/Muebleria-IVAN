@@ -2,12 +2,12 @@
 
 ## Estado general
 
-- Fecha de referencia: 2026-11-21.
-- Fase actual: Fase 2, base de datos y autenticación.
-- Estado: Fase 2 sigue abierta hasta validar Supabase publicado y sus permisos reales. La integración React Auth ya está en `main`. En la última validación backend pasaron 70 pruebas por grupos, se omitieron 3 de PostgreSQL por falta de `SUPABASE_TEST_DATABASE_URL` y se excluyó 1 prueba HTTP de catálogo cuyo proceso queda esperando al finalizar en Windows. Los modelos coinciden con las columnas declaradas en la migración. Las Fases 3 y 4 tienen sus flujos principales implementados y la Fase 5 solo conserva la visualización administrativa y la validación PostgreSQL.
+- Fecha de referencia: 2026-11-27.
+- Fase actual: Fase 8, preparación del despliegue de demo.
+- Estado: Fases 1–6 están implementadas. Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. Las visualizaciones administrativas de optimización están implementadas. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback. Fase 7 tiene pruebas unitarias y E2E, revisiones responsive y de accesibilidad, y protocolo de prueba de usuario; faltan sesiones y mediciones reales. Fase 8 tiene frontend operativo en Netlify (`https://muebleriaivan.netlify.app`), backend en Render (`https://muebleria-ivan.onrender.com`) y la migración a Cloudflare Pages preparada en el repositorio; falta crear el proyecto Pages, efectuar el corte y completar la validación integral.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: publicar Supabase, aplicar migración y seed, ejecutar pgTAP y `backend/tests/integration/` con `SUPABASE_TEST_DATABASE_URL`; en paralelo, Cristian completa la visualización frontend de algoritmos.
-- Avance global: 9 fases numeradas (0–8); Fase 1 está cumplida, Fase 0 está definida pero conserva dos pendientes administrativos (fecha/formato de entrega y duración de exposición), Fase 2 está activa y quedan 6 fases posteriores (3–8). En total, 7 fases numeradas siguen abiertas o por iniciar si se cuenta también la fase activa.
+- Próxima puerta de control: ejecutar smoke test público de catálogo, autenticación, cotización y taller; luego completar la evidencia de Fase 7.
+- Avance global: Fases 1 a 6 cumplen sus criterios técnicos. En Fase 7 quedan las pruebas de integración de API y base de datos, las sesiones con usuarios y completar las mediciones de rendimiento. En Fase 8 los servicios están desplegados; queda validar los flujos completos y preparar los materiales de presentación. Siguen dos pendientes administrativos de Fase 0.
 
 ## Cómo actualizar este seguimiento
 
@@ -61,17 +61,17 @@ Criterio de salida: frontend y backend construyen y sus pruebas se ejecutan loca
 ## Fase 2. Base de datos y autenticación
 
 - [x] Definir el modelo completo y sus criterios. Responsable: equipo. Evidencia: `docs/BASE_DATOS.md`.
-- [ ] Crear proyecto de Supabase para demo. Responsable: Cristian.
+- [x] Crear proyecto de Supabase para demo. Responsable: Cristian. Evidencia: PostgreSQL publicado y validado el 2026-11-21.
 - [x] Crear migración base completa. Responsable: Cristian; revisión: Dexter. Evidencia: `supabase/migrations/20261121000100_initial_schema.sql`; ejecución local pendiente.
 - [x] Crear seed reproducible. Responsable: Cristian. Evidencia: `supabase/seed.sql`; ejecución local pendiente.
 - [x] Implementar RLS, perfiles y roles. Responsable: Cristian; revisión: Dexter. Evidencia: migración y pruebas `supabase/tests/database/03_rls_test.sql`; ejecución pgTAP pendiente.
 - [x] Preparar conexión, sesiones y modelo de perfil SQLAlchemy. Responsable: Dexter. Evidencia: `backend/app/core/database.py`, `backend/app/models/profile.py`, `backend/tests/test_security.py`. `Profile` coincide con `app.profiles`: enum `app.user_role`, columnas `text`, timestamps no nulos y FK a `auth.users`.
 - [x] Integrar Supabase Auth en React. Responsable: Cristian. Evidencia: `frontend/src/auth/`, `frontend/src/api/client/supabase.ts`, `frontend/.env.example`; prueba de UI en `frontend/src/auth/AuthPage.test.tsx`. Falta validar con proyecto Supabase real.
 - [x] Verificar JWT de firma asimétrica en FastAPI y rol desde perfil. Responsable: Dexter. Evidencia: `backend/app/core/security.py`, `backend/app/api/v1/auth.py`, `backend/tests/test_security.py`, `backend/tests/test_auth_endpoint.py`. CurrentUser incluye `full_name`, `phone`, `created_at`. Pendiente prueba con proyecto Supabase real.
-- [ ] Probar permisos de visitante, cliente, operador y administrador. Responsable: ambos.
-- [ ] Probar aislamiento entre clientes. Responsable: ambos.
+- [x] Probar permisos de visitante, cliente, operador y administrador. Responsable: ambos. Evidencia: `supabase/tests/database/03_rls_test.sql`, 17 comprobaciones aprobadas contra Supabase publicado.
+- [x] Probar aislamiento entre clientes. Responsable: ambos. Evidencia: pgTAP remoto y pruebas API de propiedad.
 
-Integración PostgreSQL añadida en `backend/tests/integration/test_profile_postgres.py`; sus tres casos se omiten si no se define `SUPABASE_TEST_DATABASE_URL`. En esta verificación no estaban disponibles Supabase CLI, Docker ni `psql`, y la variable no está configurada, por lo que no se pudo ejecutar la migración ni las pruebas de base de datos. La migración, seed y pruebas pgTAP de Cristian están integradas desde `codex/database-catalog` (`1f4480e`).
+El 2026-11-21 pasaron los tres casos de `backend/tests/integration/test_profile_postgres.py` y 68 comprobaciones de `supabase/tests/database/` contra Supabase publicado. El ejecutor remoto transaccional está en `backend/scripts/run_remote_pgtap.py`; cada archivo finaliza con `ROLLBACK`.
 
 Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas positivas y negativas.
 
@@ -85,6 +85,8 @@ Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas
 - [x] Generar cliente TypeScript desde OpenAPI. Evidencia: `frontend/src/api/generated/schema.d.ts`, `frontend/src/api/modules/`.
 - [x] Reemplazar datos locales del catálogo.
 - [x] Añadir pruebas del cálculo de precios.
+- [x] Mostrar las imágenes reales de Cloudinary en tarjetas y detalle. Evidencia: 52 imágenes distintas responden correctamente y se consumen desde la API en producción.
+- [x] Sustituir descripciones de demo y precios repetidos por contenido individual del catálogo. Evidencia: `data/catalog/catalog_merchandising.csv`, `backend/scripts/sync_catalog_merchandising.py`; 52 productos actualizados en Supabase, sin descripciones de demo y con 40 precios base distintos.
 
 Criterio de salida: catálogo y cotización funcionan sin depender de datos escritos en el frontend.
 
@@ -107,7 +109,7 @@ Criterio de salida: cotización, pedido, producción, pago e instalación funcio
 
 ## Fase 5. Algoritmos de búsqueda
 
-- Avance local: A* y Hill Climbing ya están conectados a endpoints consultivos y cada ejecución se guarda en `app.optimization_runs`. A* usa matrices simétricas de distancias y Hill Climbing aplica la función documentada con reinicios aleatorios reproducibles. Ninguno modifica pedidos automáticamente y las distancias no representan tráfico real. Falta la visualización administrativa y la prueba contra PostgreSQL publicado.
+- Avance: A* y Hill Climbing están conectados a endpoints consultivos, cada ejecución se guarda en `app.optimization_runs` y la administración permite comparar resultados. Ninguno modifica pedidos automáticamente y las distancias no representan tráfico real.
 - [x] Definir dataset de rutas y distancias. Evidencia: `backend/app/algorithms/route_dataset.py`.
 - [x] Implementar A*. Evidencia: `backend/app/algorithms/astar.py`.
 - [x] Crear línea base para rutas. Evidencia: el orden recibido se usa como ruta inicial en `optimize_route`.
@@ -123,18 +125,18 @@ Criterio de salida: A* y Hill Climbing tienen pruebas, resultados reproducibles 
 
 ## Fase 6. Machine learning
 
-- [ ] Crear generador reproducible de 500 pedidos sintéticos.
-- [ ] Documentar columnas y relaciones del dataset.
-- [ ] Separar entrenamiento, validación y prueba.
-- [ ] Entrenar modelos de regresión.
-- [ ] Entrenar modelos de clasificación.
-- [ ] Ejecutar K-Means y DBSCAN.
-- [ ] Calcular métricas adecuadas.
-- [ ] Comparar contra líneas base.
-- [ ] Versionar el modelo aprobado.
-- [ ] Servir inferencia desde FastAPI.
-- [ ] Implementar fallback a reglas.
-- [ ] Etiquetar resultados obtenidos con datos de prueba.
+- [x] Crear generador reproducible de 500 pedidos sintéticos. Evidencia: `backend/app/ml/dataset.py`, `data/synthetic/orders_v1.csv`, semilla 2026.
+- [x] Documentar columnas y relaciones del dataset. Evidencia: `data/README.md`.
+- [x] Separar entrenamiento, validación y prueba. Evidencia: separación 350/75/75 en `backend/app/ml/training.py` y manifiesto.
+- [x] Entrenar modelos de regresión. Evidencia: regresión lineal, árbol y Random Forest comparados; modelo activo MAE 0,92270 y R² 0,89811 en prueba.
+- [x] Entrenar modelos de clasificación. Evidencia: regresión logística, KNN, SVM y árbol comparados; modelo activo F1 0,57143 y ROC-AUC 0,70069 en prueba.
+- [x] Ejecutar K-Means y DBSCAN. Evidencia: comparación reproducible en `backend/artifacts/ml/manifest.json`.
+- [x] Calcular métricas adecuadas. Evidencia: MAE, RMSE, R², precision, recall, F1, matriz de confusión, ROC-AUC, Brier, Silhouette y Davies-Bouldin calculadas al entrenar.
+- [x] Comparar contra líneas base. Evidencia: ambos modelos supervisados activos superan su línea base en el conjunto de prueba separado.
+- [x] Versionar el modelo aprobado. Evidencia: tres artefactos v1 con SHA-256 y tres filas activas en `app.model_versions` de Supabase.
+- [x] Servir inferencia desde FastAPI. Evidencia: `POST /api/v1/ml/production-days`, `POST /api/v1/ml/delay-risk` y registro en `app.predictions`.
+- [x] Implementar fallback a reglas. Evidencia: `backend/app/ml/inference.py` valida existencia y hash antes de cargar cada artefacto.
+- [x] Etiquetar resultados obtenidos con datos de prueba. Evidencia: `dataLabel: "Datos de prueba"` en manifiesto, métricas y respuestas API.
 
 Criterio de salida: modelos reproducibles, evaluados, versionados e integrados sin métricas hardcodeadas.
 
@@ -145,7 +147,7 @@ Criterio de salida: modelos reproducibles, evaluados, versionados e integrados s
 - [x] Añadir pruebas E2E con Playwright. Evidencia: `frontend/e2e/quote-flow.spec.ts`, `frontend/e2e/admin-quotes.spec.ts`; cotización, aprobación, teclado y Axe.
 - [x] Revisar responsive. Evidencia: cotizador y cotizaciones administrativas sin desborde a 360, 768 y 1440 px en E2E.
 - [x] Revisar accesibilidad. Evidencia: auditorías Axe sin infracciones en cotizador, resumen, modal y lista administrativa; foco de modal probado con teclado.
-- [x] Preparar protocolo de prueba de usuario. Evidencia: `frontend/quality/USER_TEST_PROTOCOL.md`.
+- [x] Preparar protocolo de prueba de usuario. Evidencia: `docs/PROTOCOLO_PRUEBA_USUARIO.md`, `frontend/quality/USER_TEST_PROTOCOL.md`.
 - [ ] Ejecutar pruebas con cinco a ocho participantes.
 - [ ] Calcular SUS y tasa de tareas completadas.
 - [ ] Medir P50, P95, errores e inferencia. Evidencia parcial de catálogo y estimación: `frontend/quality/PERFORMANCE_BASELINE.md`; pendiente medir inferencia ML.
@@ -155,12 +157,17 @@ Criterio de salida: flujos críticos aprobados y resultados reales documentados.
 
 ## Fase 8. Despliegue y presentación
 
-- [ ] Desplegar frontend en Netlify.
-- [ ] Desplegar backend en Render.
-- [ ] Configurar Supabase y Cloudinary de demo.
-- [ ] Configurar variables y CORS.
-- [ ] Validar pipeline de despliegue.
-- [ ] Ejecutar smoke test en producción de demo.
+- [x] Preparar Blueprint para desplegar FastAPI en Render. Evidencia: `render.yaml`, plan gratuito para demo y health check `/health`.
+- [x] Documentar variables y pasos de publicación. Evidencia: `docs/DESPLIEGUE_DEMO.md`.
+- [x] Desplegar frontend en Netlify. Evidencia: `https://muebleriaivan.netlify.app`.
+- [x] Preparar migración del frontend a Cloudflare Pages. Evidencia: `frontend/.node-version`, `frontend/public/_redirects`, `docs/DESPLIEGUE_DEMO.md`.
+- [ ] Desplegar frontend en Cloudflare Pages y completar el corte desde Netlify.
+- [x] Desplegar backend en Render. Evidencia: `https://muebleria-ivan.onrender.com/health`.
+- [x] Configurar Supabase y Cloudinary de demo. Evidencia: catálogo público devuelve 52 productos con imágenes de Cloudinary desde Supabase.
+- [x] Configurar variables y CORS. Evidencia: el frontend de Netlify consume la API de Render.
+- [x] Validar pipeline de despliegue. Evidencia: pipeline de CI aprobado en `main`; el frontend se publica desde Netlify.
+- [x] Crear cuentas de demo para los roles cliente, operador y administrador. Evidencia: `backend/scripts/bootstrap_demo_accounts.py`; cuatro inicios de sesión HTTP 200, correos confirmados, identidades email y roles verificados en Supabase.
+- [ ] Ejecutar smoke test integral en producción de demo. Parcial: el catálogo devuelve 52 productos, con 52 imágenes distintas respondiendo HTTP 200, cero descripciones demo y 40 precios base distintos. Las cuatro cuentas demo inician sesión y `/api/v1/auth/me` devuelve HTTP 200 con los roles `admin`, `operator` y `customer` esperados. Quedan los flujos completos de cotización y taller.
 - [ ] Preparar informe de métricas.
 - [ ] Preparar arquitectura final.
 - [ ] Preparar guion de demostración.
@@ -183,6 +190,7 @@ Criterio de salida: una persona externa puede verificar el prototipo y repetir e
 | D-008 | 2026-11-21 | Versionar OpenAPI como frontera entre ambos frentes | Evitar contratos verbales y cambios incompatibles | Backend genera el contrato y frontend lo consume | Equipo completo |
 | D-009 | 2026-11-21 | Dividir el trabajo por módulos verticales y no por carpetas completas | Permite que ambos aporten a backend sin editar los mismos archivos | Cristian asume base de datos, catálogo y cotizaciones; Dexter plataforma, operación e IA | Equipo completo |
 | D-010 | 2026-11-21 | Usar migraciones SQL de Supabase como única fuente de DDL | Auth, RLS, funciones y políticas requieren SQL específico de PostgreSQL; dos sistemas producirían divergencias | SQLAlchemy será ORM, pero no administrará migraciones con Alembic | Equipo completo |
+| D-011 | 2026-11-27 | Migrar el hosting del frontend de Netlify a Cloudflare Pages | Unificar el hosting estático, previews y dominio bajo Cloudflare | El backend permanece en Render; se actualizan CORS, Supabase Auth y la guía de despliegue durante el corte | Dexter |
 
 ## Bloqueos
 

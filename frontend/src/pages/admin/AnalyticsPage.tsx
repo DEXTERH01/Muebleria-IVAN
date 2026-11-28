@@ -1,21 +1,26 @@
 import { useMemo, useState } from 'react';
 import { AdminLayout, navigate } from '../../components/layout';
-import { Button, StatusBadge } from '../../components/ui';
+import { Button, Pagination, StatusBadge } from '../../components/ui';
+import { usePagination } from '../../hooks/usePagination';
 import type { Order } from '../../types';
 import { categoryDemand, getDemandForecast, getOrderRisk } from '../../utils/analytics';
 import { date, money } from '../../utils/format';
 
 export function AnalyticsPage({ orders }: { orders: Order[] }) {
   const [period, setPeriod] = useState<30 | 60 | 90>(60);
-  const forecast = useMemo(() => getDemandForecast(period), [period]);
+  const forecast = useMemo(() => getDemandForecast(period, orders), [orders, period]);
   const demand = useMemo(() => categoryDemand(orders), [orders]);
   const risks = useMemo(() => orders
     .filter((order) => order.status !== 'instalado')
     .map((order) => ({ order, risk: getOrderRisk(order) }))
     .sort((a, b) => b.risk.score - a.risk.score), [orders]);
-  const maxValue = Math.max(...forecast.map((point) => point.value));
+  const { page, pageItems: visibleRisks, setPage, totalPages } = usePagination(risks, 4);
+  const maxValue = Math.max(1, ...forecast.map((point) => point.value));
   const projectedOrders = forecast[forecast.length - 1]?.value ?? 0;
-  const averageTicket = Math.round(orders.reduce((sum, order) => sum + order.total, 0) / orders.length);
+  const averageTicket = orders.length
+    ? Math.round(orders.reduce((sum, order) => sum + order.total, 0) / orders.length)
+    : 0;
+  const monthsAnalyzed = new Set(orders.map((order) => order.createdAt.slice(0, 7))).size;
 
   return <AdminLayout title="Análisis inteligente" subtitle="IA Y ANÁLISIS PREDICTIVO">
     <div className="analytics-controls">
@@ -24,10 +29,10 @@ export function AnalyticsPage({ orders }: { orders: Order[] }) {
     </div>
 
     <section className="ai-metrics">
-      <article><span className="metric-icon purple">↗</span><div><small>Demanda estimada</small><strong>{projectedOrders} proyectos</strong><em>+18% frente al periodo anterior</em></div></article>
+      <article><span className="metric-icon purple">↗</span><div><small>Demanda estimada</small><strong>{projectedOrders} proyectos</strong><em>Proyección lineal consultiva</em></div></article>
       <article><span className="metric-icon amber">!</span><div><small>Pedidos con atención</small><strong>{risks.filter((item) => item.risk.level !== 'Bajo').length} pedidos</strong><em>Revisar fechas y anticipos</em></div></article>
       <article><span className="metric-icon green">S/</span><div><small>Ticket promedio</small><strong>{money(averageTicket)}</strong><em>Calculado sobre {orders.length} pedidos</em></div></article>
-      <article><span className="metric-icon blue">◎</span><div><small>Precisión del modelo</small><strong>84%</strong><em>Actualizado con nuevos pedidos</em></div></article>
+      <article><span className="metric-icon blue">◎</span><div><small>Cobertura histórica</small><strong>{monthsAnalyzed} meses</strong><em>Datos registrados en pedidos</em></div></article>
     </section>
 
     <section className="analytics-grid">
@@ -65,11 +70,12 @@ export function AnalyticsPage({ orders }: { orders: Order[] }) {
 
       <article className="admin-card risk-card">
         <div className="card-title"><div><h2>Riesgo de retraso</h2><p>Puntaje heurístico por etapa, fecha y pago.</p></div><button className="text-button" onClick={() => navigate('/admin/pedidos')}>Ver pedidos →</button></div>
-        <div className="risk-list">{risks.slice(0, 4).map(({ order, risk }) => <button onClick={() => navigate(`/admin/pedido/${order.id}`)} key={order.id}>
+        <div className="risk-list">{visibleRisks.map(({ order, risk }) => <button onClick={() => navigate(`/admin/pedido/${order.id}`)} key={order.id}>
           <div className={`risk-score ${risk.level.toLowerCase()}`}>{risk.score}<small>%</small></div>
           <div><b>{order.id} · {order.customerName}</b><span>{risk.reason}</span><small>Entrega {date(order.deliveryDate)}</small></div>
           <StatusBadge status={order.status}/><i>→</i>
         </button>)}</div>
+        <Pagination page={page} totalPages={totalPages} totalItems={risks.length} onPageChange={setPage} label="pedidos con riesgo" />
       </article>
     </section>
   </AdminLayout>;

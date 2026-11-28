@@ -37,7 +37,7 @@ describe('CatalogPage', () => {
 
     expect(screen.getByRole('status')).toHaveTextContent('Cargando catálogo');
     expect(await screen.findByRole('heading', { name: 'Escritorio Lima' })).toBeInTheDocument();
-    expect(screen.getByText(/Desde/)).toHaveTextContent(/S\/\s*780/);
+    expect(screen.getByText(/Precio base/)).toHaveTextContent(/S\/\s*780/);
     expect(screen.getByRole('tab', { name: 'Oficina' })).toBeInTheDocument();
   });
 

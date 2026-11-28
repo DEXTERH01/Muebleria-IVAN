@@ -12,7 +12,7 @@ describe('HomePage', () => {
     render(<HomePage />);
 
     expect(screen.getByRole('button', { name: /Mueblería Iván, ir al inicio/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /Muebles hechos\s*para tu espacio/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Ver catálogo' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Tu espacio merece un mueble que sí encaje/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Explorar diseños' })).toBeInTheDocument();
   });
 });

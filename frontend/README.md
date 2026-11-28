@@ -1,6 +1,11 @@
 # Frontend de Mueblería Iván
 
-Aplicación React, TypeScript y Vite desplegada en Netlify.
+Aplicación React, TypeScript y Vite preparada para desplegarse en Cloudflare Pages.
+
+Cloudflare debe usar `frontend/` como directorio raíz, `npm run build` como comando
+de construcción y `dist` como directorio de salida. La versión de Node está fijada
+en `.node-version` y `public/_redirects` conserva las rutas de la SPA al abrirlas
+directamente.
 
 ## Liderazgo
 

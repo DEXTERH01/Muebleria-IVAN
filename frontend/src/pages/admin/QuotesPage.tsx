@@ -9,7 +9,7 @@ import {
   type QuoteStatus,
 } from '../../api/modules/quotes';
 import { AdminLayout } from '../../components/layout';
-import { Button, Modal } from '../../components/ui';
+import { Button, Modal, Pagination } from '../../components/ui';
 import { date, moneyMinor } from '../../utils/format';
 
 const statusLabel: Record<QuoteStatus, string> = {
@@ -21,6 +21,7 @@ const statusLabel: Record<QuoteStatus, string> = {
   expired: 'Vencida',
   converted: 'Convertida',
 };
+const PAGE_SIZE = 10;
 
 type ReviewStatus = Extract<QuoteStatus, 'reviewing' | 'approved' | 'rejected' | 'expired'>;
 
@@ -107,18 +108,22 @@ export function QuotesPage({
   const [error, setError] = useState<string | null>(null);
   const [busyQuote, setBusyQuote] = useState<string | null>(null);
   const [selected, setSelected] = useState<QuoteData | null>(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      setQuotes((await listQuotes()).items);
+      const result = await listQuotes(page, PAGE_SIZE);
+      setQuotes(result.items);
+      setTotal(result.total);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'No pudimos cargar las cotizaciones.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     void load();
@@ -158,8 +163,9 @@ export function QuotesPage({
         <div className="portal-notice portal-empty"><h2>No hay cotizaciones pendientes</h2></div>
       )}
       {!loading && !error && quotes.length > 0 && (
-        <div className="admin-quote-list">
-          {quotes.map((quote) => (
+        <>
+          <div className="admin-quote-list">
+            {quotes.map((quote) => (
             <article className="admin-card admin-quote-card" key={quote.id}>
               <div className="admin-quote-heading">
                 <div>
@@ -183,8 +189,16 @@ export function QuotesPage({
                 {quote.status === 'approved' && <Button variant="secondary" disabled={busyQuote === quote.id} onClick={() => void changeStatus(quote, 'expired')}>Marcar vencida</Button>}
               </div>
             </article>
-          ))}
-        </div>
+            ))}
+          </div>
+          <Pagination
+            page={page}
+            totalPages={Math.max(1, Math.ceil(total / PAGE_SIZE))}
+            totalItems={total}
+            onPageChange={setPage}
+            label="cotizaciones"
+          />
+        </>
       )}
       <ConversionModal quote={selected} onClose={() => setSelected(null)} onConvert={finishConversion} />
     </AdminLayout>

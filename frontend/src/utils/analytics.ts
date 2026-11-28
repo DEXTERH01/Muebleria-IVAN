@@ -6,11 +6,9 @@ export interface ForecastPoint {
   projected?: boolean;
 }
 
-const historicalDemand = [9, 11, 10, 14, 16, 18];
-const historicalLabels = ['May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct'];
-
 function linearProjection(values: number[], futurePeriods: number) {
   const n = values.length;
+  if (n < 2) return Array.from({ length: futurePeriods }, () => values[0] ?? 0);
   const sumX = values.reduce((sum, _, index) => sum + index, 0);
   const sumY = values.reduce((sum, value) => sum + value, 0);
   const sumXY = values.reduce((sum, value, index) => sum + index * value, 0);
@@ -22,11 +20,26 @@ function linearProjection(values: number[], futurePeriods: number) {
   );
 }
 
-export function getDemandForecast(period: 30 | 60 | 90): ForecastPoint[] {
+export function getDemandForecast(period: 30 | 60 | 90, orders: Order[]): ForecastPoint[] {
   const months = period === 30 ? 1 : period === 60 ? 2 : 3;
-  const futureLabels = ['Nov', 'Dic', 'Ene'];
+  const monthly = new Map<string, number>();
+  for (const order of orders) {
+    const key = order.createdAt.slice(0, 7);
+    monthly.set(key, (monthly.get(key) ?? 0) + 1);
+  }
+  const periods = [...monthly.keys()].sort().slice(-6);
+  const historicalDemand = periods.map((key) => monthly.get(key) ?? 0);
+  const label = (key: string) => new Intl.DateTimeFormat('es-PE', { month: 'short' })
+    .format(new Date(`${key}-01T12:00:00`))
+    .replace('.', '');
+  const lastPeriod = periods[periods.length - 1] ?? new Date().toISOString().slice(0, 7);
+  const [lastYear, lastMonth] = lastPeriod.split('-').map(Number);
+  const futureLabels = Array.from({ length: months }, (_, index) => {
+    const date = new Date(lastYear, lastMonth + index, 1);
+    return new Intl.DateTimeFormat('es-PE', { month: 'short' }).format(date).replace('.', '');
+  });
   return [
-    ...historicalDemand.map((value, index) => ({ label: historicalLabels[index], value })),
+    ...historicalDemand.map((value, index) => ({ label: label(periods[index]), value })),
     ...linearProjection(historicalDemand, months).map((value, index) => ({
       label: futureLabels[index],
       value,
@@ -44,7 +57,7 @@ const statusRisk: Record<OrderStatus, number> = {
 };
 
 export function getOrderRisk(order: Order) {
-  const referenceDate = new Date('2026-10-17T12:00:00');
+  const referenceDate = new Date();
   const delivery = new Date(`${order.deliveryDate}T12:00:00`);
   const daysLeft = Math.ceil((delivery.getTime() - referenceDate.getTime()) / 86400000);
   const urgency = daysLeft <= 2 ? 42 : daysLeft <= 5 ? 26 : daysLeft <= 9 ? 12 : 3;

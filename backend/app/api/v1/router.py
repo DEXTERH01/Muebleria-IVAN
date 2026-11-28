@@ -5,6 +5,7 @@ from app.api.v1.auth import router as auth_router
 from app.api.v1.catalog import router as catalog_router
 from app.api.v1.customers import router as customers_router
 from app.api.v1.media import router as media_router
+from app.api.v1.ml import router as ml_router
 from app.api.v1.optimizations import router as optimizations_router
 from app.api.v1.orders import quote_conversion_router
 from app.api.v1.orders import router as orders_router
@@ -21,4 +22,5 @@ api_router.include_router(orders_router)
 api_router.include_router(payments_router)
 api_router.include_router(media_router)
 api_router.include_router(optimizations_router)
+api_router.include_router(ml_router)
 api_router.include_router(analytics_router)

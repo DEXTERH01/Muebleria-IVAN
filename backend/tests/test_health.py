@@ -1,6 +1,7 @@
 from starlette.requests import Request
 
 from app.api.routes.health import health_check
+from app.api.routes.health import router as health_router
 from app.core.config import Settings
 from app.main import create_app
 
@@ -17,6 +18,14 @@ def test_health_endpoint_returns_service_metadata() -> None:
         "version": "0.1.0",
         "environment": "test",
     }
+
+
+def test_health_endpoint_accepts_get_and_head() -> None:
+    health_route = next(
+        route for route in health_router.routes if getattr(route, "path", None) == "/health"
+    )
+
+    assert health_route.methods == {"GET", "HEAD"}
 
 
 def test_openapi_and_documentation_are_available() -> None:

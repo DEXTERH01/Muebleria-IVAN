@@ -1,5 +1,9 @@
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000')
-  .replace(/\/$/, '');
+const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+const apiBaseUrl = configuredApiBaseUrl
+  ? configuredApiBaseUrl.replace(/\/$/, '')
+  : import.meta.env.PROD
+    ? null
+    : 'http://127.0.0.1:8000';
 let accessTokenProvider: (() => string | null) | null = null;
 
 export function setAccessTokenProvider(provider: (() => string | null) | null): void {
@@ -34,6 +38,12 @@ function errorMessage(body: ApiErrorBody, fallback: string): string {
 }
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
+  if (!apiBaseUrl) {
+    throw new ApiError(
+      'La API no está configurada. Define VITE_API_BASE_URL en el entorno de despliegue.',
+      0,
+    );
+  }
   const accessToken = accessTokenProvider?.();
   const response = await fetch(`${apiBaseUrl}${path}`, {
     ...init,
