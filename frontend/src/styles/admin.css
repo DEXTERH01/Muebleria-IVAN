@@ -54,6 +54,8 @@
   margin-top: auto;
   padding: 16px 10px 4px;
   border-top: 1px solid var(--line);
+  display: grid;
+  gap: 10px;
 }
 .sidebar-bottom small {
   display: block;
@@ -63,15 +65,20 @@
   margin-top: 16px;
 }
 .back-client {
+  width: 100%;
+  text-align: left;
   border: 0;
-  background: none;
-  padding: 0;
+  background: transparent;
+  border-radius: 8px;
+  padding: 8px 10px;
   color: var(--wood);
   font-size: 12.5px;
   font-weight: 600;
-  transition: color .2s;
+  transition: color .2s, background .2s;
 }
-.back-client:hover { color: var(--brown); }
+.back-client:hover { color: var(--brown); background: var(--cream-dark); }
+.sidebar-bottom .back-client:nth-of-type(2) { color: var(--muted); }
+.sidebar-bottom .back-client:nth-of-type(2):hover { color: var(--red); background: var(--red-light); }
 
 /* ─── ADMIN MAIN ───────────────────────────────────────────────── */
 .admin-main {
@@ -163,11 +170,13 @@
 .stat-card strong { font-size: 20px; color: var(--brown); font-weight: 800; }
 
 /* ─── DASHBOARD GRID ───────────────────────────────────────────── */
-.dashboard-toolbar { align-items: center; display: flex; justify-content: space-between; margin: 0 auto 14px; max-width: 1220px; }
+.dashboard-toolbar { align-items: center; display: flex; justify-content: flex-end; margin: 0 auto 12px; max-width: 1220px; }
+.dashboard-customize-button { background: #fff; border: 1px solid var(--line); border-radius: 9px; color: var(--brown); cursor: pointer; font: inherit; font-size: 12px; font-weight: 650; padding: 9px 13px; transition: background .18s, border-color .18s; }
+.dashboard-customize-button:hover { background: var(--cream-dark); border-color: var(--beige); }
 .dashboard-customizer { align-items: center; background: var(--cream); border: 1px solid var(--line); border-radius: 12px; display: flex; flex-wrap: wrap; gap: 12px 20px; margin: 0 auto 16px; max-width: 1220px; padding: 14px 18px; }
 .dashboard-customizer label { align-items: center; color: var(--muted); display: flex; font-size: 12px; gap: 7px; }
 .dashboard-customizer input { accent-color: var(--wood); }
-.dashboard-financial { display: grid; gap: 14px; grid-template-columns: repeat(3,minmax(0,1fr)); margin: 18px auto 0; max-width: 1220px; }
+.dashboard-financial { display: grid; gap: 14px; grid-template-columns: repeat(2,minmax(0,1fr)); margin: 18px auto 0; max-width: 1220px; }
 .dashboard-financial .admin-card { display: grid; gap: 7px; }
 .dashboard-financial small, .forecast-disclaimer { color: var(--muted); font-size: 10px; letter-spacing: .06em; }
 .dashboard-financial strong { color: var(--brown); font-size: 22px; }

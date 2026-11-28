@@ -57,7 +57,14 @@ export async function listPayments(orderId: string): Promise<ApiPayment[]> {
   const response = await apiRequest<PaymentListResponse>(
     `/api/v1/orders/${encodeURIComponent(orderId)}/payments?page=1&pageSize=100`,
   );
-  return response.data;
+  const payments = [...response.data];
+  for (let page = 2; page <= Math.ceil(response.total / 100); page += 1) {
+    const next = await apiRequest<PaymentListResponse>(
+      `/api/v1/orders/${encodeURIComponent(orderId)}/payments?page=${page}&pageSize=100`,
+    );
+    payments.push(...next.data);
+  }
+  return payments;
 }
 
 export async function createPayment(

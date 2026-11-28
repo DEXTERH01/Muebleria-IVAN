@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AdminLayout, navigate, navigateBack } from '../../components/layout';
+import { AdminLayout, navigate } from '../../components/layout';
 import { Button, Modal, Pagination, PaymentBadge, StatCard, StatusBadge } from '../../components/ui';
 import type { Customer, Order, OrderStatus } from '../../types';
 import type { PaymentHandler } from '../../api/modules/orders';
@@ -47,10 +47,10 @@ export function Dashboard({orders}:{orders:Order[]}){
     return next;
   });
   return <AdminLayout title={`Hola, ${name}`} subtitle="RESUMEN GENERAL"><div className="dashboard dashboard-custom">
-    <div className="dashboard-toolbar"><button className="text-button" onClick={()=>setCustomizing(value=>!value)} aria-expanded={customizing}>{customizing?'Listo':'⚙ Personalizar paneles'}</button><button className="text-button" onClick={navigateBack}>← Volver atrás</button></div>
+    <div className="dashboard-toolbar"><button className="dashboard-customize-button" onClick={()=>setCustomizing(value=>!value)} aria-expanded={customizing}>{customizing?'Guardar vista':'⚙ Personalizar paneles'}</button></div>
     {customizing&&<section className="dashboard-customizer" aria-label="Personalizar paneles"><strong>Mostrar en mi resumen</strong>{dashboardWidgets.map(widget=><label key={widget.id}><input type="checkbox" checked={visible.includes(widget.id)} onChange={()=>toggleWidget(widget.id)}/>{widget.label}</label>)}</section>}
     {visible.includes('metrics')&&<section className="stats-grid"><StatCard icon="▦" label="Pedidos activos" value={String(active)}/><StatCard icon="◴" label="Por entregar" value={String(due)} tone="amber"/><StatCard icon="S/" label="Saldo pendiente" value={money(pending)} tone="red"/><StatCard icon="↗" label="Pedidos del mes" value={String(monthlyOrders.length)} tone="green"/></section>}
-    {visible.includes('sales')&&<section className="dashboard-financial"><article className="admin-card"><small>VENTAS CONFIRMADAS ESTE MES</small><strong>{money(monthlySales)}</strong><span>Valor total de pedidos registrados</span></article><article className="admin-card"><small>INGRESOS COBRADOS ESTE MES</small><strong>{money(received)}</strong><span>Pagos registrados en esos pedidos</span></article><article className="admin-card"><small>SALDO PENDIENTE</small><strong>{money(pending)}</strong><span>Saldo de todos los pedidos activos</span></article></section>}
+    {visible.includes('sales')&&<section className="dashboard-financial"><article className="admin-card"><small>VENTAS CONFIRMADAS ESTE MES</small><strong>{money(monthlySales)}</strong><span>Valor total de pedidos registrados</span></article><article className="admin-card"><small>COBRADO DE PEDIDOS DEL MES</small><strong>{money(received)}</strong><span>Pagos registrados en esos pedidos</span></article></section>}
     <section className="dash-grid">
       {visible.includes('recent')&&<article className="admin-card recent"><div className="card-title"><div><h2>Pedidos recientes</h2><p>Últimos pedidos de la API.</p></div><button className="text-button" onClick={()=>navigate('/admin/pedidos')}>Ver todos →</button></div><OrdersTable orders={orders.slice(0,5)}/></article>}
       {visible.includes('production')&&<article className="admin-card production"><div className="card-title"><div><h2>Resumen de producción</h2><p>Distribución actual por etapa.</p></div></div>{statusSteps.map(status=><div className="production-row" key={status}><StatusBadge status={status}/><span>{orders.filter(o=>o.status===status).length} pedidos</span></div>)}</article>}

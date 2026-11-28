@@ -13,6 +13,7 @@ import { CatalogAdminPage } from './pages/admin/CatalogAdminPage';
 import { QuotesPage } from './pages/admin/QuotesPage';
 import { OptimizationsPage } from './pages/admin/OptimizationsPage';
 import { TeamPage } from './pages/admin/TeamPage';
+import { IncomePage } from './pages/admin/IncomePage';
 import {
   CustomersPage,
   Dashboard,
@@ -101,6 +102,8 @@ function AppRoutes() {
     page = <AuthGuard roles={['admin']}><CatalogAdminPage showToast={show} /></AuthGuard>;
   } else if (path === '/admin/equipo') {
     page = <AuthGuard roles={['admin']}><TeamPage /></AuthGuard>;
+  } else if (path === '/admin/ingresos') {
+    page = <AuthGuard roles={['admin']}><IncomePage /></AuthGuard>;
   }
   else if (path === '/admin/kanban') {
     page = (

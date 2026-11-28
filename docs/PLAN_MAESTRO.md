@@ -117,6 +117,15 @@ No será un rol de producción. Accederá a una cuenta demostrativa y a evidenci
 | Ver analítica y optimizadores | No | No | Sí | Sí |
 | Entrenar o activar modelos | No | No | No | Sí |
 
+Paneles por rol: el administrador/dueño dispone de Resumen, Ingresos, Cotizaciones,
+Pedidos, Producción, Pagos, Clientes, Catálogo, Análisis, Optimizaciones y Equipo.
+El operador dispone de Resumen, Pedidos, Producción, Pagos, Clientes, Análisis y
+Optimizaciones. El cliente dispone de su portal, cotizaciones y pedidos propios.
+La vista Ingresos del dueño agrupa cobros registrados por día, semana y mes según
+fecha de pago, excluyendo anulados. Los datos de prueba se identifican como tales.
+La utilidad neta queda pendiente del registro de costos y gastos. La exclusividad
+de esta vista no elimina el acceso del operador a pagos individuales para cobrar.
+
 Supabase Auth gestionará la identidad. El frontend enviará el JWT a FastAPI y el backend verificará identidad y rol antes de ejecutar operaciones protegidas.
 
 ## Roles del equipo
