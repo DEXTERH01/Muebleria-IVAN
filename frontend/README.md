@@ -23,6 +23,17 @@ Para habilitar inicio de sesión, copia `.env.example` como `.env.local` y compl
 la URL de Supabase y su clave `anon` pública. No uses la `service_role` en el frontend.
 En Supabase Auth, configura la URL local y `/restablecer-contrasena` como destinos permitidos.
 
+## Recorrido E2E local
+
+La suite E2E usa respuestas de API controladas y una sesión de demostración ficticia; no necesita credenciales de Supabase ni modifica datos. Instala Chromium una vez y ejecuta:
+
+```powershell
+npx playwright install chromium
+npm run test:e2e
+```
+
+Playwright inicia Vite en `http://127.0.0.1:4173` durante la ejecución. La suite cubre el envío de cotización, la aprobación administrativa, accesibilidad de teclado y responsive en 360, 768 y 1440 px.
+
 ## Verificación
 
 ```powershell

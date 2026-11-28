@@ -18,11 +18,13 @@ export function CatalogPhoto({
   fallbackKind,
   className = '',
   eager = false,
+  decorative = false,
 }: {
   image?: ProductImage | null;
   fallbackKind: string;
   className?: string;
   eager?: boolean;
+  decorative?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -36,7 +38,8 @@ export function CatalogPhoto({
     <img
       className={`catalog-photo ${className}`}
       src={image.secureUrl}
-      alt={image.altText}
+      alt={decorative ? '' : image.altText}
+      aria-hidden={decorative || undefined}
       loading={eager ? 'eager' : 'lazy'}
       decoding="async"
       onError={() => setFailed(true)}

@@ -36,7 +36,6 @@ export function ProductDetailPage({ id }: { id: string }) {
   }, [id, retry]);
 
   const visual = product ? productVisual(product.category, product.slug) : 'hero';
-
   return (
     <>
       <Navbar />
@@ -71,7 +70,7 @@ export function ProductDetailPage({ id }: { id: string }) {
                       aria-pressed={selectedImage === index}
                       onClick={() => setSelectedImage(index)}
                     >
-                      <CatalogPhoto image={image} fallbackKind={visual} />
+                      <CatalogPhoto image={image} fallbackKind={visual} decorative />
                     </button>
                   ))}
                 </div>

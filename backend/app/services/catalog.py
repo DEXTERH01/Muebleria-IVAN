@@ -43,7 +43,10 @@ class CatalogService:
             category=category,
             search=search,
         )
-        items = [self._summary(self.repository.get_aggregate(product)) for product in products]
+        items = [
+            self._summary(aggregate)
+            for aggregate in self.repository.get_aggregates(products)
+        ]
         return ProductListData(items=items, page=page, page_size=page_size, total=total)
 
     def product_by_slug(self, slug: str) -> ProductDetailData:

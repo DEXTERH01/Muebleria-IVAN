@@ -134,6 +134,76 @@ class CatalogRepository:
             accessories=accessories,
         )
 
+    def get_aggregates(
+        self,
+        products: list[Product],
+        *,
+        available_only: bool = True,
+    ) -> list[ProductAggregate]:
+        if not products:
+            return []
+
+        product_ids = [product.id for product in products]
+        materials: dict[UUID, list[OptionRecord]] = {product_id: [] for product_id in product_ids}
+        finishes: dict[UUID, list[OptionRecord]] = {product_id: [] for product_id in product_ids}
+        accessories: dict[UUID, list[OptionRecord]] = {product_id: [] for product_id in product_ids}
+        images: dict[UUID, list[ProductImage]] = {product_id: [] for product_id in product_ids}
+
+        material_filters = (
+            [Material.active.is_(True), Material.available.is_(True)] if available_only else []
+        )
+        for product_id, option, is_default in self.session.execute(
+            select(ProductMaterial.product_id, Material, ProductMaterial.is_default)
+            .join(ProductMaterial, ProductMaterial.material_id == Material.id)
+            .where(ProductMaterial.product_id.in_(product_ids), *material_filters)
+            .order_by(ProductMaterial.product_id, ProductMaterial.is_default.desc(), Material.name)
+        ).all():
+            materials[product_id].append(OptionRecord(option, is_default))
+
+        finish_filters = (
+            [Finish.active.is_(True), Finish.available.is_(True)] if available_only else []
+        )
+        for product_id, option, is_default in self.session.execute(
+            select(ProductFinish.product_id, Finish, ProductFinish.is_default)
+            .join(ProductFinish, ProductFinish.finish_id == Finish.id)
+            .where(ProductFinish.product_id.in_(product_ids), *finish_filters)
+            .order_by(ProductFinish.product_id, ProductFinish.is_default.desc(), Finish.name)
+        ).all():
+            finishes[product_id].append(OptionRecord(option, is_default))
+
+        accessory_filters = (
+            [Accessory.active.is_(True), Accessory.available.is_(True)] if available_only else []
+        )
+        for product_id, option, is_default in self.session.execute(
+            select(ProductAccessory.product_id, Accessory, ProductAccessory.is_default)
+            .join(ProductAccessory, ProductAccessory.accessory_id == Accessory.id)
+            .where(ProductAccessory.product_id.in_(product_ids), *accessory_filters)
+            .order_by(
+                ProductAccessory.product_id,
+                ProductAccessory.is_default.desc(),
+                Accessory.name,
+            )
+        ).all():
+            accessories[product_id].append(OptionRecord(option, is_default))
+
+        for image in self.session.scalars(
+            select(ProductImage)
+            .where(ProductImage.product_id.in_(product_ids))
+            .order_by(ProductImage.product_id, ProductImage.position, ProductImage.id)
+        ).all():
+            images[image.product_id].append(image)
+
+        return [
+            ProductAggregate(
+                product=product,
+                images=images[product.id],
+                materials=materials[product.id],
+                finishes=finishes[product.id],
+                accessories=accessories[product.id],
+            )
+            for product in products
+        ]
+
     def add(self, product: Product) -> None:
         self.session.add(product)
         self.session.flush()

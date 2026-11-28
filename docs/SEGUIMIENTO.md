@@ -4,10 +4,10 @@
 
 - Fecha de referencia: 2026-11-27.
 - Fase actual: Fase 8, preparación del despliegue de demo.
-- Estado: Fases 1–6 están implementadas. Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. Las visualizaciones administrativas de optimización están implementadas. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback. Fase 7 tiene protocolo de prueba de usuario y vista administrativa responsive; faltan sesiones y mediciones reales. Fase 8 tiene frontend operativo en Netlify (`https://muebleriaivan.netlify.app`), backend en Render (`https://muebleria-ivan.onrender.com`) y la migración a Cloudflare Pages preparada en el repositorio; falta crear el proyecto Pages, efectuar el corte y completar la validación integral.
+- Estado: Fases 1–6 están implementadas. Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. Las visualizaciones administrativas de optimización están implementadas. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback. Fase 7 tiene pruebas unitarias y E2E, revisiones responsive y de accesibilidad, y protocolo de prueba de usuario; faltan sesiones y mediciones reales. Fase 8 tiene frontend operativo en Netlify (`https://muebleriaivan.netlify.app`), backend en Render (`https://muebleria-ivan.onrender.com`) y la migración a Cloudflare Pages preparada en el repositorio; falta crear el proyecto Pages, efectuar el corte y completar la validación integral.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
 - Próxima puerta de control: ejecutar smoke test público de catálogo, autenticación, cotización y taller; luego completar la evidencia de Fase 7.
-- Avance global: Fases 1 a 6 cumplen sus criterios técnicos. En Fase 7 quedan validación E2E, accesibilidad, pruebas con usuarios y rendimiento. En Fase 8 los servicios están desplegados; queda validar los flujos completos y preparar los materiales de presentación. Siguen dos pendientes administrativos de Fase 0.
+- Avance global: Fases 1 a 6 cumplen sus criterios técnicos. En Fase 7 quedan las pruebas de integración de API y base de datos, las sesiones con usuarios y completar las mediciones de rendimiento. En Fase 8 los servicios están desplegados; queda validar los flujos completos y preparar los materiales de presentación. Siguen dos pendientes administrativos de Fase 0.
 
 ## Cómo actualizar este seguimiento
 
@@ -77,7 +77,7 @@ Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas
 
 ## Fase 3. Catálogo y cotizaciones
 
-- [x] Migrar productos a PostgreSQL.
+- [x] Migrar productos a PostgreSQL. Evidencia: catálogo demo ampliado a 52 productos; manifiesto idempotente de 46 modelos en `supabase/catalog_import/`.
 - [x] Implementar endpoints de catálogo.
 - [x] Implementar administración del catálogo.
 - [x] Migrar reglas del cotizador al backend.
@@ -100,7 +100,7 @@ Avance local: están implementados clientes, conversión de cotizaciones aprobad
 - [x] Implementar clientes. Evidencia: `backend/app/api/v1/customers.py`, `backend/app/schemas/customer.py`.
 - [x] Implementar pagos con idempotencia. Evidencia: `backend/app/api/v1/payments.py`, `backend/tests/test_operations_api.py`.
 - [x] Implementar reversión de pagos. Evidencia: `backend/app/api/v1/payments.py`, `backend/app/models/audit_log.py`.
-- [x] Integrar Cloudinary para productos. Evidencia: `backend/app/api/v1/catalog.py`, `frontend/src/api/modules/media.ts`, `frontend/src/pages/admin/CatalogAdminPage.tsx`. Validación con cuenta real pendiente.
+- [x] Integrar Cloudinary para productos. Evidencia: 46 imágenes cargadas y vinculadas en Supabase demo; `supabase/catalog_import/products.csv`, `supabase/catalog_import/import_catalog.py`, `frontend/src/components/catalog.tsx` y `frontend/src/pages/ProductDetailPage.tsx` muestran el recorrido hasta el frontend.
 - [x] Integrar Cloudinary privado para vouchers. Evidencia: `backend/app/api/v1/media.py`, `backend/tests/test_operations_api.py`.
 - [x] Sustituir `localStorage` por la API FastAPI de pedidos y pagos. Evidencia: `frontend/src/hooks/useOrders.ts`, `frontend/src/api/modules/orders.ts`.
 - [x] Probar el flujo completo. Evidencia: `backend/tests/integration/test_phase4_workflow_postgres.py`; ejecutado contra Supabase local con JWT real y PostgreSQL migrado, desde cotización hasta instalación con aislamiento entre clientes, conversión idempotente, 8 eventos de estado, 2 pagos y saldo final cero.
@@ -142,16 +142,16 @@ Criterio de salida: modelos reproducibles, evaluados, versionados e integrados s
 
 ## Fase 7. Calidad y experiencia
 
-- [ ] Cubrir flujos críticos con pruebas unitarias.
+- [x] Cubrir flujos críticos con pruebas unitarias. Evidencia: `frontend/src/pages/admin/QuotesStatus.test.tsx`; 18 pruebas unitarias pasan con `npm test`.
 - [ ] Añadir pruebas de integración de API y base de datos.
-- [ ] Añadir pruebas E2E con Playwright.
-- [ ] Revisar responsive.
-- [ ] Revisar accesibilidad.
-- [x] Preparar protocolo de prueba de usuario. Evidencia: `docs/PROTOCOLO_PRUEBA_USUARIO.md`.
+- [x] Añadir pruebas E2E con Playwright. Evidencia: `frontend/e2e/quote-flow.spec.ts`, `frontend/e2e/admin-quotes.spec.ts`; cotización, aprobación, teclado y Axe.
+- [x] Revisar responsive. Evidencia: cotizador y cotizaciones administrativas sin desborde a 360, 768 y 1440 px en E2E.
+- [x] Revisar accesibilidad. Evidencia: auditorías Axe sin infracciones en cotizador, resumen, modal y lista administrativa; foco de modal probado con teclado.
+- [x] Preparar protocolo de prueba de usuario. Evidencia: `docs/PROTOCOLO_PRUEBA_USUARIO.md`, `frontend/quality/USER_TEST_PROTOCOL.md`.
 - [ ] Ejecutar pruebas con cinco a ocho participantes.
 - [ ] Calcular SUS y tasa de tareas completadas.
-- [ ] Medir P50, P95, errores e inferencia.
-- [ ] Corregir problemas prioritarios.
+- [ ] Medir P50, P95, errores e inferencia. Evidencia parcial de catálogo y estimación: `frontend/quality/PERFORMANCE_BASELINE.md`; pendiente medir inferencia ML.
+- [x] Corregir problemas prioritarios. Evidencia: consultas agrupadas del catálogo en `backend/app/repositories/catalog.py`, foco/contraste y responsive en `frontend/src/styles/accessibility.css` y `frontend/src/styles/admin-responsive.css`.
 
 Criterio de salida: flujos críticos aprobados y resultados reales documentados.
 

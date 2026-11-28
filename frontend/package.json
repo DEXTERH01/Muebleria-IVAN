@@ -8,6 +8,7 @@
     "build": "node ./node_modules/typescript/bin/tsc -b && node ./node_modules/vite/bin/vite.js build",
     "api:generate": "openapi-typescript ../contracts/openapi.json --output src/api/generated/schema.d.ts",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "test:watch": "vitest",
     "preview": "node ./node_modules/vite/bin/vite.js preview"
   },
@@ -20,6 +21,8 @@
     "vite": "latest"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
     "@testing-library/dom": "latest",
     "@testing-library/jest-dom": "latest",
     "@testing-library/react": "latest",

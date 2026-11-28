@@ -140,6 +140,12 @@
   overflow: hidden;
   box-shadow: var(--shadow-md);
 }
+img.detail-main-visual {
+  display: block;
+  width: 100%;
+  object-fit: contain;
+  background: #e6d5c1;
+}
 .thumbnails { display: flex; gap: 12px; margin-top: 14px; }
 .thumbnails button {
   width: 90px;
