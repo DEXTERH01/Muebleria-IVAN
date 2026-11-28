@@ -11,7 +11,7 @@ describe('HomePage', () => {
   it('presenta la marca y el acceso al catálogo', () => {
     render(<HomePage />);
 
-    expect(screen.getByRole('button', { name: /Mueblería Iván, ir al inicio/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Mueblería Iván.*DISEÑO A TU MEDIDA/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Tu espacio merece un mueble que sí encaje/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Explorar diseños' })).toBeInTheDocument();
   });

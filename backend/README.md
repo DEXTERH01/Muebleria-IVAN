@@ -79,6 +79,26 @@ crea o actualiza transaccionalmente el usuario, su identidad de correo y el perf
 backend\.venv\Scripts\python.exe backend\scripts\bootstrap_demo_accounts.py --database-auth
 ~~~
 
+## Administrador inicial e invitaciones del equipo
+
+El registro público solo crea clientes. Para dar acceso al equipo sin contraseñas compartidas:
+
+1. Desde Supabase Dashboard, abre **Authentication → Users → Add user → Send invitation** e invita al correo del administrador inicial.
+2. La persona acepta la invitación y confirma su correo.
+3. Desde una terminal confiable, el responsable del proyecto asigna el rol inicial:
+
+~~~powershell
+backend\.venv\Scripts\python.exe backend\scripts\promote_first_admin.py dexterneira.12@gmail.com --full-name "Dexter Peña"
+~~~
+
+El comando exige que la cuenta exista y esté confirmada, asigna `admin` y registra el cambio en `app.audit_logs`. Usa `MUEBLERIA_DATABASE_URL` con permisos de propietario solo en la terminal; no la publiques ni configures en el navegador.
+
+Después del despliegue, configura en Render `MUEBLERIA_SUPABASE_SECRET_KEY` con una clave secreta `sb_secret_...` (o `service_role` heredada) y `MUEBLERIA_SUPABASE_INVITE_REDIRECT_URL` con la URL pública `/restablecer-contrasena`. Añade esa URL a la lista de redirecciones permitidas en Supabase Auth. La clave se usa exclusivamente en FastAPI y nunca se configura como `VITE_*`.
+
+En el panel administrativo, abre **Equipo**, registra el nombre y correo personal de cada integrante y asigna el menor rol que necesite: `operator` para operar pedidos y taller, `admin` para gestionar catálogo, cotizaciones y accesos, o `customer` para probar la experiencia de cliente. Supabase envía un enlace individual; cada persona elige su propia contraseña. Los cambios de rol quedan auditados.
+
+Para probar cotizaciones y pedidos sin mezclar datos comerciales, emplea contactos, direcciones y pagos ficticios identificados como prueba. Las cuatro cuentas demo existentes siguen separadas y el script demo no es necesario para invitar al equipo.
+
 ## Machine learning con datos de prueba
 
 El entrenamiento se ejecuta fuera de las solicitudes web. Para reproducir los 500 pedidos sintéticos, comparar los modelos, generar los artefactos versionados y registrar sus métricas en Supabase:

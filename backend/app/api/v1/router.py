@@ -12,10 +12,12 @@ from app.api.v1.orders import quote_conversion_router
 from app.api.v1.orders import router as orders_router
 from app.api.v1.payments import router as payments_router
 from app.api.v1.quotes import router as quotes_router
+from app.api.v1.users import router as users_router
 
 api_router = APIRouter()
 api_router.include_router(assistant_router)
 api_router.include_router(auth_router)
+api_router.include_router(users_router)
 api_router.include_router(catalog_router)
 api_router.include_router(quotes_router)
 api_router.include_router(customers_router)

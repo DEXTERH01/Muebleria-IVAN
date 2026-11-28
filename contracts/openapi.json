@@ -95,6 +95,52 @@
         ]
       }
     },
+    "/api/v1/users/invitations": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create User Invitation",
+        "operationId": "create_user_invitation_api_v1_users_invitations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserInvitationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInvitationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/products": {
       "get": {
         "tags": [
@@ -5403,6 +5449,78 @@
           "adjustmentMinor"
         ],
         "title": "SelectedOptionData"
+      },
+      "UserInvitationData": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "fullName": {
+            "type": "string",
+            "title": "Fullname"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "fullName",
+          "role"
+        ],
+        "title": "UserInvitationData"
+      },
+      "UserInvitationRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "minLength": 5,
+            "title": "Email"
+          },
+          "fullName": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Fullname"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "customer",
+              "operator",
+              "admin"
+            ],
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "fullName",
+          "role"
+        ],
+        "title": "UserInvitationRequest"
+      },
+      "UserInvitationResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/UserInvitationData"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "Invitación enviada por correo."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "UserInvitationResponse"
       },
       "ValidationError": {
         "properties": {

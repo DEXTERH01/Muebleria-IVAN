@@ -61,6 +61,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create User Invitation */
+        post: operations["create_user_invitation_api_v1_users_invitations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/products": {
         parameters: {
             query?: never;
@@ -1863,6 +1880,36 @@ export interface components {
             /** Adjustmentminor */
             adjustmentMinor: number;
         };
+        /** UserInvitationData */
+        UserInvitationData: {
+            /** Email */
+            email: string;
+            /** Fullname */
+            fullName: string;
+            /** Role */
+            role: string;
+        };
+        /** UserInvitationRequest */
+        UserInvitationRequest: {
+            /** Email */
+            email: string;
+            /** Fullname */
+            fullName: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "customer" | "operator" | "admin";
+        };
+        /** UserInvitationResponse */
+        UserInvitationResponse: {
+            data: components["schemas"]["UserInvitationData"];
+            /**
+             * Message
+             * @default Invitación enviada por correo.
+             */
+            message: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -1954,6 +2001,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeResponse"];
+                };
+            };
+        };
+    };
+    create_user_invitation_api_v1_users_invitations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserInvitationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInvitationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

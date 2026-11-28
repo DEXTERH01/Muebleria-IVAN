@@ -156,7 +156,7 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
 .view-switch {
   border: 0;
   background: none;
-  color: var(--wood);
+  color: var(--brown);
   font-weight: 600;
   font-size: 13px;
   padding: 6px 10px;
@@ -221,7 +221,7 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 1.8px;
-  color: var(--wood);
+  color: var(--brown);
   text-transform: uppercase;
 }
 .hero h1 { margin: 20px 0 18px; color: var(--brown); }

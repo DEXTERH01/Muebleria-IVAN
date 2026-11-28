@@ -47,6 +47,7 @@ Cristian Gonza es el responsable principal de `frontend/`. Cada cambio debe cons
 - Formularios accesibles para catálogo y pagos.
 - Confirmaciones antes de acciones sensibles.
 - Diseño responsive del kanban y tablas.
+- Administración de accesos del equipo mediante invitaciones con roles; el primer administrador se provisiona fuera del registro público.
 
 ### FE-06 Calidad
 

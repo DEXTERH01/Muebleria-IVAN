@@ -9,4 +9,5 @@ import './styles/ai.css';
 import './styles/optimizations.css';
 import './styles/accessibility.css';
 import './styles/home-responsive.css';
+import './styles/theme.css';
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

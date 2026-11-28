@@ -551,3 +551,19 @@
 /* ─── UTILITY ──────────────────────────────────────────────────── */
 .red-text   { color: var(--red)   !important; }
 .green-text { color: var(--green) !important; }
+
+.team-page { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr) minmax(300px, .85fr); }
+.team-invite-card, .team-invitations-card { align-content: start; }
+.team-invite-form { display: grid; gap: 16px; max-width: 620px; }
+.team-invite-form label { color: var(--ink); display: grid; font-size: 13px; font-weight: 650; gap: 7px; }
+.team-invite-form input, .team-invite-form select { background: var(--cream); border: 1px solid var(--line); border-radius: 9px; color: var(--ink); font: inherit; min-height: 44px; padding: 0 12px; width: 100%; }
+.team-invite-form input:focus, .team-invite-form select:focus { border-color: var(--terracotta); outline: 3px solid color-mix(in srgb, var(--terracotta) 18%, transparent); }
+.team-security-note, .team-empty { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 16px 0 0; }
+.team-invitation-list { list-style: none; margin: 0; padding: 0; }
+.team-invitation-list li { align-items: center; border-top: 1px solid var(--line); display: flex; gap: 11px; padding: 13px 0; }
+.team-avatar { align-items: center; background: var(--cream-dark); border-radius: 50%; color: var(--brown); display: inline-flex; flex: 0 0 38px; font-size: 12px; font-weight: 750; height: 38px; justify-content: center; }
+.team-person { display: grid; gap: 3px; min-width: 0; }
+.team-person strong { color: var(--ink); font-size: 13px; }
+.team-person small { color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+.team-role { background: var(--cream-dark); border-radius: 999px; color: var(--brown); font-size: 10px; margin-left: auto; padding: 6px 9px; white-space: nowrap; }
+@media (max-width: 960px) { .team-page { grid-template-columns: 1fr; } }

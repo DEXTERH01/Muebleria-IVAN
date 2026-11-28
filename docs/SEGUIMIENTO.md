@@ -73,6 +73,8 @@ Criterio de salida: frontend y backend construyen y sus pruebas se ejecutan loca
 
 El 2026-11-21 pasaron los tres casos de `backend/tests/integration/test_profile_postgres.py` y 68 comprobaciones de `supabase/tests/database/` contra Supabase publicado. El ejecutor remoto transaccional está en `backend/scripts/run_remote_pgtap.py`; cada archivo finaliza con `ROLLBACK`.
 
+- [x] Preparar acceso del equipo por invitación y rol. Evidencia: endpoint admin-only `POST /api/v1/users/invitations`, servicio Supabase Auth, panel `/admin/equipo`, `backend/scripts/promote_first_admin.py`, contrato OpenAPI y pruebas `backend/tests/test_users_api.py` (5 casos). Suite backend: 85 aprobadas y 9 omitidas; Ruff aprobado el 2026-11-28. El administrador inicial debe aceptar una invitación y confirmarse antes de promoverlo. Falta configurar la clave secreta y URL permitida en Render/Supabase para validar el envío real.
+
 Criterio de salida: todos los roles tienen permisos comprobados mediante pruebas positivas y negativas.
 
 ## Fase 3. Catálogo y cotizaciones
@@ -193,6 +195,7 @@ Criterio de salida: una persona externa puede verificar el prototipo y repetir e
 | D-010 | 2026-11-21 | Usar migraciones SQL de Supabase como única fuente de DDL | Auth, RLS, funciones y políticas requieren SQL específico de PostgreSQL; dos sistemas producirían divergencias | SQLAlchemy será ORM, pero no administrará migraciones con Alembic | Equipo completo |
 | D-011 | 2026-11-27 | Migrar el hosting del frontend de Netlify a Cloudflare Pages | Unificar el hosting estático, previews y dominio bajo Cloudflare | El backend permanece en Render; se actualizan CORS, Supabase Auth y la guía de despliegue durante el corte | Dexter |
 | D-012 | 2026-11-28 | Integrar Groq como fallback generativo de Mía | Mejorar preguntas abiertas sin reemplazar respuestas verificables del sistema | La clave vive en FastAPI; hay límite por cliente y fallback local; no se envían datos privados de pedidos | Dexter |
+| D-013 | 2026-11-28 | Administrar accesos del equipo con invitaciones individuales y roles desde el backend | Evitar contraseñas compartidas y evitar que el registro público asigne roles de personal | El primer admin se habilita una sola vez desde terminal confiable; los siguientes usuarios se invitan desde `/admin/equipo`; secretos solo en Render | Dexter |
 
 ## Bloqueos
 

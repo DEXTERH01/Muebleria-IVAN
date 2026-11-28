@@ -12,6 +12,7 @@ import { AnalyticsPage } from './pages/admin/AnalyticsPage';
 import { CatalogAdminPage } from './pages/admin/CatalogAdminPage';
 import { QuotesPage } from './pages/admin/QuotesPage';
 import { OptimizationsPage } from './pages/admin/OptimizationsPage';
+import { TeamPage } from './pages/admin/TeamPage';
 import {
   CustomersPage,
   Dashboard,
@@ -25,6 +26,7 @@ import { HomePage } from './pages/HomePage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { QuotePage } from './pages/QuotePage';
 import { QuoteSummaryPage } from './pages/QuoteSummaryPage';
+import { ThemeProvider } from './theme/ThemeProvider';
 
 function AppRoutes() {
   const [path, setPath] = useState(window.location.pathname);
@@ -97,6 +99,8 @@ function AppRoutes() {
     page = <AuthGuard roles={['admin']}><QuotesPage showToast={show} onOrdersChanged={reload} /></AuthGuard>;
   } else if (path === '/admin/catalogo') {
     page = <AuthGuard roles={['admin']}><CatalogAdminPage showToast={show} /></AuthGuard>;
+  } else if (path === '/admin/equipo') {
+    page = <AuthGuard roles={['admin']}><TeamPage /></AuthGuard>;
   }
   else if (path === '/admin/kanban') {
     page = (
@@ -156,5 +160,5 @@ function AppRoutes() {
 }
 
 export default function App() {
-  return <AuthProvider><AppRoutes /></AuthProvider>;
+  return <ThemeProvider><AuthProvider><AppRoutes /></AuthProvider></ThemeProvider>;
 }

@@ -145,5 +145,5 @@ def test_me_returns_profile_fields_in_camel_case() -> None:
 def test_unconfigured_auth_rejects_presented_token() -> None:
     credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials="token")
     with pytest.raises(HTTPException) as error:
-        get_current_identity(credentials, Settings(environment="test"))
+        get_current_identity(credentials, Settings(_env_file=None, environment="test"))
     assert error.value.status_code == 503

@@ -2,7 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
     database_url: str | None = None
     supabase_url: str | None = None
+    supabase_secret_key: SecretStr | None = None
+    supabase_invite_redirect_url: str = (
+        "https://muebleria-ivan.pages.dev/restablecer-contrasena"
+    )
     supabase_jwt_audience: str = "authenticated"
     cloudinary_cloud_name: str | None = None
     cloudinary_api_key: str | None = None
