@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { chatWithAssistant } from '../api/modules/assistant';
 import { listProducts, type ProductSummary } from '../api/modules/catalog';
 import { useAuth } from '../auth/AuthProvider';
 import type { Order } from '../types';
@@ -76,7 +77,7 @@ function smartReply(
   orders: Order[],
   products: ProductSummary[],
   authenticated: boolean,
-): Omit<ChatMessage, 'id' | 'role'> {
+): Omit<ChatMessage, 'id' | 'role'> | null {
   const text = normalize(input);
   const status = orderReply(input, orders, authenticated);
   if (status) return status;
@@ -123,11 +124,12 @@ function smartReply(
     const count = products.length;
     return { text: count ? `El catálogo tiene ${count} diseños publicados con precio base e imágenes. Dime qué ambiente buscas y te sugiero uno.` : 'El catálogo no está respondiendo en este momento. Puedes volver a intentarlo desde la página de catálogo.', action: { label: 'Abrir catálogo', path: '/catalogo' } };
   }
-  if (!products.length) {
-    return { text: 'No puedo cargar el catálogo ahora. Prueba de nuevo en unos momentos o abre la página de catálogo.' , action: { label: 'Abrir catálogo', path: '/catalogo' } };
-  }
-  return { text: 'Puedo buscar diseños, consultar precios base, iniciar cotizaciones y explicar el seguimiento. Prueba con “ropero”, “mesa de comedor” o “cotizar escritorio”.' };
+  return null;
 }
+
+const fallbackReply: Omit<ChatMessage, 'id' | 'role'> = {
+  text: 'Puedo buscar diseños, consultar precios base, iniciar cotizaciones y explicar el seguimiento. Prueba con “ropero”, “mesa de comedor” o “cotizar escritorio”.',
+};
 
 export function AIAssistant({ orders }: { orders: Order[] }) {
   const auth = useAuth();
@@ -168,6 +170,15 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
 
   useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages]);
 
+  const askGenerativeAssistant = async (text: string) => {
+    try {
+      const response = await chatWithAssistant(text);
+      return { text: response.message };
+    } catch {
+      return fallbackReply;
+    }
+  };
+
   const send = async (raw: string) => {
     const text = raw.trim();
     if (!text || thinking) return;
@@ -178,16 +189,22 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
     setInput('');
 
     if (!usesCatalog) {
-      let response: Omit<ChatMessage, 'id' | 'role'>;
+      let response: Omit<ChatMessage, 'id' | 'role'> | null;
       try {
         response = smartReply(text, orders, products, Boolean(auth?.session));
       } catch {
-        response = {
-          text: 'No pude procesar esa consulta. Inténtalo otra vez o abre el catálogo para encontrar un diseño.',
-          action: { label: 'Abrir catálogo', path: '/catalogo' },
-        };
+        response = fallbackReply;
       }
-      setMessages((current) => [...current, userMessage, { id: assistantMessageId, role: 'assistant', ...response }]);
+      if (response) {
+        const resolvedResponse = response;
+        setMessages((current) => [...current, userMessage, { id: assistantMessageId, role: 'assistant', ...resolvedResponse }]);
+        return;
+      }
+      setMessages((current) => [...current, userMessage]);
+      setThinking(true);
+      const generativeResponse = await askGenerativeAssistant(text);
+      setMessages((current) => [...current, { id: assistantMessageId, role: 'assistant', ...generativeResponse }]);
+      setThinking(false);
       return;
     }
 
@@ -199,16 +216,14 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
     } catch {
       // Keep the last successful catalog so Mía can still answer from cached data.
     }
-    let response: Omit<ChatMessage, 'id' | 'role'>;
+    let response: Omit<ChatMessage, 'id' | 'role'> | null;
     try {
       response = smartReply(text, orders, currentProducts, Boolean(auth?.session));
     } catch {
-      response = {
-        text: 'No pude procesar esa consulta. Inténtalo otra vez o abre el catálogo para encontrar un diseño.',
-        action: { label: 'Abrir catálogo', path: '/catalogo' },
-      };
+      response = fallbackReply;
     }
-    setMessages((current) => [...current, { id: assistantMessageId, role: 'assistant', ...response }]);
+    const resolvedResponse = response ?? await askGenerativeAssistant(text);
+    setMessages((current) => [...current, { id: assistantMessageId, role: 'assistant', ...resolvedResponse }]);
     setThinking(false);
   };
 
@@ -219,13 +234,13 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
         <div><strong>Mía · Asistente de compras</strong><span><i /> {catalogError ? 'Catálogo sin conexión' : 'Lista para ayudarte'}</span></div>
         <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar asistente">×</button>
       </header>
-      <div className="ai-chat-caption">Respuestas basadas en el catálogo publicado y los pedidos de tu sesión.</div>
+      <div className="ai-chat-caption">Respuestas del catálogo y asistencia generativa; verifica los datos antes de comprar.</div>
       <div className="ai-messages" aria-live="polite">
         {messages.map((message) => <div className={`ai-message ${message.role}`} key={message.id}>
           <p>{message.text}</p>
           {message.action && <a href={message.action.path}>{message.action.label}</a>}
         </div>)}
-        {thinking && <div className="ai-message assistant" role="status"><p>Consultando el catálogo publicado…</p></div>}
+        {thinking && <div className="ai-message assistant" role="status"><p>Preparando una respuesta…</p></div>}
         <div ref={endRef}/>
       </div>
       <div className="ai-suggestions">{suggestions.map((item) => <button type="button" key={item} onClick={() => void send(item)} disabled={thinking}>{item}</button>)}</div>

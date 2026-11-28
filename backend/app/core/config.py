@@ -2,7 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     cloudinary_api_key: str | None = None
     cloudinary_api_secret: str | None = None
     cloudinary_signature_algorithm: CloudinaryAlgorithm = "sha1"
+    groq_api_key: str | None = None
+    groq_model: str = "openai/gpt-oss-20b"
+    groq_timeout_seconds: float = Field(default=12.0, gt=0, le=30)
+    assistant_requests_per_minute: int = Field(default=10, ge=1, le=60)
 
     @model_validator(mode="after")
     def configure_demo_supabase(self) -> "Settings":

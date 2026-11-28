@@ -83,6 +83,9 @@ Las demás variables de Render no cambian:
 | `MUEBLERIA_CLOUDINARY_CLOUD_NAME` | Nombre del cloud |
 | `MUEBLERIA_CLOUDINARY_API_KEY` | API key del backend |
 | `MUEBLERIA_CLOUDINARY_API_SECRET` | API secret del backend |
+| `MUEBLERIA_GROQ_API_KEY` | API key secreta de Groq; solo backend |
+| `MUEBLERIA_GROQ_MODEL` | `openai/gpt-oss-20b` |
+| `MUEBLERIA_ASSISTANT_REQUESTS_PER_MINUTE` | `10` para proteger la cuota gratuita |
 
 ## 4. Actualizar Supabase Auth
 
@@ -118,6 +121,8 @@ Ejecutar estas comprobaciones usando `<ORIGEN_PAGES>`:
 8. Solicitar recuperación de contraseña y confirmar que el enlace vuelve a
    `<ORIGEN_PAGES>/restablecer-contrasena`.
 9. Abrir `https://muebleria-ivan.onrender.com/health` y confirmar HTTP 200.
+10. Preguntar a Mía por una recomendación abierta y confirmar en DevTools que
+    `POST /api/v1/assistant/chat` responde HTTP 200 sin exponer la API key.
 
 Cloudflare desplegará automáticamente cada cambio enviado a `main` y puede crear
 previews cuando se vuelvan a habilitar las ramas. Esto corresponde a la

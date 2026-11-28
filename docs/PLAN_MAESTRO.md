@@ -309,6 +309,7 @@ El frontend no accederá directamente a las tablas comerciales. Solo utilizará 
 | Autenticación | Supabase Auth y JWT |
 | Imágenes | Cloudinary |
 | ML | Scikit-learn, CatBoost opcional, Prophet cuando corresponda |
+| Asistente generativo | Groq mediante FastAPI, con bot local como fallback |
 | Pruebas frontend | Vitest, Testing Library y Playwright |
 | Pruebas backend | Pytest y HTTPX |
 | CI/CD | GitHub Actions |
@@ -369,7 +370,7 @@ Muebleria Ivan/
 - Resultado de cotización.
 - Registro e inicio de sesión.
 - Consulta de seguimiento autenticada.
-- Asistente Mía, identificado como asistente basado en reglas mientras no use un modelo generativo.
+- Asistente Mía híbrido: reglas para datos del catálogo y pedidos, y Groq para orientación general; nunca envía credenciales ni datos privados de pedidos al proveedor.
 
 ### Portal del cliente
 
