@@ -22,4 +22,22 @@ Fecha: 2026-11-28. Se enviaron 12 solicitudes secuenciales por ruta desde esta e
 
 La muestra incluye red, proxy, Render y PostgreSQL. No aísla la latencia del servidor ni mide concurrencia; tampoco es comparable directamente con la medición local anterior. La lista de catálogo supera el objetivo de referencia de P95 menor a 700 ms para lecturas simples. La página publicada de Netlify respondió HTTP 200 en `/`, `/catalogo` y `/cotizador`; esto comprueba la entrega de la SPA, no el recorrido funcional en navegador.
 
-La inferencia ML ya tiene endpoints en FastAPI, pero requiere rol operador o administrador y registra cada predicción en la base. Su latencia sigue pendiente de medir en un entorno de prueba controlado, junto con una muestra mayor y concurrente de las rutas públicas. No se debe presentar esta muestra pequeña como prueba de rendimiento de producción.
+Esta primera muestra no mide inferencia ni concurrencia. Las siguientes mediciones amplían esa evidencia sin convertirla en una certificación de rendimiento de producción.
+
+## API publicada: muestra ampliada y concurrencia
+
+Fecha: 2026-11-28. Desde esta estación se ejecutó:
+
+```powershell
+node --use-system-ca frontend/quality/measure-api.mjs --base-url https://muebleria-ivan.onrender.com --samples 50 --concurrency 3 --output output/phase7-public-performance.json
+```
+
+El script descubre un producto activo, prepara una estimación válida y mide la respuesta completa, incluida la transferencia del cuerpo. Separa la primera solicitud de cada operación; después ejecuta 50 solicitudes secuenciales y 50 con tres trabajadores por ruta. P50/P95 usan rango más cercano sobre respuestas exitosas. Los errores HTTP o de red se contabilizan aparte y hacen fallar el comando. El JSON conserva fecha, rutas, códigos, primera solicitud, percentiles y duración de cada escenario. Solo se lee catálogo y se calcula una estimación: no se crean cotizaciones ni pagos.
+
+| Operación | Primera solicitud (ms) | P50 secuencial (ms) | P95 secuencial (ms) | P50 con 3 trabajadores (ms) | P95 con 3 trabajadores (ms) | Errores / muestras medidas |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Catálogo, 100 productos | 774,348 | 746,604 | 848,623 | 662,441 | 1479,572 | 0 / 100 |
+| Detalle `centro-tv-flotante` | 537,508 | 571,579 | 633,585 | 576,716 | 616,697 | 0 / 100 |
+| Estimación | 557,902 | 563,706 | 1091,019 | 542,766 | 612,404 | 0 / 100 |
+
+Las 300 solicitudes medidas respondieron HTTP 200. No se cuenta la preparación ni las primeras solicitudes dentro de esas 300. El catálogo supera el objetivo P95 de 700 ms tanto secuencialmente como con tres trabajadores; el detalle queda por debajo en ambos escenarios. La diferencia entre escenarios no demuestra una mejora causal: se ejecutaron en momentos distintos y varían red, caché y carga del servicio. La primera solicitud tampoco garantiza un arranque en frío. No se compara directamente con la muestra anterior realizada con `curl`.
