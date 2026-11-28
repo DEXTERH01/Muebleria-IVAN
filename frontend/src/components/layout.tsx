@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { useAuth } from '../auth/AuthProvider';
 import { Button } from './ui';
 import { BrandMark } from './BrandMark';
-export function Logo(){return <button className="logo" onClick={()=>navigate('/')} aria-label="Mueblería Iván, ir al inicio"><span className="logo-emblem"><BrandMark /></span><span className="logo-wordmark">Mueblería <i>Iván</i></span></button>}
+export function Logo(){return <button className="logo" onClick={()=>navigate('/')} aria-label="Mueblería Iván, ir al inicio"><BrandMark /><span className="logo-wordmark">Mueblería <i>Iván</i></span></button>}
 export const navigate=(to:string)=>{window.history.pushState({},'',to);window.dispatchEvent(new PopStateEvent('popstate'))};
 export function Navbar(){
   const auth=useAuth();

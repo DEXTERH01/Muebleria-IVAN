@@ -446,12 +446,9 @@ img.detail-main-visual {
 }
 .auth-showcase-logo {
   align-items: center;
-  background: #fff;
-  border-radius: 10px;
   display: flex;
   height: 40px;
   justify-content: center;
-  overflow: hidden;
   width: 40px;
 }
 .auth-showcase-logo .brand-mark { height: 34px; width: 34px; }
