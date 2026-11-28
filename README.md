@@ -1,6 +1,6 @@
 # Mueblería Iván
 
-![Logo de Mueblería Iván](frontend/public/assets/brand/muebleria-ivan-logo.png)
+![Logo de Mueblería Iván](frontend/public/assets/brand/muebleria-ivan-logo.svg)
 
 Plataforma web desacoplada para gestionar el catálogo, las cotizaciones, los pedidos, la producción y los pagos de Mueblería Iván. El repositorio también servirá como prototipo académico de Cloud, DevOps, algoritmos de búsqueda y machine learning.
 
