@@ -45,6 +45,12 @@ Esta prueba revisa catálogo, detalle, estimación y redirección del portal sin
 
 ## Verificación
 
+### Pagos y vouchers
+
+El detalle del pedido y el control de pagos permiten registrar importes con céntimos, fecha y referencia, y adjuntar un voucher opcional JPG, PNG, WebP o PDF de hasta 10 MB. El navegador solicita una firma a FastAPI, carga el archivo como privado y confirma el recurso antes de asociar su UUID al pago. La clave de idempotencia y el archivo confirmado se reutilizan al reintentar la misma operación desde el formulario.
+
+Las pruebas de `PaymentModal.test.tsx`, `payment-media.test.ts` y `e2e/payment-voucher.spec.ts` cubren importes inválidos, error de carga, doble envío y reintento, además de accesibilidad y responsive. Usan respuestas controladas; queda validar la carga real en Cloudinary con las cuentas y configuración de demo.
+
 ### Bloque integral local
 
 Estado al guardar el avance (2026-11-28): primera ejecución integral pendiente de completar la descarga e inicio de Supabase local. La corrección de avance de etapas pasó cuatro pruebas de regresión y el build; todavía no hay resultados de navegador ni de latencia ML para este bloque.

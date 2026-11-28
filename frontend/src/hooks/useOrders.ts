@@ -7,7 +7,7 @@ import {
   setOrderStatus,
   type ApiOrder,
   type ApiOrderStatus,
-  type ApiPaymentMethod,
+  type ApiPaymentCreate,
 } from '../api/modules/orders';
 import type { Order, OrderStatus, PaymentStatus } from '../types';
 
@@ -48,6 +48,7 @@ function toOrder(apiOrder: ApiOrder): Order {
     total,
     advancePaid,
     remainingBalance,
+    depositRequiredMinor: apiOrder.depositRequiredMinor,
     status: displayStatus[apiOrder.status],
     paymentStatus,
     createdAt: apiOrder.createdAt.slice(0, 10),
@@ -144,23 +145,13 @@ export function useOrders() {
 
   const registerPayment = async (
     id: string,
-    amount: number,
-    method: ApiPaymentMethod = 'bank_transfer',
+    input: ApiPaymentCreate,
+    idempotencyKey: string,
   ) => {
-    try {
-      const order = orders.find((item) => item.id === id);
-      if (!order) throw new Error('No encontramos el pedido que quieres actualizar.');
-      await submitPayment(order.apiId, {
-        amountMinor: Math.round(amount * 100),
-        currency: 'PEN',
-        method,
-        paymentDate: new Date().toISOString().slice(0, 10),
-      });
-      await reload();
-    } catch (reason) {
-      await reload();
-      throw reason;
-    }
+    const order = orders.find((item) => item.id === id);
+    if (!order) throw new Error('No encontramos el pedido que quieres actualizar.');
+    await submitPayment(order.apiId, input, idempotencyKey);
+    await reload();
   };
 
   return { orders, loading, error, reload, updateOrder, registerPayment };

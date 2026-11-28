@@ -102,6 +102,7 @@ Avance: están implementados clientes, conversión de cotizaciones aprobadas a p
 - [x] Implementar reversión de pagos. Evidencia: `backend/app/api/v1/payments.py`, `backend/app/models/audit_log.py`.
 - [x] Integrar Cloudinary para productos. Evidencia: 46 imágenes cargadas y vinculadas en Supabase demo; `supabase/catalog_import/products.csv`, `supabase/catalog_import/import_catalog.py`, `frontend/src/components/catalog.tsx` y `frontend/src/pages/ProductDetailPage.tsx` muestran el recorrido hasta el frontend.
 - [x] Integrar Cloudinary privado para vouchers. Evidencia: `backend/app/api/v1/media.py`, `backend/tests/test_operations_api.py`.
+- [x] Conectar vouchers privados al registro de pagos del frontend. Responsable: Cristian. Evidencia: `frontend/src/pages/admin/PaymentModal.tsx`, `frontend/src/api/modules/media.ts` y `frontend/e2e/payment-voucher.spec.ts`; JPG/PNG/WebP/PDF, importe en céntimos, fecha, referencia y reintento con el mismo recurso y clave. Pruebas con respuestas controladas aprobadas el 2026-11-28; la carga real en Cloudinary demo sigue pendiente.
 - [x] Sustituir `localStorage` por la API FastAPI de pedidos y pagos. Evidencia: `frontend/src/hooks/useOrders.ts`, `frontend/src/api/modules/orders.ts`.
 - [x] Probar el flujo completo. Evidencia: `backend/tests/integration/test_phase4_workflow_postgres.py`; ejecutado contra Supabase local con JWT real y PostgreSQL migrado, desde cotización hasta instalación con aislamiento entre clientes, conversión idempotente, 8 eventos de estado, 2 pagos y saldo final cero.
 
@@ -142,9 +143,9 @@ Criterio de salida: modelos reproducibles, evaluados, versionados e integrados s
 
 ## Fase 7. Calidad y experiencia
 
-- [x] Cubrir flujos críticos con pruebas unitarias. Evidencia: `frontend/src/pages/admin/QuotesStatus.test.tsx`; 21 pruebas unitarias en 10 archivos pasaron con `npm run test` el 2026-11-28; `npm run build` también pasó.
+- [x] Cubrir flujos críticos con pruebas unitarias. Evidencia: `frontend/src/pages/admin/QuotesStatus.test.tsx`, `frontend/src/pages/admin/PaymentModal.test.tsx` y `frontend/src/api/modules/payment-media.test.ts`; 47 pruebas unitarias en 13 archivos pasaron con `npm run test` el 2026-11-28; `npm run build` también pasó.
 - [x] Añadir pruebas de integración de API y base de datos. Evidencia: `backend/tests/integration/test_profile_postgres.py` y `backend/tests/integration/test_phase4_workflow_postgres.py`; el recorrido de Fase 4 se ejecutó contra Supabase local y las 68 comprobaciones pgTAP contra Supabase publicado se registraron el 2026-11-21. No se repitieron en esta estación el 2026-11-28 porque Supabase local no estaba iniciado.
-- [x] Añadir pruebas E2E con Playwright. Evidencia: `frontend/e2e/quote-flow.spec.ts`, `frontend/e2e/admin-quotes.spec.ts`; los tres casos de cotización, aprobación, teclado, Axe y responsive pasaron con `npm run test:e2e` el 2026-11-28.
+- [x] Añadir pruebas E2E con Playwright. Evidencia: `frontend/e2e/quote-flow.spec.ts`, `frontend/e2e/admin-quotes.spec.ts`, `frontend/e2e/payment-voucher.spec.ts`; cuatro casos locales de cotización, aprobación, pago con voucher, teclado, Axe y responsive pasaron el 2026-11-28. Los tres casos de demo pública se omiten cuando no se define `DEPLOYED_BASE_URL`.
 - [x] Revisar responsive. Evidencia: cotizador y cotizaciones administrativas sin desborde a 360, 768 y 1440 px en E2E.
 - [x] Revisar accesibilidad. Evidencia: auditorías Axe sin infracciones en cotizador, resumen, modal y lista administrativa; foco de modal probado con teclado.
 - [x] Preparar protocolo de prueba de usuario. Evidencia: `docs/PROTOCOLO_PRUEBA_USUARIO.md`, `frontend/quality/USER_TEST_PROTOCOL.md`.
