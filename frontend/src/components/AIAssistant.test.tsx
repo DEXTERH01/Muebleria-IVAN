@@ -30,7 +30,7 @@ describe('AIAssistant', () => {
     mockedChatWithAssistant.mockReset();
     Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
       configurable: true,
-      value: vi.fn(),
+      value: vi.fn(() => Promise.resolve()),
     });
   });
 

@@ -168,7 +168,9 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
     void loadCatalog().catch(() => {});
   }, []);
 
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages]);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const askGenerativeAssistant = async (text: string) => {
     try {
