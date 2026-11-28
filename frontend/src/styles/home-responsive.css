@@ -3,7 +3,7 @@
   .navbar {
     max-width: none;
     margin-inline: 0;
-    padding-inline: clamp(24px, 5.2vw, 88px);
+    padding-inline: clamp(24px, 4.2vw, 64px);
     width: 100%;
   }
 
@@ -11,18 +11,18 @@
     max-width: none;
     grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
     gap: clamp(28px, 4vw, 64px);
-    padding-inline: clamp(24px, 5.2vw, 88px);
+    padding-inline: clamp(24px, 4.2vw, 64px);
     width: 100%;
   }
 
   .home-collection {
     max-width: none;
-    padding-inline: clamp(24px, 5.2vw, 88px);
+    padding-inline: clamp(24px, 4.2vw, 64px);
     width: 100%;
   }
 
-  .home-process { padding-inline: clamp(24px, 5.2vw, 88px); }
-  .home-final-copy { padding-inline: clamp(24px, 5.2vw, 88px); }
+  .home-process { padding-inline: clamp(24px, 4.2vw, 64px); }
+  .home-final-copy { padding-inline: clamp(24px, 4.2vw, 64px); }
 
   .home-hero-copy { min-width: 0; }
 
