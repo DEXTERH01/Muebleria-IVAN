@@ -12,7 +12,26 @@
           "system"
         ],
         "summary": "Comprobar el estado de la API",
-        "operationId": "health_check_health_get",
+        "operationId": "health_check_health_head",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Comprobar el estado de la API",
+        "operationId": "health_check_health_head",
         "responses": {
           "200": {
             "description": "Successful Response",
