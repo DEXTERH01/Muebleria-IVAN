@@ -6,9 +6,9 @@ from app.schemas.health import HealthResponse
 router = APIRouter(tags=["system"])
 
 
-@router.api_route(
+@router.head("/health", include_in_schema=False)
+@router.get(
     "/health",
-    methods=["GET", "HEAD"],
     response_model=HealthResponse,
     summary="Comprobar el estado de la API",
 )

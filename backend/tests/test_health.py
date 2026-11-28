@@ -21,11 +21,14 @@ def test_health_endpoint_returns_service_metadata() -> None:
 
 
 def test_health_endpoint_accepts_get_and_head() -> None:
-    health_route = next(
+    health_routes = [
         route for route in health_router.routes if getattr(route, "path", None) == "/health"
-    )
+    ]
 
-    assert health_route.methods == {"GET", "HEAD"}
+    assert {frozenset(route.methods) for route in health_routes} == {
+        frozenset({"GET"}),
+        frozenset({"HEAD"}),
+    }
 
 
 def test_openapi_and_documentation_are_available() -> None:
@@ -33,5 +36,6 @@ def test_openapi_and_documentation_are_available() -> None:
     schema = app.openapi()
 
     assert "/health" in schema["paths"]
+    assert set(schema["paths"]["/health"]) == {"get"}
     assert app.docs_url == "/docs"
     assert app.openapi_url == "/openapi.json"
