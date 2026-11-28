@@ -2,9 +2,9 @@
 
 ## Estado general
 
-- Fecha de referencia: 2026-11-21.
+- Fecha de referencia: 2026-11-27.
 - Fase actual: Fase 8, preparación del despliegue de demo.
-- Estado: Fases 1–6 están implementadas. Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. Las visualizaciones administrativas de optimización están implementadas. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback. Fase 7 tiene protocolo de prueba de usuario y vista administrativa responsive; faltan sesiones y mediciones reales. Fase 8 tiene frontend en Netlify (`https://muebleriaivan.netlify.app`), backend en Render (`https://muebleria-ivan.onrender.com`) y catálogo conectado a Supabase; falta completar la validación integral de los flujos públicos y administrativos.
+- Estado: Fases 1–6 están implementadas. Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. Las visualizaciones administrativas de optimización están implementadas. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback. Fase 7 tiene protocolo de prueba de usuario y vista administrativa responsive; faltan sesiones y mediciones reales. Fase 8 tiene frontend operativo en Netlify (`https://muebleriaivan.netlify.app`), backend en Render (`https://muebleria-ivan.onrender.com`) y la migración a Cloudflare Pages preparada en el repositorio; falta crear el proyecto Pages, efectuar el corte y completar la validación integral.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
 - Próxima puerta de control: ejecutar smoke test público de catálogo, autenticación, cotización y taller; luego completar la evidencia de Fase 7.
 - Avance global: Fases 1 a 6 cumplen sus criterios técnicos. En Fase 7 quedan validación E2E, accesibilidad, pruebas con usuarios y rendimiento. En Fase 8 los servicios están desplegados; queda validar los flujos completos y preparar los materiales de presentación. Siguen dos pendientes administrativos de Fase 0.
@@ -160,6 +160,8 @@ Criterio de salida: flujos críticos aprobados y resultados reales documentados.
 - [x] Preparar Blueprint para desplegar FastAPI en Render. Evidencia: `render.yaml`, plan gratuito para demo y health check `/health`.
 - [x] Documentar variables y pasos de publicación. Evidencia: `docs/DESPLIEGUE_DEMO.md`.
 - [x] Desplegar frontend en Netlify. Evidencia: `https://muebleriaivan.netlify.app`.
+- [x] Preparar migración del frontend a Cloudflare Pages. Evidencia: `frontend/.node-version`, `frontend/public/_redirects`, `docs/DESPLIEGUE_DEMO.md`.
+- [ ] Desplegar frontend en Cloudflare Pages y completar el corte desde Netlify.
 - [x] Desplegar backend en Render. Evidencia: `https://muebleria-ivan.onrender.com/health`.
 - [x] Configurar Supabase y Cloudinary de demo. Evidencia: catálogo público devuelve 52 productos con imágenes de Cloudinary desde Supabase.
 - [x] Configurar variables y CORS. Evidencia: el frontend de Netlify consume la API de Render.
@@ -188,6 +190,7 @@ Criterio de salida: una persona externa puede verificar el prototipo y repetir e
 | D-008 | 2026-11-21 | Versionar OpenAPI como frontera entre ambos frentes | Evitar contratos verbales y cambios incompatibles | Backend genera el contrato y frontend lo consume | Equipo completo |
 | D-009 | 2026-11-21 | Dividir el trabajo por módulos verticales y no por carpetas completas | Permite que ambos aporten a backend sin editar los mismos archivos | Cristian asume base de datos, catálogo y cotizaciones; Dexter plataforma, operación e IA | Equipo completo |
 | D-010 | 2026-11-21 | Usar migraciones SQL de Supabase como única fuente de DDL | Auth, RLS, funciones y políticas requieren SQL específico de PostgreSQL; dos sistemas producirían divergencias | SQLAlchemy será ORM, pero no administrará migraciones con Alembic | Equipo completo |
+| D-011 | 2026-11-27 | Migrar el hosting del frontend de Netlify a Cloudflare Pages | Unificar el hosting estático, previews y dominio bajo Cloudflare | El backend permanece en Render; se actualizan CORS, Supabase Auth y la guía de despliegue durante el corte | Dexter |
 
 ## Bloqueos
 

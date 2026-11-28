@@ -6,7 +6,7 @@ Plataforma web desacoplada para gestionar el catálogo, las cotizaciones, los pe
 
 ## Arquitectura
 
-- `frontend/`: React, TypeScript y Vite; despliegue en Netlify.
+- `frontend/`: React, TypeScript y Vite; despliegue en Cloudflare Pages.
 - `backend/`: Python y FastAPI; despliegue previsto en Render.
 - `supabase/`: migraciones, pruebas SQL y datos iniciales de PostgreSQL/Auth.
 - `contracts/`: contrato OpenAPI generado por FastAPI.
@@ -50,7 +50,7 @@ También se puede verificar una sola área con `-Scope frontend` o `-Scope backe
 
 ## Despliegue de demo
 
-Render y Netlify se configuran siguiendo [`docs/DESPLIEGUE_DEMO.md`](docs/DESPLIEGUE_DEMO.md). Render usa el Blueprint `render.yaml`; Netlify toma el build desde `netlify.toml` y requiere variables públicas de API y Supabase configuradas antes de construir.
+Render y Cloudflare Pages se configuran siguiendo [`docs/DESPLIEGUE_DEMO.md`](docs/DESPLIEGUE_DEMO.md). Render usa el Blueprint `render.yaml`; Cloudflare Pages construye desde `frontend/` y requiere las variables públicas de API y Supabase antes de publicar.
 
 ## Trabajo en equipo
 

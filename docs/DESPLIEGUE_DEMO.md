@@ -1,50 +1,157 @@
-# Despliegue de la demo
+# Despliegue de la demo: Render y Cloudflare Pages
 
-## Orden recomendado
+El frontend se publica en Cloudflare Pages y el backend continúa en Render. Durante
+el cambio, Netlify se conserva como rollback; no se elimina hasta aprobar el smoke
+test del nuevo origen.
 
-1. Integrar los PR #16 y #17 en `main`, en ese orden.
-2. En Render, crear un Blueprint desde `render.yaml` y conectar el repositorio.
-3. Ingresar en el servicio Render los valores secretos solicitados.
-4. En Netlify, importar el mismo repositorio. El archivo `netlify.toml` configura `frontend/` como directorio base, el build y la publicación de `dist/`.
-5. Configurar las variables de build de Netlify y volver a desplegar el frontend.
-6. Copiar la URL final de Netlify a `MUEBLERIA_CORS_ORIGINS` en Render y volver a desplegar el backend.
-7. Añadir la URL pública de Netlify a Supabase Auth → URL Configuration → Site URL y Redirect URLs.
+## Configuración preparada en el repositorio
 
-## Variables de Netlify
+- `frontend/.node-version` fija Node.js 22.12.0.
+- `frontend/public/_redirects` reescribe `/*` a `/index.html` con estado 200 para
+  que las rutas de la SPA funcionen al abrirlas o recargarlas directamente.
+- El build continúa siendo `npm run build` y genera `frontend/dist/`.
+- FastAPI continúa desplegado en `https://muebleria-ivan.onrender.com`.
 
-Configurar en Site configuration → Environment variables antes de desplegar:
+## 1. Crear el proyecto en Cloudflare Pages
+
+1. Entrar a Cloudflare Dashboard → **Workers & Pages**.
+2. Seleccionar **Create application** → **Pages** → **Import an existing Git repository**.
+3. Autorizar GitHub y elegir `DEXTERH01/Muebleria-IVAN`.
+4. Configurar exactamente estos valores:
+
+| Campo | Valor |
+| --- | --- |
+| Project name | `muebleria-ivan` (o el nombre disponible elegido) |
+| Production branch | `main` |
+| Framework preset | `React (Vite)` |
+| Root directory | `frontend` |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+
+5. En **Settings → Builds → Branch control**, dejar `main` como producción. Para
+   la migración inicial, seleccionar **None** para preview branches; así no se crean
+   orígenes temporales que todavía no estén autorizados en Render y Supabase.
+6. Crear el proyecto. Si el primer deploy ocurre antes de configurar variables,
+   continuar con la siguiente sección y después seleccionar **Retry deployment**.
+
+Cloudflare usa `frontend/` como raíz del monorepo; por eso `dist` es relativo a esa
+carpeta. La configuración coincide con la guía oficial de
+[builds de Pages](https://developers.cloudflare.com/pages/configuration/build-configuration/).
+
+## 2. Configurar variables del frontend
+
+En el proyecto Pages, abrir **Settings → Environment variables** y añadir estos
+valores al entorno **Production**:
 
 | Variable | Valor |
 | --- | --- |
-| `VITE_API_BASE_URL` | URL pública del backend Render, por ejemplo `https://muebleria-ivan-api.onrender.com`, sin `/` final |
-| `VITE_SUPABASE_URL` | URL pública del proyecto Supabase |
-| `VITE_SUPABASE_ANON_KEY` | Clave pública `anon` o publishable de Supabase |
+| `VITE_API_BASE_URL` | `https://muebleria-ivan.onrender.com` |
+| `VITE_SUPABASE_URL` | La URL pública actual del proyecto Supabase |
+| `VITE_SUPABASE_ANON_KEY` | La clave pública publishable/`anon` actual |
 
-Las variables `VITE_*` se incluyen en el JavaScript público. Nunca usar aquí la clave `service_role`, la contraseña de PostgreSQL ni secretos de Cloudinary. El frontend falla con un mensaje claro si la URL de API no está definida en producción.
+No añadir la clave `service_role`, `sb_secret_...`, la contraseña PostgreSQL ni
+secretos de Cloudinary. Las variables `VITE_*` se integran en el JavaScript público.
 
-## Variables de Render
+Guardar y ejecutar un nuevo deployment de `main`. Anotar la URL final completa,
+por ejemplo `https://muebleria-ivan.pages.dev`; en los pasos siguientes se denomina
+`<ORIGEN_PAGES>`. Debe escribirse sin `/` final.
 
-El Blueprint solicita estos valores al crear el servicio:
+## 3. Autorizar Cloudflare Pages en Render
 
-| Variable | Valor |
+En Render → servicio `muebleria-ivan` → **Environment**, cambiar
+`MUEBLERIA_CORS_ORIGINS` conservando temporalmente Netlify:
+
+```json
+["https://muebleriaivan.netlify.app","<ORIGEN_PAGES>"]
+```
+
+Ejemplo si Cloudflare asignó el nombre previsto:
+
+```json
+["https://muebleriaivan.netlify.app","https://muebleria-ivan.pages.dev"]
+```
+
+Guardar y desplegar nuevamente el servicio Render. Los orígenes deben ser exactos,
+usar HTTPS y no terminar en `/`.
+
+Las demás variables de Render no cambian:
+
+| Variable | Uso |
 | --- | --- |
-| `MUEBLERIA_DATABASE_URL` | Cadena PostgreSQL de Supabase, con esquema `postgresql+psycopg://`; utilizar el pooler si el entorno no permite IPv6 |
-| `MUEBLERIA_SUPABASE_URL` | URL del proyecto Supabase, sin `/auth/v1` |
-| `MUEBLERIA_CORS_ORIGINS` | JSON con orígenes exactos permitidos, por ejemplo `["https://<sitio>.netlify.app"]` |
-| `MUEBLERIA_CLOUDINARY_CLOUD_NAME` | Nombre del cloud de Cloudinary |
-| `MUEBLERIA_CLOUDINARY_API_KEY` | API Key de Cloudinary |
-| `MUEBLERIA_CLOUDINARY_API_SECRET` | API Secret de Cloudinary |
+| `MUEBLERIA_DATABASE_URL` | PostgreSQL de Supabase con `postgresql+psycopg://` |
+| `MUEBLERIA_SUPABASE_URL` | URL del proyecto Supabase |
+| `MUEBLERIA_CLOUDINARY_CLOUD_NAME` | Nombre del cloud |
+| `MUEBLERIA_CLOUDINARY_API_KEY` | API key del backend |
+| `MUEBLERIA_CLOUDINARY_API_SECRET` | API secret del backend |
 
-Cloudinary puede quedar vacío para el primer despliegue; las cargas de imágenes y vouchers permanecerán deshabilitadas hasta configurarlo. La API requiere base de datos y Supabase para los flujos autenticados.
+## 4. Actualizar Supabase Auth
 
-## Comprobación manual de disponibilidad
+En Supabase Dashboard → **Authentication → URL Configuration**:
 
-Después de los despliegues, abrir:
+1. Cambiar **Site URL** a `<ORIGEN_PAGES>`.
+2. Añadir a **Redirect URLs**:
 
-- `https://<backend>.onrender.com/health`
-- `https://<backend>.onrender.com/docs`
-- `https://<frontend>.netlify.app/`
+```text
+<ORIGEN_PAGES>/restablecer-contrasena
+```
 
-Verificar catálogo, registro/inicio de sesión, cotización y un flujo administrativo. La primera petición a una instancia gratuita de Render puede tardar porque el servicio entra en reposo tras inactividad.
+3. Conservar temporalmente la URL equivalente de Netlify para poder volver atrás.
+4. Para desarrollo local, conservar `http://localhost:5173/**` si ya está registrada.
 
-El Blueprint usa el plan gratuito de Render para la demo académica. Puede entrar en reposo y no se recomienda como alojamiento de producción comercial.
+La recuperación de contraseña construye el retorno con `window.location.origin`,
+por lo que la ruta exacta de Cloudflare debe estar permitida. Supabase recomienda
+URLs exactas en producción; los comodines se reservan para previews. Véase
+[Redirect URLs de Supabase](https://supabase.com/docs/guides/auth/redirect-urls).
+
+## 5. Smoke test obligatorio
+
+Ejecutar estas comprobaciones usando `<ORIGEN_PAGES>`:
+
+1. Abrir `/` y confirmar que carga la portada.
+2. Abrir directamente `/catalogo`, recargar y confirmar HTTP 200.
+3. Abrir directamente `/producto/<slug-valido>` y recargar.
+4. Confirmar en DevTools → Network que `/api/v1/products` responde desde Render
+   sin error CORS.
+5. Crear una cotización de prueba.
+6. Iniciar sesión con una cuenta demo y abrir `/mi-cuenta`.
+7. Iniciar sesión como operador o administrador y abrir `/admin`.
+8. Solicitar recuperación de contraseña y confirmar que el enlace vuelve a
+   `<ORIGEN_PAGES>/restablecer-contrasena`.
+9. Abrir `https://muebleria-ivan.onrender.com/health` y confirmar HTTP 200.
+
+Cloudflare desplegará automáticamente cada cambio enviado a `main` y puede crear
+previews cuando se vuelvan a habilitar las ramas. Esto corresponde a la
+[integración Git oficial](https://developers.cloudflare.com/pages/configuration/git-integration/).
+
+## 6. Dominio propio opcional
+
+En Pages → **Custom domains** → **Set up a domain**, asociar el dominio final antes
+de cambiar DNS manualmente. Para un dominio raíz, la zona y sus nameservers deben
+estar en Cloudflare; para un subdominio se puede usar un CNAME hacia el hostname
+`*.pages.dev`. Seguir la guía oficial de
+[custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/).
+
+Si se añade un dominio propio, repetir los pasos 3 y 4 usando ese dominio como
+origen final y como Site URL. Mantener también `<ORIGEN_PAGES>` hasta aprobar el
+smoke test del dominio.
+
+## 7. Cerrar Netlify después de validar
+
+Solo después de aprobar todo el smoke test:
+
+1. Desactivar los deploys automáticos del sitio en Netlify.
+2. Retirar `https://muebleriaivan.netlify.app` de `MUEBLERIA_CORS_ORIGINS` en Render.
+3. Retirar las URLs de Netlify de Supabase Auth.
+4. Archivar o eliminar el sitio en Netlify.
+5. Eliminar `netlify.toml` del repositorio en un commit posterior.
+
+## Rollback
+
+Si Cloudflare falla antes de retirar Netlify:
+
+1. Restaurar la Site URL de Supabase a `https://muebleriaivan.netlify.app`.
+2. Mantener ambos orígenes en `MUEBLERIA_CORS_ORIGINS`.
+3. Volver a usar la URL de Netlify mientras se corrige el deployment de Pages.
+
+No es necesario cambiar Render, la base de datos, Cloudinary ni las migraciones
+para realizar este rollback.
