@@ -76,12 +76,6 @@ function transitionsTo(target: OrderStatus, current: ApiOrderStatus): ApiOrderSt
     listo: 3,
     instalado: 4,
   };
-  while (displayStatus[state] !== target && targetRank[displayStatus[state]] < targetRank[target]) {
-    const nextState = next[state];
-    if (!nextState) break;
-    steps.push(nextState);
-    state = nextState;
-  }
   if (displayStatus[state] === target) return [];
   if (targetRank[displayStatus[state]] > targetRank[target]) {
     throw new Error('Los pedidos solo pueden avanzar a la siguiente etapa.');

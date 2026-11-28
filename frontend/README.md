@@ -45,6 +45,20 @@ Esta prueba revisa catálogo, detalle, estimación y redirección del portal sin
 
 ## Verificación
 
+### Bloque integral local
+
+Estado al guardar el avance (2026-11-28): primera ejecución integral pendiente de completar la descarga e inicio de Supabase local. La corrección de avance de etapas pasó cuatro pruebas de regresión y el build; todavía no hay resultados de navegador ni de latencia ML para este bloque.
+
+Con Python 3.12+, `backend/.venv` preparado y Supabase local migrado y sembrado, ejecuta desde la raíz:
+
+```powershell
+./frontend/quality/verify-local.ps1
+```
+
+El comando comprueba SQL, frontend, backend, integración de ML y el recorrido real en navegador: inicio de sesión de cliente, envío de cotización, aprobación y conversión por administrador, anticipo, producción, saldo e instalación, con consulta del historial del cliente. Crea cuentas y operaciones ficticias únicamente en Supabase local. No reinicia ni borra la base automáticamente; usa una base desechable preparada con `supabase db reset`.
+
+La medición de ambos endpoints ML guarda 30 muestras calientes por endpoint y la primera solicitud por separado en `output/phase7-ml-performance.json`. Incluye FastAPI TestClient, JWT y persistencia PostgreSQL; no representa latencia del despliegue público. Las pruebas exigen persistencia versionada, deniegan acceso a visitantes/clientes y comprueban que inferencia y fallback no alteren pedidos ni pagos.
+
 ```powershell
 npm run test
 npm run build
