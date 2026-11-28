@@ -211,16 +211,25 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
     setMessages((current) => [...current, userMessage]);
     setThinking(true);
     let currentProducts = products;
+    let catalogUnavailable = false;
     try {
       currentProducts = await loadCatalog();
     } catch {
       // Keep the last successful catalog so Mía can still answer from cached data.
+      catalogUnavailable = true;
     }
     let response: Omit<ChatMessage, 'id' | 'role'> | null;
-    try {
-      response = smartReply(text, orders, currentProducts, Boolean(auth?.session));
-    } catch {
-      response = fallbackReply;
+    if (catalogUnavailable && !currentProducts.length) {
+      response = {
+        text: 'No puedo cargar el catálogo ahora. Prueba de nuevo en unos momentos o abre la página de catálogo.',
+        action: { label: 'Abrir catálogo', path: '/catalogo' },
+      };
+    } else {
+      try {
+        response = smartReply(text, orders, currentProducts, Boolean(auth?.session));
+      } catch {
+        response = fallbackReply;
+      }
     }
     const resolvedResponse = response ?? await askGenerativeAssistant(text);
     setMessages((current) => [...current, { id: assistantMessageId, role: 'assistant', ...resolvedResponse }]);
