@@ -133,10 +133,9 @@ function AppRoutes() {
             .then(() => show('Etapa actualizada.'))
             .catch((error: unknown) => show(error instanceof Error ? error.message : 'No se pudo actualizar el pedido.'));
         }}
-        onPayment={(id, amount, method) => {
-          void registerPayment(id, amount, method)
-            .then(() => show('Pago registrado correctamente.'))
-            .catch((error: unknown) => show(error instanceof Error ? error.message : 'No se pudo registrar el pago.'));
+        onPayment={async (id, input, key) => {
+          await registerPayment(id, input, key);
+          show('Pago registrado correctamente.');
         }}
       /></AuthGuard>
     );

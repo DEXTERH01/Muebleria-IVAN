@@ -458,6 +458,8 @@
 .payment-summary .stat-card { width: 220px; }
 .payment-filters { margin-bottom: 16px; }
 .payment-form { display: grid; gap: 14px; margin-top: 16px; }
+.payment-fields { display: grid; gap: 14px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.payment-fields input[type="file"] { width: 100%; max-width: 100%; font-size: 12px; }
 .payment-order {
   background: var(--cream-dark);
   padding: 11px 13px;
