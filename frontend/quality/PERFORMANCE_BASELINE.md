@@ -10,4 +10,16 @@ Fecha de medición: 2026-11-21. La API FastAPI se ejecutó localmente en `demo` 
 
 P50 y P95 usan el rango más cercano sobre la muestra ordenada. En la lista, agrupar las consultas redujo P50 en 72.7% y P95 en 59.8%. Es una comparación exploratoria de baja concurrencia: incluye la latencia del cliente PowerShell, el backend local y la conexión a Supabase demo. No representa la experiencia de una persona usuaria ni una prueba de carga.
 
-La inferencia ML no se midió: la fase 6 sigue asignada a Dexter y todavía no hay un endpoint de inferencia que se pueda medir en esta demo. Repetir las mediciones con mayor muestra y concurrencia en un entorno de despliegue controlado antes de afirmar objetivos de rendimiento.
+## Muestra de la API publicada
+
+Fecha: 2026-11-28. Se enviaron 12 solicitudes secuenciales por ruta desde esta estación con `curl.exe` a Render, sin escribir datos. La estimación usó el producto `centro-tv-flotante` con medidas mínimas válidas (1200 × 450 × 300 mm). P50 y P95 se calcularon por rango más cercano sobre las duraciones totales de `curl` ordenadas. Los códigos HTTP distintos de 200 cuentan como errores.
+
+| Operación | Muestras | Errores | P50 (ms) | P95 (ms) |
+| --- | ---: | ---: | ---: | ---: |
+| `GET /api/v1/products?page=1&pageSize=100` | 12 | 0 | 707.5 | 1452.9 |
+| `GET /api/v1/products/centro-tv-flotante` | 12 | 0 | 627.3 | 680.3 |
+| `POST /api/v1/quotes/estimate` | 12 | 0 | 603.4 | 912.6 |
+
+La muestra incluye red, proxy, Render y PostgreSQL. No aísla la latencia del servidor ni mide concurrencia; tampoco es comparable directamente con la medición local anterior. La lista de catálogo supera el objetivo de referencia de P95 menor a 700 ms para lecturas simples. La página publicada de Netlify respondió HTTP 200 en `/`, `/catalogo` y `/cotizador`; esto comprueba la entrega de la SPA, no el recorrido funcional en navegador.
+
+La inferencia ML ya tiene endpoints en FastAPI, pero requiere rol operador o administrador y registra cada predicción en la base. Su latencia sigue pendiente de medir en un entorno de prueba controlado, junto con una muestra mayor y concurrente de las rutas públicas. No se debe presentar esta muestra pequeña como prueba de rendimiento de producción.
