@@ -191,6 +191,7 @@ Criterio de salida: una persona externa puede verificar el prototipo y repetir e
 | D-009 | 2026-11-21 | Dividir el trabajo por módulos verticales y no por carpetas completas | Permite que ambos aporten a backend sin editar los mismos archivos | Cristian asume base de datos, catálogo y cotizaciones; Dexter plataforma, operación e IA | Equipo completo |
 | D-010 | 2026-11-21 | Usar migraciones SQL de Supabase como única fuente de DDL | Auth, RLS, funciones y políticas requieren SQL específico de PostgreSQL; dos sistemas producirían divergencias | SQLAlchemy será ORM, pero no administrará migraciones con Alembic | Equipo completo |
 | D-011 | 2026-11-27 | Migrar el hosting del frontend de Netlify a Cloudflare Pages | Unificar el hosting estático, previews y dominio bajo Cloudflare | El backend permanece en Render; se actualizan CORS, Supabase Auth y la guía de despliegue durante el corte | Dexter |
+| D-012 | 2026-11-28 | Integrar Groq como fallback generativo de Mía | Mejorar preguntas abiertas sin reemplazar respuestas verificables del sistema | La clave vive en FastAPI; hay límite por cliente y fallback local; no se envían datos privados de pedidos | Dexter |
 
 ## Bloqueos
 
