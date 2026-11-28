@@ -51,6 +51,12 @@ El detalle del pedido y el control de pagos permiten registrar importes con cén
 
 Las pruebas de `PaymentModal.test.tsx`, `payment-media.test.ts` y `e2e/payment-voucher.spec.ts` cubren importes inválidos, error de carga, doble envío y reintento, además de accesibilidad y responsive. Usan respuestas controladas; queda validar la carga real en Cloudinary con las cuentas y configuración de demo.
 
+### Historial del pedido y movimientos
+
+El detalle administrativo consulta el historial de etapas desde FastAPI y muestra las notas y horas de Perú. La etapa actual conserva el estado canónico, incluyendo acabado, entrega e instalación. Los movimientos de pago muestran importe, fecha, método, referencia y estado, con paginación de 10 registros. También se pueden consultar desde Control de pagos mediante **Ver movimientos**.
+
+Cada consulta tiene carga, vacío, error y reintento independientes; se actualizan al cambiar la versión o los importes del pedido. El saldo financiero se toma de la API del pedido, sin sumar los movimientos del historial. La prueba `e2e/order-history.spec.ts` cubre navegación protegida, reintento, paginación, accesibilidad y responsive con datos controlados.
+
 ### Bloque integral local
 
 Estado al guardar el avance (2026-11-28): primera ejecución integral pendiente de completar la descarga e inicio de Supabase local. La corrección de avance de etapas pasó cuatro pruebas de regresión y el build; todavía no hay resultados de navegador ni de latencia ML para este bloque.

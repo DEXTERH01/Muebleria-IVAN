@@ -460,6 +460,22 @@
 .payment-form { display: grid; gap: 14px; margin-top: 16px; }
 .payment-fields { display: grid; gap: 14px; margin: 0; padding: 0; border: 0; min-width: 0; }
 .payment-fields input[type="file"] { width: 100%; max-width: 100%; font-size: 12px; }
+.order-activity-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; overflow-wrap: anywhere; }
+.order-activity-grid > section { min-width: 0; }
+.order-activity-grid h2 { margin-bottom: 16px; }
+.order-status-history > p { font-size: 13px; margin-bottom: 12px; }
+.order-stage-cancelled { color: #8a3124; background: #fff0ed; }
+.payment-record-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 12px; }
+.payment-record-list > li { border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+.payment-record-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.payment-record-heading > b { color: var(--brown); font-size: 17px; }
+.payment-record-status { padding: 4px 9px; border-radius: 20px; font-size: 11px; background: var(--cream-dark); color: var(--brown); }
+.payment-record-voided { color: #8a3124; background: #fff0ed; }
+.payment-record-list dl { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 14px 0 0; }
+.payment-record-list dt { font-size: 11px; color: var(--muted); }
+.payment-record-list dd { margin: 4px 0 0; font-size: 13px; overflow-wrap: anywhere; }
+.payment-history .pagination { flex-wrap: wrap; gap: 12px; }
+@media (max-width: 1000px) { .order-activity-grid { grid-template-columns: 1fr; gap: 16px; } }
 .payment-order {
   background: var(--cream-dark);
   padding: 11px 13px;
