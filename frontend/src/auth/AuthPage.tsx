@@ -3,6 +3,7 @@ import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { useAuth } from './AuthProvider';
 import { Button } from '../components/ui';
 import { Footer, Navbar, navigate } from '../components/layout';
+import { BrandMark } from '../components/BrandMark';
 
 type AuthMode = 'login' | 'register' | 'recovery' | 'update-password';
 
@@ -80,7 +81,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
           <aside className="auth-showcase" aria-label="Beneficios del portal de Mueblería Iván">
             <div className="auth-showcase-brand">
               <span className="auth-showcase-logo" aria-hidden="true">
-                <img src="/assets/brand/muebleria-ivan-logo.png" alt="" />
+                <BrandMark animated />
               </span>
               <span>Mueblería Iván</span>
             </div>

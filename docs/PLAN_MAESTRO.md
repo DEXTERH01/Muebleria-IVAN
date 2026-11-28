@@ -265,7 +265,7 @@ La migración desde el prototipo actual será:
 
 El nombre público y oficial de la empresa dentro del sistema es **Mueblería Iván** y será el único nombre utilizado en interfaces, documentación y metadatos públicos.
 
-El recurso oficial es `frontend/public/assets/brand/muebleria-ivan-logo.png`: un monograma inspirado en un mueble, utilizado en navegación, panel administrativo y favicon. El nombre Mueblería Iván se presenta como texto accesible fuera del ícono.
+El recurso oficial es `frontend/public/assets/brand/muebleria-ivan-logo.svg`: una marca de línea inspirada en un mueble, utilizada en navegación, panel administrativo y favicon. El nombre Mueblería Iván se presenta como texto accesible fuera del ícono.
 
 La paleta principal usa marrón nogal `#3B2416`, madera cálida `#7A5136`, arena `#DCC3A4` y fondo crema. El logo se mostrará sobre fondos claros y conservará su transparencia, proporción y espacio libre. No se deformará, recoloreará ni acompañará con otro nombre comercial.
 
