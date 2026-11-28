@@ -9,9 +9,7 @@
     display: none;
   }
 
-  .sidebar .logo-wordmark {
-    display: none;
-  }
+  .sidebar .logo-emblem { height: 50px; width: 50px; }
 
   .sidebar nav a {
     justify-content: center;
@@ -68,14 +66,7 @@
     flex: 0 0 auto;
   }
 
-  .sidebar .logo-symbol {
-    width: 34px;
-    height: 34px;
-  }
-
-  .sidebar .logo-wordmark {
-    display: none;
-  }
+  .sidebar .logo-emblem { height: 42px; width: 42px; }
 
   .sidebar nav {
     display: flex;

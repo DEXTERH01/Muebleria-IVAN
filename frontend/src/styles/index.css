@@ -83,17 +83,37 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
   transition: opacity .2s;
 }
 .logo:hover { opacity: .75; }
-.logo-symbol { display: block; width: 44px; height: 44px; object-fit: contain; }
-.logo-wordmark {
-  color: var(--brown);
-  font-family: 'Playfair Display', serif;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -.02em;
-  margin-left: 10px;
-  white-space: nowrap;
+.logo-emblem {
+  align-items: center;
+  background: radial-gradient(circle at 34% 24%, #fff 0, #f4e9dc 68%, #ead8c3 100%);
+  border: 1px solid rgba(122, 81, 54, .2);
+  border-radius: 17px;
+  box-shadow: 0 5px 14px rgba(59, 36, 22, .12), inset 0 1px 0 rgba(255,255,255,.85);
+  display: flex;
+  height: 58px;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  transition: box-shadow .2s ease, transform .2s ease;
+  width: 58px;
 }
-.logo-wordmark i { color: var(--wood); font-style: italic; }
+.logo:hover .logo-emblem { box-shadow: 0 8px 18px rgba(59, 36, 22, .17), inset 0 1px 0 rgba(255,255,255,.85); transform: translateY(-1px); }
+.logo-symbol {
+  animation: logo-assemble 1.05s cubic-bezier(.2,.8,.2,1) both;
+  display: block;
+  height: 98px;
+  max-width: none;
+  object-fit: contain;
+  width: 98px;
+}
+@keyframes logo-assemble {
+  0% { clip-path: inset(100% 0 0); opacity: 0; transform: translateY(9px) scale(.95); }
+  42% { clip-path: inset(48% 0 0); opacity: 1; transform: translateY(2px) scale(.99); }
+  100% { clip-path: inset(0); opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-symbol { animation: none; }
+}
 
 .navbar nav { display: flex; gap: 6px; margin-left: auto; }
 .navbar nav a {
@@ -653,7 +673,7 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
 }
 @media (max-width: 620px) {
   .navbar { position: relative; height: 68px; justify-content: space-between; }
-  .navbar .logo-symbol { width: 42px; height: 42px; }
+  .navbar .logo-emblem { height: 54px; width: 54px; }
   .navbar nav.primary-nav { position: absolute; top: calc(100% + 1px); left: 0; right: 0; display: none; align-items: stretch; flex-direction: column; gap: 4px; padding: 12px 20px 18px; background: white; border-bottom: 1px solid #e8e5df; box-shadow: 0 14px 25px rgba(35,29,23,.1); }
   .navbar nav.primary-nav.is-open { display: flex; }
   .navbar nav.primary-nav a { padding: 12px 8px; font-size: 15px; }

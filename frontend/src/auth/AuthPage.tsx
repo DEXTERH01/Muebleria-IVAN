@@ -80,7 +80,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
           <aside className="auth-showcase" aria-label="Beneficios del portal de Mueblería Iván">
             <div className="auth-showcase-brand">
               <span className="auth-showcase-logo" aria-hidden="true">
-                <img src="/assets/brand/muebleria-ivan-logo.svg" alt="" />
+                <img src="/assets/brand/muebleria-ivan-logo.png" alt="" />
               </span>
               <span>Mueblería Iván</span>
             </div>
