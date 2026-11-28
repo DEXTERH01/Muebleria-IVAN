@@ -2,12 +2,12 @@
 
 ## Estado general
 
-- Fecha de referencia: 2026-11-27.
-- Fase actual: Fase 8, preparación del despliegue de demo.
-- Estado: Fases 1–6 están implementadas. Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento. La prueba integral del taller fue aprobada en Supabase local. Las visualizaciones administrativas de optimización están implementadas. La Fase 6 cuenta con dataset, entrenamiento comparativo, artefactos activos en Supabase e inferencia consultiva con fallback. Fase 7 tiene pruebas unitarias y E2E, revisiones responsive y de accesibilidad, y protocolo de prueba de usuario; faltan sesiones y mediciones reales. Fase 8 tiene frontend operativo en Netlify (`https://muebleriaivan.netlify.app`), backend en Render (`https://muebleria-ivan.onrender.com`) y la migración a Cloudflare Pages preparada en el repositorio; falta crear el proyecto Pages, efectuar el corte y completar la validación integral.
+- Fecha de referencia: 2026-11-28.
+- Fase actual: cierre de Fases 7 y 8, validación integral y preparación de la exposición.
+- Estado: Fases 1–6 cumplen sus criterios técnicos. Supabase publicado aprobó conexión ORM, seed, 68 comprobaciones pgTAP, restricciones, RLS, roles y aislamiento; el recorrido integral del taller pasó contra Supabase local. La Fase 6 cuenta con dataset reproducible, entrenamiento comparativo, artefactos versionados e inferencia consultiva con fallback. En Fase 7 pasaron pruebas unitarias, E2E, revisiones responsive y de accesibilidad; faltan sesiones con participantes y completar mediciones de rendimiento, incluida inferencia. En Fase 8 el frontend está publicado en Cloudflare Pages (`https://muebleria-ivan.pages.dev`) y el backend en Render (`https://muebleria-ivan.onrender.com`). El smoke público cubre páginas y flujos sin escritura; queda completar los recorridos autenticados de cotización y taller, producir respaldo visual y ensayar la exposición.
 - Fuente de alcance: `docs/PLAN_MAESTRO.md`.
-- Próxima puerta de control: ejecutar smoke test público de catálogo, autenticación, cotización y taller; luego completar la evidencia de Fase 7.
-- Avance global: Fases 1 a 6 cumplen sus criterios técnicos. En Fase 7 quedan las pruebas de integración de API y base de datos, las sesiones con usuarios y completar las mediciones de rendimiento. En Fase 8 los servicios están desplegados; queda validar los flujos completos y preparar los materiales de presentación. Siguen dos pendientes administrativos de Fase 0.
+- Próxima puerta de control: completar el smoke test autenticado en producción de demo y registrar sus evidencias; después cerrar las sesiones con usuarios y las mediciones de rendimiento.
+- Avance global: las pruebas de integración de API y base de datos cuentan con evidencia previa (Supabase publicado y recorrido del taller en Supabase local); no están pendientes como implementación. Los pendientes de cierre son las sesiones con usuarios, SUS y tasa de tareas completadas, latencia de inferencia y una muestra de rendimiento con mayor concurrencia, los recorridos autenticados en producción, capturas/video y ensayo de exposición. Siguen dos pendientes administrativos de Fase 0.
 
 ## Cómo actualizar este seguimiento
 
@@ -92,7 +92,7 @@ Criterio de salida: catálogo y cotización funcionan sin depender de datos escr
 
 ## Fase 4. Operación del taller
 
-Avance local: están implementados clientes, conversión de cotizaciones aprobadas a pedidos, lectura y transiciones de pedidos con historial, pagos idempotentes con reversión auditada y endpoints para firmar cargas y registrar vouchers privados de Cloudinary. El frontend permite consultar cotizaciones propias, revisar y aprobar cotizaciones como administrador y convertirlas con dirección de entrega. La instalación con saldo pendiente requiere administrador y motivo. Falta validar cargas reales con Cloudinary, asociar imágenes a productos y probar el flujo completo contra Supabase.
+Avance: están implementados clientes, conversión de cotizaciones aprobadas a pedidos, lectura y transiciones de pedidos con historial, pagos idempotentes con reversión auditada y endpoints para firmar cargas y registrar vouchers privados de Cloudinary. El frontend permite consultar cotizaciones propias, revisar y aprobar cotizaciones como administrador y convertirlas con dirección de entrega. La instalación con saldo pendiente requiere administrador y motivo. Las imágenes de catálogo están asociadas en Supabase demo y el flujo integral del taller pasó contra Supabase local; queda repetir en producción de demo el recorrido autenticado de cotización y taller. La validación de carga real de vouchers con Cloudinary sigue pendiente.
 
 - [x] Convertir cotización a pedido. Evidencia: `backend/app/api/v1/orders.py`, `backend/app/schemas/order.py`, `backend/tests/test_operations_api.py`.
 - [x] Implementar estados y transiciones. Evidencia: `backend/app/api/v1/orders.py`, `backend/tests/test_operations_api.py`.
@@ -161,11 +161,11 @@ Criterio de salida: flujos críticos aprobados y resultados reales documentados.
 - [x] Documentar variables y pasos de publicación. Evidencia: `docs/DESPLIEGUE_DEMO.md`.
 - [x] Desplegar frontend en Netlify. Evidencia: `https://muebleriaivan.netlify.app`.
 - [x] Preparar migración del frontend a Cloudflare Pages. Evidencia: `frontend/.node-version`, `frontend/public/_redirects`, `docs/DESPLIEGUE_DEMO.md`.
-- [ ] Desplegar frontend en Cloudflare Pages y completar el corte desde Netlify.
+- [x] Desplegar frontend en Cloudflare Pages y completar la migración del frontend activo. Evidencia: `https://muebleria-ivan.pages.dev`; el smoke E2E del 2026-11-28 pasó contra Pages y la API de Render. Netlify queda como respaldo documentado.
 - [x] Desplegar backend en Render. Evidencia: `https://muebleria-ivan.onrender.com/health`.
 - [x] Configurar Supabase y Cloudinary de demo. Evidencia: catálogo público devuelve 52 productos con imágenes de Cloudinary desde Supabase.
-- [x] Configurar variables y CORS. Evidencia: el frontend de Netlify consume la API de Render.
-- [x] Validar pipeline de despliegue. Evidencia: pipeline de CI aprobado en `main`; el frontend se publica desde Netlify.
+- [x] Configurar variables y CORS. Evidencia: Cloudflare Pages consume la API de Render; el origen Pages fue aceptado en la verificación del 2026-11-28.
+- [x] Validar pipeline de despliegue. Evidencia: pipeline de CI aprobado en `main`; frontend publicado en Cloudflare Pages.
 - [x] Crear cuentas de demo para los roles cliente, operador y administrador. Evidencia: `backend/scripts/bootstrap_demo_accounts.py`; cuatro inicios de sesión HTTP 200, correos confirmados, identidades email y roles verificados en Supabase.
 - [ ] Ejecutar smoke test integral en producción de demo. Parcial: el catálogo devuelve 52 productos, con 52 imágenes distintas respondiendo HTTP 200, cero descripciones demo y 40 precios base distintos. Las cuatro cuentas demo inician sesión y `/api/v1/auth/me` devuelve HTTP 200 con los roles `admin`, `operator` y `customer` esperados. El 2026-11-28 Cloudflare Pages respondió HTTP 200 en portada, catálogo, cotizador, inicio de sesión y portal; Render respondió HTTP 200 en `/health` y permitió el origen Pages por CORS. Los tres casos de `frontend/e2e/deployed-smoke.spec.ts` pasaron contra Pages y la API real: catálogo, detalle, estimación sin guardar y redirección del portal sin sesión. Quedan los flujos completos autenticados de cotización y taller.
 - [x] Preparar informe de métricas. Evidencia: `docs/ENTREGA_DEMO.md`; distingue pruebas locales, smoke público, latencia exploratoria y métricas ML calculadas con datos de prueba. Las métricas pendientes permanecen señaladas.
