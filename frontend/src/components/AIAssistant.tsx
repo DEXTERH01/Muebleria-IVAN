@@ -4,7 +4,6 @@ import { listProducts, type ProductSummary } from '../api/modules/catalog';
 import { useAuth } from '../auth/AuthProvider';
 import type { Order } from '../types';
 import { money, orderStatusLabel, paymentStatusLabel } from '../utils/format';
-import { navigate } from './layout';
 
 interface ChatMessage {
   id: number;
@@ -16,6 +15,12 @@ interface ChatMessage {
 const suggestions = ['Quiero un ropero', '¿Cuánto cuesta?', 'Consultar mi pedido', 'Cómo cotizo'];
 const normalize = (text: string) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const containsAny = (text: string, terms: string[]) => terms.some((term) => text.includes(term));
+const catalogTerms = [
+  'ropero', 'closet', 'armario', 'comoda', 'dormitorio', 'cocina', 'repostero', 'escritorio',
+  'oficina', 'televisor', 'television', 'centro tv', 'comedor', 'mesa', 'zapatera', 'zapatos',
+  'mueble', 'catalogo', 'modelos', 'disenos', 'precio', 'cuesta', 'costo', 'vale', 'cotiz',
+  'presupuesto', 'comprar', 'busco', 'buscar',
+];
 
 function findProduct(text: string, products: ProductSummary[]): ProductSummary | undefined {
   const exact = products.find((product) => normalize(`${product.name} ${product.slug}`)
@@ -128,6 +133,7 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
   const auth = useAuth();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
+  const [thinking, setThinking] = useState(false);
   const [products, setProducts] = useState<ProductSummary[]>([]);
   const [catalogError, setCatalogError] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -135,43 +141,75 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
   ]);
   const endRef = useRef<HTMLDivElement>(null);
   const nextMessageId = useRef(2);
+  const catalogRequest = useRef<Promise<ProductSummary[]> | null>(null);
+
+  const loadCatalog = () => {
+    if (!catalogRequest.current) {
+      const request = listProducts().then((response) => response.items);
+      catalogRequest.current = request;
+      void request.then(
+        () => { if (catalogRequest.current === request) catalogRequest.current = null; },
+        () => { if (catalogRequest.current === request) catalogRequest.current = null; },
+      );
+    }
+    return catalogRequest.current.then((items) => {
+      setProducts(items);
+      setCatalogError(false);
+      return items;
+    }).catch((error: unknown) => {
+      setCatalogError(true);
+      throw error;
+    });
+  };
 
   useEffect(() => {
-    let active = true;
-    listProducts()
-      .then((response) => {
-        if (active) setProducts(response.items);
-      })
-      .catch(() => {
-        if (active) setCatalogError(true);
-      });
-    return () => {
-      active = false;
-    };
+    void loadCatalog().catch(() => {});
   }, []);
 
   useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages]);
 
-  const send = (raw: string) => {
+  const send = async (raw: string) => {
     const text = raw.trim();
-    if (!text) return;
+    if (!text || thinking) return;
     const userMessageId = nextMessageId.current++;
     const assistantMessageId = nextMessageId.current++;
+    const userMessage: ChatMessage = { id: userMessageId, role: 'user', text };
+    const usesCatalog = containsAny(normalize(text), catalogTerms);
+    setInput('');
+
+    if (!usesCatalog) {
+      let response: Omit<ChatMessage, 'id' | 'role'>;
+      try {
+        response = smartReply(text, orders, products, Boolean(auth?.session));
+      } catch {
+        response = {
+          text: 'No pude procesar esa consulta. Inténtalo otra vez o abre el catálogo para encontrar un diseño.',
+          action: { label: 'Abrir catálogo', path: '/catalogo' },
+        };
+      }
+      setMessages((current) => [...current, userMessage, { id: assistantMessageId, role: 'assistant', ...response }]);
+      return;
+    }
+
+    setMessages((current) => [...current, userMessage]);
+    setThinking(true);
+    let currentProducts = products;
+    try {
+      currentProducts = await loadCatalog();
+    } catch {
+      // Keep the last successful catalog so Mía can still answer from cached data.
+    }
     let response: Omit<ChatMessage, 'id' | 'role'>;
     try {
-      response = smartReply(text, orders, products, Boolean(auth?.session));
+      response = smartReply(text, orders, currentProducts, Boolean(auth?.session));
     } catch {
       response = {
         text: 'No pude procesar esa consulta. Inténtalo otra vez o abre el catálogo para encontrar un diseño.',
         action: { label: 'Abrir catálogo', path: '/catalogo' },
       };
     }
-    setMessages((current) => [
-      ...current,
-      { id: userMessageId, role: 'user', text },
-      { id: assistantMessageId, role: 'assistant', ...response },
-    ]);
-    setInput('');
+    setMessages((current) => [...current, { id: assistantMessageId, role: 'assistant', ...response }]);
+    setThinking(false);
   };
 
   return <div className="ai-assistant">
@@ -185,14 +223,15 @@ export function AIAssistant({ orders }: { orders: Order[] }) {
       <div className="ai-messages" aria-live="polite">
         {messages.map((message) => <div className={`ai-message ${message.role}`} key={message.id}>
           <p>{message.text}</p>
-          {message.action && <button onClick={() => navigate(message.action!.path)}>{message.action.label}</button>}
+          {message.action && <a href={message.action.path}>{message.action.label}</a>}
         </div>)}
+        {thinking && <div className="ai-message assistant" role="status"><p>Consultando el catálogo publicado…</p></div>}
         <div ref={endRef}/>
       </div>
-      <div className="ai-suggestions">{suggestions.map((item) => <button type="button" key={item} onClick={() => send(item)}>{item}</button>)}</div>
+      <div className="ai-suggestions">{suggestions.map((item) => <button type="button" key={item} onClick={() => void send(item)} disabled={thinking}>{item}</button>)}</div>
       <form onSubmit={(event) => { event.preventDefault(); send(input); }}>
         <input aria-label="Escribe tu consulta" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Escribe tu consulta…" />
-        <button type="submit" aria-label="Enviar mensaje" disabled={!input.trim()}>↑</button>
+        <button type="submit" aria-label="Enviar mensaje" disabled={!input.trim() || thinking}>↑</button>
       </form>
     </section>}
     <button className="ai-launcher" onClick={() => setOpen((value) => !value)} aria-label={open ? 'Cerrar asistente virtual' : 'Abrir asistente virtual'}>

@@ -34,6 +34,8 @@
 .ai-chat { height: min(590px, calc(100vh - 183px)); max-height: calc(100vh - 183px); }
 .ai-messages { min-height: 0; }
 .ai-suggestions { flex-wrap: wrap; overflow-x: hidden; overflow-y: auto; max-height: 100px; }
+.ai-message > a { display: inline-block; margin-top: 7px; padding: 10px 12px; border: 1px solid #ded4c9; border-radius: 5px; color: #734b38; font-size: 14px; font-weight: 700; text-decoration: none; }
+.ai-message > a:hover { border-color: #aa7655; background: #fffaf5; }
 @media(max-width:560px) {
   .ai-chat { height: auto; max-height: none; }
 }
