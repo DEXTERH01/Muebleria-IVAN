@@ -121,11 +121,16 @@ function AppRoutes() {
   }
   else if (adminOrder) {
     const order = orders.find((item) => item.id === adminOrder[1]);
-    if (!order && !ordersLoading) {
-      page = <main className="auth-page"><section className="auth-card"><h1>Pedido no disponible</h1><p>No encontramos ese pedido en la API.</p><button className="text-button" onClick={() => void reload()}>Volver a cargar</button></section></main>;
-    } else if (order) {
     page = (
-      <AuthGuard roles={['admin', 'operator']}><OrderDetail
+      <AuthGuard roles={['admin', 'operator']}>
+      {!order ? (
+        <main className="auth-page"><section className="auth-card">
+          {ordersLoading ? <p role="status">Cargando pedido…</p> : <>
+            <h1>Pedido no disponible</h1><p>No encontramos ese pedido en la API.</p>
+            <button className="text-button" onClick={() => void reload()}>Volver a cargar</button>
+          </>}
+        </section></main>
+      ) : <OrderDetail
         order={order}
         customer={customers.find((customer) => customer.id === order.customerId)}
         onMove={(id, status) => {
@@ -137,9 +142,9 @@ function AppRoutes() {
           await registerPayment(id, input, key);
           show('Pago registrado correctamente.');
         }}
-      /></AuthGuard>
+      />}
+      </AuthGuard>
     );
-    }
   } else page = <HomePage />;
 
   return (

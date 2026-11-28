@@ -36,7 +36,7 @@ try {
     Invoke-LocalCheck 'frontend, backend e integración PostgreSQL' { & ./scripts/verify.ps1 }
     Push-Location frontend
     try {
-        Invoke-LocalCheck 'E2E con API controlada' { npm.cmd run test:e2e -- admin-quotes.spec.ts quote-flow.spec.ts payment-voucher.spec.ts }
+        Invoke-LocalCheck 'E2E con API controlada' { npm.cmd run test:e2e -- admin-quotes.spec.ts quote-flow.spec.ts payment-voucher.spec.ts order-history.spec.ts }
         Invoke-LocalCheck 'taller con Auth, FastAPI y PostgreSQL reales' {
             npm.cmd run test:e2e -- --config playwright.integration.config.ts
         }

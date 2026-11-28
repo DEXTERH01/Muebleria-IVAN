@@ -53,10 +53,14 @@ export async function setOrderStatus(
   return response.data;
 }
 
-export async function listPayments(orderId: string): Promise<ApiPayment[]> {
-  const response = await apiRequest<PaymentListResponse>(
-    `/api/v1/orders/${encodeURIComponent(orderId)}/payments?page=1&pageSize=100`,
+export async function getPaymentPage(orderId: string, page = 1, pageSize = 20): Promise<PaymentListResponse> {
+  return apiRequest<PaymentListResponse>(
+    `/api/v1/orders/${encodeURIComponent(orderId)}/payments?page=${page}&pageSize=${pageSize}`,
   );
+}
+
+export async function listPayments(orderId: string): Promise<ApiPayment[]> {
+  const response = await getPaymentPage(orderId, 1, 100);
   return response.data;
 }
 
