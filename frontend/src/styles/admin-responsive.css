@@ -9,7 +9,6 @@
     display: none;
   }
 
-  .sidebar .logo-emblem { height: 50px; width: 50px; }
   .sidebar .brand-mark { height: 40px; width: 40px; }
 
   .sidebar nav a {
@@ -67,7 +66,6 @@
     flex: 0 0 auto;
   }
 
-  .sidebar .logo-emblem { height: 42px; width: 42px; }
   .sidebar .brand-mark { height: 32px; width: 32px; }
 
   .sidebar nav {

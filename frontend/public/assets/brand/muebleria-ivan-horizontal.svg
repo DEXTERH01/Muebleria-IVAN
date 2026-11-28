@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 590 150" fill="none">
+  <g transform="translate(14 15)">
+    <path fill="#3D2B1F" d="M18 112V18h17l45 39 45-39h17v94h-23V60L80 92 41 60v52H18Z" />
+    <path fill="#A45C40" d="M73 84h14v28H73z" />
+  </g>
+  <text x="188" y="94" fill="#3D2B1F" font-family="'Playfair Display', Georgia, serif" font-size="49" font-weight="600" letter-spacing="-1.5">
+    <tspan>Mueblería </tspan><tspan fill="#A45C40" font-style="italic">Iván</tspan>
+  </text>
+</svg>

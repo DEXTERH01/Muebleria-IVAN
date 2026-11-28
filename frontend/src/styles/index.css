@@ -2,14 +2,14 @@
 
 /* ─── DESIGN TOKENS ─────────────────────────────────────────────── */
 :root {
-  --ink:        #1e1a17;
-  --brown:      #3e2c1a;
-  --brown-mid:  #5a3d26;
-  --wood:       #7a5230;
-  --wood-light: #a8784a;
-  --beige:      #d4b896;
-  --cream:      #faf8f5;
-  --cream-dark: #f2ede6;
+  --ink:        #26221e;
+  --brown:      #3d2b1f;
+  --brown-mid:  #3d2b1f;
+  --wood:       #a45c40;
+  --wood-light: #d8c4ad;
+  --beige:      #d8c4ad;
+  --cream:      #f5f2ed;
+  --cream-dark: #ede7df;
   --line:       #e8e2da;
   --line-soft:  #f0ebe3;
   --green:      #2d6e47;
@@ -77,42 +77,27 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
 .logo {
   background: none;
   border: 0;
+  gap: 10px;
   padding: 0;
   display: flex;
   align-items: center;
-  transition: opacity .2s;
+  transition: opacity .2s ease;
 }
-.logo:hover { opacity: .75; }
-.logo-emblem {
-  align-items: center;
-  background: radial-gradient(circle at 34% 24%, #fff 0, #f4e9dc 68%, #ead8c3 100%);
-  border: 1px solid rgba(122, 81, 54, .2);
-  border-radius: 17px;
-  box-shadow: 0 5px 14px rgba(59, 36, 22, .12), inset 0 1px 0 rgba(255,255,255,.85);
-  display: flex;
-  height: 58px;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-  transition: box-shadow .2s ease, transform .2s ease;
-  width: 58px;
-}
-.logo:hover .logo-emblem { box-shadow: 0 8px 18px rgba(59, 36, 22, .17), inset 0 1px 0 rgba(255,255,255,.85); transform: translateY(-1px); }
+.logo:hover { opacity: .82; }
 .logo-wordmark {
   color: var(--brown);
   font-family: 'Playfair Display', serif;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -.02em;
-  margin-left: 10px;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -.025em;
   white-space: nowrap;
 }
 .logo-wordmark i { color: var(--wood); font-style: italic; }
 .brand-mark {
   display: block;
-  height: 46px;
+  height: 40px;
   object-fit: contain;
-  width: 46px;
+  width: 50px;
 }
 .brand-mark.is-animated {
   animation: brand-mark-enter .72s cubic-bezier(.2,.8,.2,1) both;
@@ -684,8 +669,7 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
 }
 @media (max-width: 620px) {
   .navbar { position: relative; height: 68px; justify-content: space-between; }
-  .navbar .logo-emblem { height: 54px; width: 54px; }
-  .navbar .brand-mark { height: 42px; width: 42px; }
+  .navbar .brand-mark { height: 36px; width: 44px; }
   .navbar nav.primary-nav { position: absolute; top: calc(100% + 1px); left: 0; right: 0; display: none; align-items: stretch; flex-direction: column; gap: 4px; padding: 12px 20px 18px; background: white; border-bottom: 1px solid #e8e5df; box-shadow: 0 14px 25px rgba(35,29,23,.1); }
   .navbar nav.primary-nav.is-open { display: flex; }
   .navbar nav.primary-nav a { padding: 12px 8px; font-size: 15px; }

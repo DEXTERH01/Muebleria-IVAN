@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 590 150" fill="none">
+  <g fill="#26221E" transform="translate(14 15)">
+    <path d="M18 112V18h17l45 39 45-39h17v94h-23V60L80 92 41 60v52H18Z" />
+    <path d="M73 84h14v28H73z" />
+  </g>
+  <text x="188" y="94" fill="#26221E" font-family="'Playfair Display', Georgia, serif" font-size="49" font-weight="600" letter-spacing="-1.5">
+    <tspan>Mueblería Iván</tspan>
+  </text>
+</svg>
