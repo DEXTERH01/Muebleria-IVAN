@@ -9,6 +9,10 @@
     display: none;
   }
 
+  .sidebar .logo-wordmark {
+    display: none;
+  }
+
   .sidebar nav a {
     justify-content: center;
     padding: 11px 8px;
@@ -67,6 +71,10 @@
   .sidebar .logo-symbol {
     width: 34px;
     height: 34px;
+  }
+
+  .sidebar .logo-wordmark {
+    display: none;
   }
 
   .sidebar nav {

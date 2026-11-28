@@ -83,7 +83,17 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
   transition: opacity .2s;
 }
 .logo:hover { opacity: .75; }
-.logo-symbol { display: block; width: 40px; height: 40px; object-fit: contain; }
+.logo-symbol { display: block; width: 44px; height: 44px; object-fit: contain; }
+.logo-wordmark {
+  color: var(--brown);
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+.logo-wordmark i { color: var(--wood); font-style: italic; }
 
 .navbar nav { display: flex; gap: 6px; margin-left: auto; }
 .navbar nav a {
@@ -643,7 +653,7 @@ h1 i, h2 i { font-family: 'Playfair Display', serif; font-weight: 600; font-styl
 }
 @media (max-width: 620px) {
   .navbar { position: relative; height: 68px; justify-content: space-between; }
-  .navbar .logo-symbol { width: 36px; height: 36px; }
+  .navbar .logo-symbol { width: 42px; height: 42px; }
   .navbar nav.primary-nav { position: absolute; top: calc(100% + 1px); left: 0; right: 0; display: none; align-items: stretch; flex-direction: column; gap: 4px; padding: 12px 20px 18px; background: white; border-bottom: 1px solid #e8e5df; box-shadow: 0 14px 25px rgba(35,29,23,.1); }
   .navbar nav.primary-nav.is-open { display: flex; }
   .navbar nav.primary-nav a { padding: 12px 8px; font-size: 15px; }
