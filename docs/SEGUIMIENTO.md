@@ -142,7 +142,7 @@ Criterio de salida: modelos reproducibles, evaluados, versionados e integrados s
 
 ## Fase 7. Calidad y experiencia
 
-- [x] Cubrir flujos críticos con pruebas unitarias. Evidencia: `frontend/src/pages/admin/QuotesStatus.test.tsx`; 20 pruebas unitarias en 10 archivos pasaron con `npm run test` el 2026-11-28; `npm run build` también pasó.
+- [x] Cubrir flujos críticos con pruebas unitarias. Evidencia: `frontend/src/pages/admin/QuotesStatus.test.tsx`; 21 pruebas unitarias en 10 archivos pasaron con `npm run test` el 2026-11-28; `npm run build` también pasó.
 - [x] Añadir pruebas de integración de API y base de datos. Evidencia: `backend/tests/integration/test_profile_postgres.py` y `backend/tests/integration/test_phase4_workflow_postgres.py`; el recorrido de Fase 4 se ejecutó contra Supabase local y las 68 comprobaciones pgTAP contra Supabase publicado se registraron el 2026-11-21. No se repitieron en esta estación el 2026-11-28 porque Supabase local no estaba iniciado.
 - [x] Añadir pruebas E2E con Playwright. Evidencia: `frontend/e2e/quote-flow.spec.ts`, `frontend/e2e/admin-quotes.spec.ts`; los tres casos de cotización, aprobación, teclado, Axe y responsive pasaron con `npm run test:e2e` el 2026-11-28.
 - [x] Revisar responsive. Evidencia: cotizador y cotizaciones administrativas sin desborde a 360, 768 y 1440 px en E2E.
@@ -167,11 +167,11 @@ Criterio de salida: flujos críticos aprobados y resultados reales documentados.
 - [x] Configurar variables y CORS. Evidencia: el frontend de Netlify consume la API de Render.
 - [x] Validar pipeline de despliegue. Evidencia: pipeline de CI aprobado en `main`; el frontend se publica desde Netlify.
 - [x] Crear cuentas de demo para los roles cliente, operador y administrador. Evidencia: `backend/scripts/bootstrap_demo_accounts.py`; cuatro inicios de sesión HTTP 200, correos confirmados, identidades email y roles verificados en Supabase.
-- [ ] Ejecutar smoke test integral en producción de demo. Parcial: el catálogo devuelve 52 productos, con 52 imágenes distintas respondiendo HTTP 200, cero descripciones demo y 40 precios base distintos. Las cuatro cuentas demo inician sesión y `/api/v1/auth/me` devuelve HTTP 200 con los roles `admin`, `operator` y `customer` esperados. Quedan los flujos completos de cotización y taller.
-- [ ] Preparar informe de métricas.
-- [ ] Preparar arquitectura final.
-- [ ] Preparar guion de demostración.
-- [ ] Preparar capturas y video de respaldo.
+- [ ] Ejecutar smoke test integral en producción de demo. Parcial: el catálogo devuelve 52 productos, con 52 imágenes distintas respondiendo HTTP 200, cero descripciones demo y 40 precios base distintos. Las cuatro cuentas demo inician sesión y `/api/v1/auth/me` devuelve HTTP 200 con los roles `admin`, `operator` y `customer` esperados. El 2026-11-28 Cloudflare Pages respondió HTTP 200 en portada, catálogo, cotizador, inicio de sesión y portal; Render respondió HTTP 200 en `/health` y permitió el origen Pages por CORS. Los tres casos de `frontend/e2e/deployed-smoke.spec.ts` pasaron contra Pages y la API real: catálogo, detalle, estimación sin guardar y redirección del portal sin sesión. Quedan los flujos completos autenticados de cotización y taller.
+- [x] Preparar informe de métricas. Evidencia: `docs/ENTREGA_DEMO.md`; distingue pruebas locales, smoke público, latencia exploratoria y métricas ML calculadas con datos de prueba. Las métricas pendientes permanecen señaladas.
+- [x] Preparar arquitectura final. Evidencia: diagrama y descripción de flujos, permisos y persistencia en `docs/ENTREGA_DEMO.md`.
+- [x] Preparar guion de demostración. Evidencia: recorrido de ocho pasos en `docs/ENTREGA_DEMO.md`; pendiente ensayarlo tras completar el smoke autenticado.
+- [ ] Preparar capturas y video de respaldo. Avance local: `output/phase8-home.png`, `output/phase8-catalog.png`, `output/phase8-product.png` y `output/phase8-estimate.png` muestran páginas públicas de Cloudflare con datos reales de catálogo y estimación; no se incluyen en commits. Faltan capturas del flujo autenticado y un video breve.
 - [ ] Ensayar la exposición completa.
 
 Criterio de salida: una persona externa puede verificar el prototipo y repetir el guion.
